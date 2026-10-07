@@ -1,0 +1,2 @@
+# SQL files locais podem conter credenciais de instalação; nunca versionar.
+*.local.sql
