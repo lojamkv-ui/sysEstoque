@@ -25,9 +25,10 @@
 
   --bg:#e9eff7; --bg-2:#dbe5f1;
   --surface:#ffffff; --surface-2:#f2f6fc; --surface-3:#e6eef9;
-  --ink:#0b1b33; --ink-2:#33486a; --ink-3:#647a9c;
+  --ink:#0b1b33; --ink-2:#33486a; --ink-3:#52647f;
   --line:#d3dfee; --line-2:#b9c9df;
-  --accent:#0b57c9; --accent-2:#2e9bff; --accent-ink:#ffffff; --accent-soft:#e2eeff;
+  --accent:#0b57c9; --accent-2:#216bd1; --accent-ink:#ffffff; --accent-soft:#e2eeff;
+  --brand-green:#548235;
   --ok:#1c7a4c; --ok-bg:#e2f3ea; --ok-line:#b6ddc7;
   --bad:#b3261e; --bad-bg:#fdeceb; --bad-line:#f2c4c0;
   --warn:#8a6100; --warn-bg:#fdf3d6; --warn-line:#ecd79a;
@@ -74,6 +75,8 @@ html[data-tema="escuro"]{
   --shadow-l:0 30px 80px -30px rgba(0,0,0,.9);
 }
 *,*::before,*::after{box-sizing:border-box}
+.skip-link{position:fixed;top:8px;left:8px;z-index:1000;transform:translateY(-160%);padding:10px 14px;border-radius:8px;background:var(--ink);color:var(--surface);font-weight:700;box-shadow:var(--shadow-m)}
+.skip-link:focus{transform:translateY(0)}
 html,body{margin:0;padding:0;min-height:100%}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{
@@ -98,7 +101,7 @@ body{
 /* ============ TOPO ============ */
 .topbar{position:sticky; top:0; z-index:60; background:color-mix(in srgb,var(--surface) 88%,transparent);
   backdrop-filter:blur(10px); border-bottom:1px solid var(--line); box-shadow:var(--shadow-s)}
-.topbar-in{max-width:1680px; margin:0 auto; padding:10px 18px; display:flex; align-items:center; gap:18px; flex-wrap:wrap}
+.topbar-in{max-width:1680px; margin:0 auto; padding:10px 18px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;position:relative}
 .marca{display:flex; align-items:center; gap:12px; min-width:0}
 .marca .simbolo{width:42px;height:42px;flex:0 0 42px;border-radius:9px;display:grid;place-items:center;
   background:linear-gradient(150deg,var(--accent-2),var(--accent)); color:var(--accent-ink);
@@ -108,7 +111,10 @@ body{
 .marca h1{font-family:var(--font-display); font-size:20px; line-height:1; margin:0; letter-spacing:.6px; text-transform:uppercase; font-weight:700}
 .marca h1 em{font-style:normal; color:var(--accent)}
 .marca p{margin:3px 0 0; font-size:11.5px; color:var(--ink-3); letter-spacing:.9px; text-transform:uppercase; font-weight:600}
-.topbar-acoes{margin-left:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.topbar-status{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:0}
+.topbar-acoes{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.topbar-section-label{font-family:var(--font-display);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--ink-3);padding:0 2px}
+.mobile-menu-controls{display:none}
 .relogio{font-family:var(--font-mono); font-size:12.5px; color:var(--ink-2); background:var(--surface-2);
   border:1px solid var(--line); border-radius:8px; padding:6px 10px; display:flex; align-items:center; gap:8px; white-space:nowrap}
 .relogio .ponto{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulso 2s infinite}
@@ -163,10 +169,12 @@ body{
   border-radius:999px;padding:1px 7px;color:var(--ink-3);transition:.2s}
 .nav-item:hover{background:var(--surface-2);color:var(--ink);transform:translateX(2px)}
 .nav-item:hover .ic{transform:scale(1.12);filter:none}
-.nav-item[aria-selected="true"]{background:linear-gradient(100deg,var(--accent-soft),var(--surface-2));color:var(--ink);border-color:var(--line-2)}
-.nav-item[aria-selected="true"]::before{content:'';position:absolute;left:-10px;top:12%;bottom:12%;width:4px;border-radius:0 4px 4px 0;background:var(--accent)}
-.nav-item[aria-selected="true"] .ic{filter:none}
-.nav-item[aria-selected="true"] small{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.nav-item[aria-current="page"]{background:linear-gradient(100deg,var(--accent-soft),var(--surface-2));color:var(--ink);border-color:var(--line-2)}
+.nav-item[aria-current="page"]::before{content:'';position:absolute;left:-10px;top:12%;bottom:12%;width:4px;border-radius:0 4px 4px 0;background:var(--accent)}
+.nav-item[aria-current="page"] .ic{filter:none}
+.nav-item[aria-current="page"] small{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.nav-item:focus-visible,.segmento button:focus-visible,.pill a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 .painel{display:none;animation:entra .34s cubic-bezier(.2,.8,.3,1) both}
 .painel.ativo{display:block}
@@ -196,6 +204,40 @@ input[type=text],input[type=number],input[type=search],input[type=date],select,t
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
 input.mono,select.mono{font-family:var(--font-mono);letter-spacing:.4px}
 input[disabled],select[disabled]{opacity:.55;cursor:not-allowed}
+/* Utilitários visuais compartilhados para manter os templates consistentes. */
+.push-right{margin-left:auto}
+.align-self-center{align-self:center}
+.text-right{text-align:right}
+.text-bold{font-weight:700}
+.text-muted{color:var(--ink-3)}
+.text-bad{color:var(--bad)}
+.mt-10{margin-top:10px}
+.mt-12{margin-top:12px}
+.mt-16{margin-top:16px}
+.val-compacto{font-size:18px}
+.form-note{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line-2)}
+.form-note-label{display:block;margin-bottom:7px;font-size:11.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3)}
+.grid.grid-carga-item{grid-template-columns:minmax(240px,3fr) minmax(120px,1fr) auto}
+.grid.grid-conf-select{grid-template-columns:minmax(280px,3fr) auto}
+.corpo-linha-acoes{display:flex;gap:9px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line)}
+.tabela-wrap.tabela-interna{margin-top:12px;border:1px solid var(--line);border-radius:var(--radius)}
+.tabela-wrap.tabela-detalhe{margin-top:10px;border:1px solid var(--line);border-radius:8px}
+.tabela th.text-right{text-align:right}
+.doc .text-right{text-align:right}
+.doc .text-bold{font-weight:bold}
+.doc .observacao{margin-top:14px;font-size:12px}
+.num input.qtd-input{width:100px;text-align:right}
+.status-diff.ok{color:var(--ok)}
+.status-diff.bad{color:var(--bad)}
+.status-delta.bad{color:var(--bad)}
+.status-delta.warn{color:var(--warn)}
+.falta-linha.status-falta{font-weight:800}
+.falta-linha.aviso-warn{border-left-color:var(--warn);background:var(--warn-bg);color:var(--warn);border-color:var(--warn-line)}
+.faixa-ultima-data{flex:0 1 auto;font-size:12.5px}
+#buscaProduto{min-width:260px}
+#filtroMov{min-width:170px}
+#buscaCarga{min-width:230px}
+#avisoCarga{margin-top:12px}
 .dica{font-size:11.5px;color:var(--ink-3)}
 .erro-campo{font-size:12px;color:var(--bad);font-weight:600;display:none}
 .erro-campo.visivel{display:block;animation:entra .2s both}
@@ -212,8 +254,16 @@ input[disabled],select[disabled]{opacity:.55;cursor:not-allowed}
 .contagem-manual p{margin:0;flex:1 1 260px;color:var(--ink-2);font-size:13.5px}
 
 /* ============ TABELAS ============ */
-.tabela-wrap{overflow-x:auto;border-top:1px solid var(--line);-webkit-overflow-scrolling:touch}
+.tabela-wrap{overflow-x:auto;border-top:1px solid var(--line);-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.tabela-wrap:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabela-scroll-hint{position:sticky;left:0;z-index:3;width:max-content;max-width:100%;padding:4px 10px;color:var(--ink-3);font-size:11px;background:var(--surface-2);border-bottom:1px solid var(--line);border-radius:0 0 6px 0}
 table.tabela{width:100%;border-collapse:collapse;min-width:760px}
+table.tabela.tabela-min-520{min-width:520px}
+table.tabela.tabela-min-640{min-width:640px}
+table.tabela.tabela-min-700{min-width:700px}
+table.tabela.tabela-min-820{min-width:820px}
+table.tabela.tabela-min-860{min-width:860px}
+table.tabela.tabela-min-900{min-width:900px}
 table.tabela th{position:sticky;top:0;z-index:2;background:var(--surface-3);text-align:left;font-size:11px;letter-spacing:.9px;
   text-transform:uppercase;color:var(--ink-3);font-weight:800;padding:10px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap}
 table.tabela td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:13.5px;vertical-align:middle;color:var(--ink-2)}
@@ -273,6 +323,9 @@ tr.baixo td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
 .toast .ic{font-size:17px;line-height:1.2}
 .toast .txt{font-size:13.5px;color:var(--ink);flex:1;min-width:0}
 .toast .txt b{display:block;font-size:12px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:2px}
+.toast-fechar{flex:0 0 36px;width:36px;height:36px;margin:-5px -7px 0 0;border:0;border-radius:7px;background:transparent;color:var(--ink-3);font:inherit;font-size:21px;line-height:1;cursor:pointer}
+.toast-fechar:hover{background:var(--surface-3);color:var(--ink)}
+.toast-fechar:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
 .toast.sucesso{border-left-color:var(--ok)} .toast.sucesso b{color:var(--ok)}
 .toast.erro{border-left-color:var(--bad)} .toast.erro b{color:var(--bad)}
 .toast.alerta{border-left-color:var(--warn)} .toast.alerta b{color:var(--warn)}
@@ -290,6 +343,7 @@ tr.baixo td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
 .modal header{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;
   background:linear-gradient(180deg,var(--surface-2),var(--surface))}
 .modal header h3{font-family:var(--font-display);font-size:17px;margin:0;letter-spacing:.8px;text-transform:uppercase}
+.modal .modal-icone{font-size:19px}
 .modal .corpo-modal{padding:18px;font-size:14px;color:var(--ink-2)}
 .modal .corpo-modal ul{margin:8px 0 0;padding-left:20px}
 .modal .corpo-modal li{margin-bottom:5px}
@@ -306,7 +360,7 @@ tr.baixo td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
 .doc h1{font-family:var(--font-display);font-size:24px;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px}
 .doc .sub{font-size:12px;color:#444;margin-bottom:18px}
 .doc table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}
-.doc th{background:#548235;color:#fff;text-align:left;padding:7px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.doc th{background:var(--brand-green);color:#fff;text-align:left;padding:7px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
 .doc td{border-bottom:1px solid #ddd;padding:7px 8px}
 .doc .assinaturas{display:flex;gap:60px;margin-top:70px}
 .doc .assinaturas div{flex:1;border-top:1px solid #333;padding-top:6px;font-size:12px;text-align:center}
@@ -324,32 +378,46 @@ tr.baixo td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
 /* ============ RESPONSIVO: DESKTOP, TABLET E CELULAR ============ */
 .shell,.shell>main,main,.painel,.cartao,.cartao>header,.cartao .corpo{min-width:0}
 img,video{max-width:100%}
-@media (max-width:1024px){
+@media (max-width:1024px), (max-height:500px) and (pointer:coarse){
+  .topbar-in{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;gap:8px;padding:8px 14px}
+  .marca{min-width:0}
+  .topbar-status{margin:0;display:flex;justify-content:space-between;gap:8px;min-width:0}
+  .topbar-status .usr-chip,.topbar-status .nuvem{min-height:44px}
+  .topbar-acoes{display:none;position:absolute;top:100%;left:12px;right:12px;z-index:65;width:auto;max-height:min(72dvh,520px);overflow:auto;
+    grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px;padding:12px;border:1px solid var(--line-2);border-radius:12px;
+    background:var(--surface);box-shadow:var(--shadow-l)}
+  .topbar-acoes.aberto{display:grid}
+  .topbar-section-label{grid-column:1/-1;padding:0 2px 2px}
+  .topbar-acoes .btn{width:100%;min-width:0;min-height:44px;justify-content:flex-start;white-space:normal;text-align:left}
+  .topbar-acoes .relogio{grid-column:1/-1;justify-content:center;white-space:normal;min-height:44px}
+  .topbar-acoes .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .mobile-menu-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .mobile-menu-controls .btn{width:100%;min-height:44px;justify-content:center}
+  .toast-fechar{width:44px;height:44px;flex-basis:44px}
   .shell{grid-template-columns:minmax(0,1fr);gap:12px;padding:12px 14px calc(32px + env(safe-area-inset-bottom))}
-  .rail{position:static;flex-direction:row;align-items:stretch;max-width:100%;overflow-x:auto;overflow-y:hidden;
-    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;gap:6px;padding:8px}
-  .rail .rotulo{display:none}
-  .nav-item{flex:0 0 auto;width:auto;min-width:max-content;min-height:44px;padding:10px 13px;white-space:nowrap}
+  .rail{display:none;position:static;max-height:min(70dvh,560px);overflow-y:auto;overscroll-behavior:contain;gap:8px;padding:10px}
+  .rail.aberto{display:flex;flex-direction:column}
+  .nav-grupo{display:flex;flex-direction:column;gap:4px}
+  .rail .rotulo{display:block}
+  .nav-item{width:100%;min-height:44px;padding:10px 13px;white-space:normal}
   .nav-item:hover{transform:none}
-  .nav-item[aria-selected="true"]::before{left:12px;right:12px;top:auto;bottom:2px;width:auto;height:3px;border-radius:3px}
-  .nav-item small{display:none}
+  .nav-item small{display:inline-flex}
+  .nav-item[aria-current="page"]::before{left:-10px;top:12%;bottom:12%;width:4px;height:auto;border-radius:0 4px 4px 0}
+  #navAdmin{flex-direction:column;gap:4px}
+  #navAdmin .rotulo{display:block}
   .console{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
   .console .celula{border-right:0;border-bottom:1px solid var(--line)}
   .console .acao{grid-column:1/-1}
   .grid .col-2{grid-column:span 1}
-  #navAdmin{flex-direction:row;gap:6px}
-  #navAdmin .rotulo{display:none}
+  .btn,.segmento button{min-height:44px}
+  input[type=text],input[type=password],input[type=number],input[type=search],input[type=date],select,textarea{min-height:44px}
+  .tabela-wrap.tem-rolagem table.tabela th:first-child{position:sticky;left:0;z-index:4;background:var(--surface-3);box-shadow:1px 0 0 var(--line-2)}
+  .tabela-wrap.tem-rolagem table.tabela td:first-child{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:1px 0 0 var(--line)}
+  .tabela-wrap.tem-rolagem tr.baixo td:first-child{box-shadow:inset 3px 0 0 var(--bad),1px 0 0 var(--line)}
 }
 @media (max-width:760px){
   body{font-size:14px}
   .topbar-in{padding:8px 12px;gap:8px}
-  .topbar-acoes{width:100%;max-width:100%;margin-left:0;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
-    padding:1px 0 6px;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
-  .topbar-acoes>*{flex:0 0 auto}
-  .topbar-acoes .nuvem{max-width:160px;overflow:hidden}
-  .topbar-acoes .nuvem span{overflow:hidden;text-overflow:ellipsis}
-  .topbar-acoes .relogio{width:auto;justify-content:flex-start;order:initial}
-  .topbar-acoes .btn{min-height:44px}
   .shell{padding:10px 10px calc(30px + env(safe-area-inset-bottom))}
   .faixa{padding:0 12px}
   .faixa-in{margin-top:10px;padding:10px 12px}
@@ -360,7 +428,7 @@ img,video{max-width:100%}
   .cartao .corpo{padding:12px}
   .grid{grid-template-columns:minmax(0,1fr);gap:10px}
   .grid .col-2{grid-column:auto}
-  .grid.grid-carga-item,.grid.grid-conf-select{grid-template-columns:minmax(0,1fr)!important}
+  .grid.grid-carga-item,.grid.grid-conf-select{grid-template-columns:minmax(0,1fr)}
   .titulo-painel{align-items:stretch;gap:10px;margin-bottom:14px}
   .titulo-painel h2{font-size:clamp(24px,7vw,32px);line-height:1}
   .titulo-painel p{max-width:none}
@@ -395,6 +463,15 @@ img,video{max-width:100%}
 }
 @media (max-width:480px){
   .topbar-in{padding-inline:10px}
+  .topbar-status{gap:6px}
+  .usr-chip{max-width:58%;min-width:0;padding-right:8px}
+  .usr-txt{min-width:0;overflow:hidden}
+  .usr-txt b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .usr-txt small{display:none}
+  .nuvem{max-width:42%;min-height:44px;padding-inline:8px;overflow:hidden}
+  .nuvem span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar-acoes{grid-template-columns:minmax(0,1fr)}
+  .topbar-acoes .relogio{grid-column:auto}
   .marca{gap:8px}
   .marca .logo-mark{height:36px;padding:2px 5px}
   .marca h1{font-size:16px}
@@ -418,8 +495,8 @@ img,video{max-width:100%}
   .modal footer .btn{flex:1 1 100%;justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){
-  .painel,.fundo .glow{animation:none}
-  *{scroll-behavior:auto!important}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+  .fundo .glow,.relogio .ponto,.nuvem.sync i{animation:none!important}
 }
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 ::-webkit-scrollbar{height:10px;width:10px}
@@ -430,7 +507,7 @@ img,video{max-width:100%}
 input[type=password]{font-family:var(--font-body);font-size:14px;color:var(--ink);background:var(--surface-2);
   border:1px solid var(--line-2);border-radius:8px;padding:9px 11px;width:100%;transition:border-color .16s,box-shadow .16s,background .16s}
 body:not(.autenticado) .topbar,body:not(.autenticado) .faixa,body:not(.autenticado) .shell,
-body:not(.autenticado) .toasts{display:none!important}
+body:not(.autenticado) .toasts,body:not(.autenticado) .skip-link{display:none!important}
 body:not(.autenticado) .toasts{display:block!important}
 .login{position:fixed;inset:0;z-index:400;display:none;place-items:center;padding:20px;overflow:auto}
 .login-card{width:min(420px,100%);background:var(--surface);border:1px solid var(--line-2);border-radius:12px;
@@ -453,9 +530,10 @@ body:not(.autenticado) .toasts{display:block!important}
 .usr-txt{display:flex;flex-direction:column;line-height:1.15}
 .usr-txt b{font-size:12.5px;color:var(--ink)}
 .usr-txt small{font-size:11px;color:var(--ink-3);font-weight:600}
-.nuvem{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;
-  padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
-.nuvem i{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.nuvem{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-body);font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;
+  padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);white-space:nowrap;transition:border-color .16s,background .16s}
+.nuvem:hover{border-color:var(--accent);background:var(--surface-3)}
+.nuvem i{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--ink-3)}
 .nuvem.ok i{background:var(--ok)}
 .nuvem.sync i{background:var(--info)}
 .nuvem.offline i{background:var(--warn)}
@@ -466,7 +544,6 @@ body:not(.autenticado) .toasts{display:block!important}
 #navAdmin{display:flex;flex-direction:column;gap:5px}
 .sem-cad-produto #cartaoFormProduto,.sem-cad-produto #btnNovoProduto,
 .sem-cad-produto [data-editar],.sem-cad-produto [data-excluir]{display:none!important}
-@media (max-width:1024px){ #navAdmin{flex-direction:row;gap:6px} #navAdmin .rotulo{display:none} }
 @media print{ .login{display:none!important} }
 
 .marca .logo-mark{height:46px;width:auto;flex:0 0 auto;background:#fff;border-radius:10px;padding:3px 7px;box-shadow:var(--shadow-m);border:1px solid var(--line)}
@@ -476,6 +553,7 @@ body:not(.autenticado) .toasts{display:block!important}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#mainContent">Pular para o conteúdo principal</a>
 <div class="fundo" aria-hidden="true"><div class="glow g1"></div><div class="glow g2"></div><div class="listras"></div></div>
 
 <!-- ================= TOPO ================= -->
@@ -488,16 +566,23 @@ body:not(.autenticado) .toasts{display:block!important}
         <p>Sistema de carregamento e estoque</p>
       </div>
     </div>
-    <div class="topbar-acoes">
-      <div class="usr-chip" id="usrChip" title="Usuário conectado"><span class="usr-av" id="usrAv">?</span><div class="usr-txt"><b id="usrNome">—</b><small id="usrPerfil">—</small></div></div>
-      <span class="nuvem sync" id="nuvemStatus" title="Banco de dados (Supabase) — clique para sincronizar agora"><i></i><span id="nuvemTxt">Conectando…</span></span>
-      <button class="btn mini fantasma" id="btnSair" title="Encerrar a sessão"><span class="ic">⎋</span>Sair</button>
-      <div class="relogio" title="Data e hora do computador"><span class="ponto"></span><span id="relogio">--:--:--</span></div>
-      <button class="btn mini" id="btnBackup" title="Baixa um arquivo .json com todos os dados"><span class="ic">💾</span>Salvar backup</button>
-      <button class="btn mini" id="btnRestaurar" title="Carrega um backup .json"><span class="ic">📂</span>Restaurar backup</button>
-      <button class="btn mini" id="btnCsv" title="Exporta os produtos em CSV (;) para o Excel"><span class="ic">📄</span>Exportar produtos (CSV)</button>
-      <button class="btn mini" id="btnXlsx" title="Gera a planilha .xlsx dos produtos de cadastro inicial"><span class="ic">📊</span>Planilha .xlsx</button>
-      <button class="btn mini fantasma" id="btnTema" title="Alternar tema (auto / claro / escuro)"><span class="ic" id="icTema">◐</span><span id="txtTema">Auto</span></button>
+      <div class="topbar-status" role="group" aria-label="Status da sessão">
+      <div class="usr-chip" id="usrChip" title="Usuário conectado"><span class="usr-av" id="usrAv" aria-hidden="true">?</span><div class="usr-txt"><b id="usrNome">—</b><small id="usrPerfil">—</small></div></div>
+      <button type="button" class="nuvem sync" id="nuvemStatus" title="Banco de dados (Supabase) — clique para sincronizar agora" aria-label="Sincronização: conectando. Clique para sincronizar agora"><i aria-hidden="true"></i><span id="nuvemTxt" aria-live="polite">Conectando…</span></button>
+    </div>
+    <div class="mobile-menu-controls" role="group" aria-label="Menus principais">
+      <button type="button" class="btn" id="btnMenuOperacao" aria-controls="navOperacao" aria-expanded="false"><span class="ic" aria-hidden="true">☰</span>Operação</button>
+      <button type="button" class="btn" id="btnMenuAcoes" aria-controls="acoesMenuPanel" aria-expanded="false"><span class="ic" aria-hidden="true">⋯</span>Ações</button>
+    </div>
+    <div class="topbar-acoes" id="acoesMenuPanel" role="region" aria-label="Ações do sistema">
+      <span class="topbar-section-label" aria-hidden="true">Ações</span>
+      <button type="button" class="btn mini fantasma" id="btnSair" title="Encerrar a sessão"><span class="ic" aria-hidden="true">⎋</span>Sair</button>
+      <div class="relogio" title="Data e hora do computador"><span class="ponto" aria-hidden="true"></span><span id="relogio">--:--:--</span></div>
+      <button type="button" class="btn mini" id="btnBackup" title="Baixa um arquivo .json com todos os dados"><span class="ic" aria-hidden="true">💾</span>Salvar backup</button>
+      <button type="button" class="btn mini" id="btnRestaurar" title="Carrega um backup .json"><span class="ic" aria-hidden="true">📂</span>Restaurar backup</button>
+      <button type="button" class="btn mini" id="btnCsv" title="Exporta os produtos em CSV (;) para o Excel"><span class="ic" aria-hidden="true">📄</span>Exportar produtos (CSV)</button>
+      <button type="button" class="btn mini" id="btnXlsx" title="Gera a planilha .xlsx dos produtos de cadastro inicial"><span class="ic" aria-hidden="true">📊</span>Planilha .xlsx</button>
+      <button type="button" class="btn mini fantasma" id="btnTema" title="Alternar tema (auto / claro / escuro)"><span class="ic" id="icTema" aria-hidden="true">◐</span><span id="txtTema">Auto</span></button>
       <input type="file" id="arquivoBackup" accept="application/json,.json" class="sr">
     </div>
   </div>
@@ -508,22 +593,24 @@ body:not(.autenticado) .toasts{display:block!important}
 
 <!-- ================= ESTRUTURA ================= -->
 <div class="shell">
-  <nav class="rail" role="tablist" aria-label="Seções do sistema">
-    <div class="rotulo">Operação</div>
-    <button class="nav-item" role="tab" data-tab="produtos" aria-selected="true"><span class="ic">📦</span>Produtos<small id="cntProd">0</small></button>
-    <button class="nav-item" role="tab" data-tab="estoque" aria-selected="false"><span class="ic">🏷️</span>Estoque<small id="cntBaixo">0</small></button>
-    <button class="nav-item" role="tab" data-tab="cargas" aria-selected="false"><span class="ic">🚚</span>Carregamentos<small id="cntCargas">0</small></button>
-    <button class="nav-item" role="tab" data-tab="receber" aria-selected="false"><span class="ic">📥</span>Receber<small id="cntReceb">0</small></button>
-    <button class="nav-item" role="tab" data-tab="conferir" aria-selected="false"><span class="ic">🔍</span>Conferir carga<small id="cntConf">0</small></button>
-    <div id="navAdmin" style="display:none">
+  <nav class="rail" id="navOperacao" aria-label="Navegação do sistema">
+    <div class="nav-grupo" role="group" aria-label="Operação">
+      <div class="rotulo">Operação</div>
+      <button type="button" class="nav-item" id="navProdutos" data-tab="produtos" aria-controls="tab-produtos" aria-current="page"><span class="ic" aria-hidden="true">📦</span>Produtos<small id="cntProd">0</small></button>
+      <button type="button" class="nav-item" id="navEstoque" data-tab="estoque" aria-controls="tab-estoque"><span class="ic" aria-hidden="true">🏷️</span>Estoque<small id="cntBaixo">0</small></button>
+      <button type="button" class="nav-item" id="navCargas" data-tab="cargas" aria-controls="tab-cargas"><span class="ic" aria-hidden="true">🚚</span>Carregamentos<small id="cntCargas">0</small></button>
+      <button type="button" class="nav-item" id="navReceber" data-tab="receber" aria-controls="tab-receber"><span class="ic" aria-hidden="true">📥</span>Receber<small id="cntReceb">0</small></button>
+      <button type="button" class="nav-item" id="navConferir" data-tab="conferir" aria-controls="tab-conferir"><span class="ic" aria-hidden="true">🔍</span>Conferir carga<small id="cntConf">0</small></button>
+    </div>
+    <div id="navAdmin" class="nav-grupo nav-admin" role="group" aria-label="Administração" style="display:none">
       <div class="rotulo">Administração</div>
-      <button class="nav-item" role="tab" data-tab="usuarios" aria-selected="false"><span class="ic">🔑</span>Usuários<small id="cntUsr">0</small></button>
+      <button type="button" class="nav-item" id="navUsuarios" data-tab="usuarios" aria-controls="tab-usuarios"><span class="ic" aria-hidden="true">🔑</span>Usuários<small id="cntUsr">0</small></button>
     </div>
   </nav>
 
-  <main>
+  <main id="mainContent" tabindex="-1">
   <!-- ============ ABA 1 — PRODUTOS ============ -->
-  <section class="painel ativo" id="tab-produtos" role="tabpanel">
+  <section class="painel ativo" id="tab-produtos" aria-labelledby="navProdutos" aria-hidden="false">
     <div class="titulo-painel">
       <div>
         <h2>Cadastro de <i>produtos</i></h2>
@@ -599,7 +686,7 @@ body:not(.autenticado) .toasts{display:block!important}
           <div class="acoes-form">
             <button type="submit" class="btn primario" id="btnSalvarProduto"><span class="ic">✔</span><span id="txtSalvarProduto">Cadastrar produto</span></button>
             <button type="button" class="btn fantasma" id="btnCancelarEdicao" style="display:none">Cancelar edição</button>
-            <span class="dica" style="align-self:center">Campos com <span class="req" style="color:var(--bad)">*</span> são obrigatórios. FT e EAN não podem se repetir.</span>
+            <span class="dica align-self-center">Campos com <span class="req text-bad">*</span> são obrigatórios. FT e EAN não podem se repetir.</span>
           </div>
         </form>
       </div>
@@ -608,7 +695,7 @@ body:not(.autenticado) .toasts{display:block!important}
     <div class="cartao">
       <header><span class="ic">🗂️</span><h3>Produtos cadastrados</h3>
         <div class="lado">
-          <input type="search" id="buscaProduto" placeholder="🔎 Buscar por nome, FT ou EAN…" style="min-width:260px">
+          <input type="search" id="buscaProduto" placeholder="🔎 Buscar por nome, FT ou EAN…">
           <span class="tag" id="tagTotalProd">0 itens</span>
         </div>
       </header>
@@ -616,7 +703,7 @@ body:not(.autenticado) .toasts{display:block!important}
         <table class="tabela">
           <thead><tr>
             <th>FT / Código</th><th>Produto</th><th>Un</th><th class="num">Estoque</th><th class="num">Mínimo</th>
-            <th class="num">Preço</th><th>EAN</th><th>Medidas (mm)</th><th>Estrutura</th><th class="num">Pedido mín.</th><th style="text-align:right">Ações</th>
+            <th class="num">Preço</th><th>EAN</th><th>Medidas (mm)</th><th>Estrutura</th><th class="num">Pedido mín.</th><th class="text-right">Ações</th>
           </tr></thead>
           <tbody id="tbodyProdutos"></tbody>
         </table>
@@ -625,7 +712,7 @@ body:not(.autenticado) .toasts{display:block!important}
   </section>
 
   <!-- ============ ABA 2 — ESTOQUE ============ -->
-  <section class="painel" id="tab-estoque" role="tabpanel">
+  <section class="painel" id="tab-estoque" aria-labelledby="navEstoque" aria-hidden="true">
     <div class="titulo-painel">
       <div><h2>Posição de <i>estoque</i></h2><p>Indicadores, movimentação manual e histórico completo de entradas e saídas.</p></div>
       <div class="lado"><button class="btn primario" id="btnIrReceber"><span class="ic">📥</span>Receber mercadoria</button></div>
@@ -636,7 +723,7 @@ body:not(.autenticado) .toasts{display:block!important}
         <div class="celula destaque"><span class="rot">Valor total em estoque</span><span class="val" id="kpiValor">R$ 0,00</span><span class="sub" id="kpiValorSub">quantidade × preço</span></div>
         <div class="celula"><span class="rot">Produtos cadastrados</span><span class="val" id="kpiProdutos">0</span><span class="sub" id="kpiUnidades">0 unidades físicas</span></div>
         <div class="celula" id="celulaBaixo"><span class="rot">Abaixo do mínimo</span><span class="val" id="kpiBaixo">0</span><span class="sub" id="kpiBaixoSub">nenhum item crítico</span></div>
-        <div class="celula"><span class="rot">Última movimentação</span><span class="val" style="font-size:18px" id="kpiUltima">—</span><span class="sub" id="kpiUltimaSub">sem registros</span></div>
+        <div class="celula"><span class="rot">Última movimentação</span><span class="val val-compacto" id="kpiUltima">—</span><span class="sub" id="kpiUltimaSub">sem registros</span></div>
         <div class="acao"><button class="btn" id="btnVerBaixos"><span class="ic">⚠️</span>Ver itens críticos</button></div>
       </div>
     </div>
@@ -652,7 +739,7 @@ body:not(.autenticado) .toasts{display:block!important}
             </div>
             <div class="campo">
               <label>Tipo de movimentação <span class="req">*</span></label>
-              <div class="segmento" id="mTipo" role="group">
+              <div class="segmento" id="mTipo" role="group" aria-label="Tipo de movimentação">
                 <button type="button" data-tipo="Entrada" aria-pressed="true">▲ Entrada</button>
                 <button type="button" data-tipo="Saída" aria-pressed="false">▼ Saída</button>
                 <button type="button" data-tipo="Ajuste" aria-pressed="false">＝ Ajuste</button>
@@ -670,7 +757,7 @@ body:not(.autenticado) .toasts{display:block!important}
           </div>
           <div class="acoes-form">
             <button type="submit" class="btn primario"><span class="ic">✔</span>Registrar movimentação</button>
-            <span class="dica" style="align-self:center">Saída maior que o estoque é bloqueada. Ajuste define o total do produto.</span>
+            <span class="dica align-self-center">Saída maior que o estoque é bloqueada. Ajuste define o total do produto.</span>
           </div>
         </form>
       </div>
@@ -679,7 +766,7 @@ body:not(.autenticado) .toasts{display:block!important}
     <div class="cartao">
       <header><span class="ic">🕘</span><h3>Histórico de movimentações</h3>
         <div class="lado">
-          <select id="filtroMov" style="min-width:170px">
+          <select id="filtroMov">
             <option value="">Todos os tipos</option>
             <option value="Entrada">Somente entradas</option>
             <option value="Saída">Somente saídas</option>
@@ -698,11 +785,11 @@ body:not(.autenticado) .toasts{display:block!important}
   </section>
 
   <!-- ============ ABA 3 — CARREGAMENTOS ============ -->
-  <section class="painel" id="tab-cargas" role="tabpanel">
+  <section class="painel" id="tab-cargas" aria-labelledby="navCargas" aria-hidden="true">
     <div class="titulo-painel">
       <div><h2>Carregamentos e <i>expedição</i></h2><p>Monte a carga, acompanhe a situação do estoque de cada item e confirme a saída.</p></div>
       <div class="lado">
-        <div class="segmento" id="filtroCargas" role="group">
+        <div class="segmento" id="filtroCargas" role="group" aria-label="Filtrar carregamentos por situação">
           <button type="button" data-f="todos" aria-pressed="true">Todos</button>
           <button type="button" data-f="Pendente" aria-pressed="false">Pendentes</button>
           <button type="button" data-f="Carregado" aria-pressed="false">Carregados</button>
@@ -724,22 +811,22 @@ body:not(.autenticado) .toasts{display:block!important}
             <div class="campo"><label for="cObs">Observação</label><input type="text" id="cObs" placeholder="Opcional"></div>
           </div>
 
-          <div style="margin-top:16px;padding-top:14px;border-top:1px dashed var(--line-2)">
-            <label style="font-size:11.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:7px">Itens da carga</label>
-            <div class="grid grid-carga-item" style="grid-template-columns:minmax(240px,3fr) minmax(120px,1fr) auto">
+          <div class="form-note">
+            <label class="form-note-label">Itens da carga</label>
+            <div class="grid grid-carga-item">
               <div class="campo"><label for="cItemProduto">Produto</label><select id="cItemProduto"></select></div>
               <div class="campo"><label for="cItemQtd">Quantidade</label><input type="number" id="cItemQtd" min="1" step="1" value="1"></div>
               <div class="campo"><label>&nbsp;</label><button type="button" class="btn ok" id="btnAddItem"><span class="ic">＋</span>Adicionar item</button></div>
             </div>
           </div>
 
-          <div class="tabela-wrap" style="margin-top:12px;border:1px solid var(--line);border-radius:var(--radius)">
-            <table class="tabela" style="min-width:640px">
-              <thead><tr><th>FT / Código</th><th>Produto</th><th>Un</th><th class="num">Qtd. pedida</th><th class="num">Disponível</th><th>Situação</th><th style="text-align:right">Ações</th></tr></thead>
+          <div class="tabela-wrap tabela-interna">
+            <table class="tabela tabela-min-640">
+              <thead><tr><th>FT / Código</th><th>Produto</th><th>Un</th><th class="num">Qtd. pedida</th><th class="num">Disponível</th><th>Situação</th><th class="text-right">Ações</th></tr></thead>
               <tbody id="tbodyItensCarga"></tbody>
             </table>
           </div>
-          <div id="avisoCarga" style="margin-top:12px"></div>
+          <div id="avisoCarga"></div>
           <div class="acoes-form">
             <button type="submit" class="btn primario"><span class="ic">📌</span>Salvar como pendente</button>
             <button type="button" class="btn fantasma" id="btnLimparCarga">Limpar</button>
@@ -750,14 +837,14 @@ body:not(.autenticado) .toasts{display:block!important}
 
     <div class="cartao">
       <header><span class="ic">📋</span><h3>Carregamentos</h3>
-        <div class="lado"><input type="search" id="buscaCarga" placeholder="🔎 Nº, destino, motorista…" style="min-width:230px"><span class="tag" id="tagCargas">0 cargas</span></div>
+        <div class="lado"><input type="search" id="buscaCarga" placeholder="🔎 Nº, destino, motorista…"><span class="tag" id="tagCargas">0 cargas</span></div>
       </header>
       <div class="corpo" id="listaCargas"></div>
     </div>
   </section>
 
   <!-- ============ ABA 4 — RECEBER ============ -->
-  <section class="painel" id="tab-receber" role="tabpanel">
+  <section class="painel" id="tab-receber" aria-labelledby="navReceber" aria-hidden="true">
     <div class="titulo-painel">
       <div><h2>Receber <i>mercadoria</i></h2><p>Adicione os produtos da nota e informe as quantidades esperadas e recebidas.</p></div>
     </div>
@@ -802,15 +889,15 @@ body:not(.autenticado) .toasts{display:block!important}
           </div>
         </header>
         <div class="tabela-wrap">
-          <table class="tabela" style="min-width:860px">
-            <thead><tr><th>Produto</th><th>FT</th><th>EAN</th><th class="num">Esperado</th><th class="num">Conferido</th><th class="num">Diferença</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead>
+          <table class="tabela tabela-min-860">
+            <thead><tr><th>Produto</th><th>FT</th><th>EAN</th><th class="num">Esperado</th><th class="num">Conferido</th><th class="num">Diferença</th><th>Status</th><th class="text-right">Ações</th></tr></thead>
             <tbody id="tbodyReceb"></tbody>
           </table>
         </div>
-        <div class="corpo" style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line)">
+        <div class="corpo corpo-linha-acoes">
           <button class="btn primario" id="btnFinalizarReceb"><span class="ic">✅</span>Finalizar recebimento e dar entrada no estoque</button>
           <button class="btn perigo fantasma" id="btnCancelarReceb"><span class="ic">🗑</span>Descartar conferência</button>
-          <span class="dica" style="margin-left:auto" id="rResumoTotais"></span>
+          <span class="dica push-right" id="rResumoTotais"></span>
         </div>
       </div>
     </div>
@@ -818,8 +905,8 @@ body:not(.autenticado) .toasts{display:block!important}
     <div class="cartao">
       <header><span class="ic">🗃️</span><h3>Histórico de recebimentos</h3><div class="lado"><span class="tag" id="tagReceb">0 recebimentos</span></div></header>
       <div class="tabela-wrap">
-        <table class="tabela" style="min-width:820px">
-          <thead><tr><th>NF / Pedido</th><th>Fornecedor</th><th>Início</th><th>Finalizado</th><th class="num">Itens</th><th class="num">Entrada</th><th>Divergências</th><th style="text-align:right">Ações</th></tr></thead>
+        <table class="tabela tabela-min-820">
+          <thead><tr><th>NF / Pedido</th><th>Fornecedor</th><th>Início</th><th>Finalizado</th><th class="num">Itens</th><th class="num">Entrada</th><th>Divergências</th><th class="text-right">Ações</th></tr></thead>
           <tbody id="tbodyRecebHist"></tbody>
         </table>
       </div>
@@ -827,7 +914,7 @@ body:not(.autenticado) .toasts{display:block!important}
   </section>
 
   <!-- ============ ABA 5 — CONFERIR CARGA ============ -->
-  <section class="painel" id="tab-conferir" role="tabpanel">
+  <section class="painel" id="tab-conferir" aria-labelledby="navConferir" aria-hidden="true">
     <div class="titulo-painel">
       <div><h2>Conferir <i>carga</i></h2><p>Conte a carga no pátio: o esperado vem do carregamento e a baixa usa o que foi realmente conferido.</p></div>
     </div>
@@ -836,7 +923,7 @@ body:not(.autenticado) .toasts{display:block!important}
       <div class="cartao">
         <header><span class="ic">🚚</span><h3>Escolha um carregamento pendente</h3></header>
         <div class="corpo">
-          <div class="grid grid-conf-select" style="grid-template-columns:minmax(280px,3fr) auto">
+          <div class="grid grid-conf-select">
             <div class="campo"><label for="confSelect">Carregamentos pendentes</label><select id="confSelect"></select></div>
             <div class="campo"><label>&nbsp;</label><button type="button" class="btn primario" id="btnIniciarConf"><span class="ic">▶</span>Iniciar conferência</button></div>
           </div>
@@ -862,21 +949,21 @@ body:not(.autenticado) .toasts{display:block!important}
           <div class="lado"><span class="tag ok" id="confTagOk">0 OK</span><span class="tag bad" id="confTagFalta">0 com falta</span><span class="tag warn" id="confTagExc">0 excedente</span></div>
         </header>
         <div class="tabela-wrap">
-          <table class="tabela" style="min-width:900px">
+          <table class="tabela tabela-min-900">
             <thead><tr><th>Produto</th><th>FT</th><th>EAN</th><th class="num">Esperado</th><th class="num">Conferido</th><th class="num">Em estoque</th><th class="num">Diferença</th><th>Status</th></tr></thead>
             <tbody id="tbodyConf"></tbody>
           </table>
         </div>
-        <div class="corpo" style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line)">
+        <div class="corpo corpo-linha-acoes">
           <button class="btn primario" id="btnFinalizarConf"><span class="ic">✅</span>Finalizar conferência e dar baixa</button>
           <button class="btn fantasma" id="btnSairConf"><span class="ic">↩</span>Voltar sem finalizar</button>
-          <span class="dica" style="margin-left:auto" id="confResumo"></span>
+          <span class="dica push-right" id="confResumo"></span>
         </div>
       </div>
     </div>
   </section>
   <!-- ============ ABA — USUÁRIOS (somente administrador) ============ -->
-  <section class="painel" id="tab-usuarios" role="tabpanel">
+  <section class="painel" id="tab-usuarios" aria-labelledby="navUsuarios" aria-hidden="true">
     <div class="titulo-painel">
       <div>
         <h2>Controle de <i>acesso</i></h2>
@@ -920,7 +1007,7 @@ body:not(.autenticado) .toasts{display:block!important}
           <div class="acoes-form">
             <button type="submit" class="btn primario" id="btnSalvarUsuario"><span class="ic">✔</span><span id="txtSalvarUsuario">Cadastrar usuário</span></button>
             <button type="button" class="btn fantasma" id="btnCancelarUsr" style="display:none">Cancelar edição</button>
-            <span class="dica" style="align-self:center"><b>Administrador:</b> gerencia usuários e restaura backups. <b>Conferente:</b> usa produtos, estoque, cargas, recebimento e conferência.</span>
+            <span class="dica align-self-center"><b>Administrador:</b> gerencia usuários e restaura backups. <b>Conferente:</b> usa produtos, estoque, cargas, recebimento e conferência.</span>
           </div>
         </form>
       </div>
@@ -932,7 +1019,7 @@ body:not(.autenticado) .toasts{display:block!important}
       </header>
       <div class="tabela-wrap">
         <table class="tabela">
-          <thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Situação</th><th>Cadastrado em</th><th style="text-align:right">Ações</th></tr></thead>
+          <thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Situação</th><th>Cadastrado em</th><th class="text-right">Ações</th></tr></thead>
           <tbody id="tbodyUsuarios"></tbody>
         </table>
       </div>
@@ -973,7 +1060,7 @@ body:not(.autenticado) .toasts{display:block!important}
   </form>
 </div>
 
-<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="toasts" id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
 <div id="modalRoot"></div>
 <div id="printArea"></div>
 
@@ -987,6 +1074,35 @@ const CHAVE = 'sistemaEstoque.v1';
 /* ---------------- utilidades ---------------- */
 const $  = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+function rolarTela(top){
+  const reduzir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({top:top || 0, behavior:reduzir ? 'auto' : 'smooth'});
+}
+function limparErrosCampos(raiz){
+  $$('.erro-campo', raiz || document).forEach(erro => {
+    erro.classList.remove('visivel');
+    erro.textContent = '';
+    if(!erro.id) return;
+    const campo = erro.closest('.campo') && erro.closest('.campo').querySelector('input:not([type=hidden]),select,textarea');
+    if(!campo) return;
+    campo.removeAttribute('aria-invalid');
+    const ids = (campo.getAttribute('aria-describedby') || '').split(/\s+/).filter(id => id && id !== erro.id);
+    if(ids.length) campo.setAttribute('aria-describedby', ids.join(' '));
+    else campo.removeAttribute('aria-describedby');
+  });
+}
+function marcarErroCampo(seletor, mensagem){
+  const erro = $(seletor);
+  if(!erro) return;
+  erro.textContent = mensagem;
+  erro.classList.add('visivel');
+  const campo = erro.closest('.campo') && erro.closest('.campo').querySelector('input:not([type=hidden]),select,textarea');
+  if(!campo) return;
+  campo.setAttribute('aria-invalid','true');
+  const ids = new Set((campo.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean));
+  if(erro.id) ids.add(erro.id);
+  campo.setAttribute('aria-describedby', Array.from(ids).join(' '));
+}
 function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
 function agora(){ return new Date().toISOString(); }
@@ -1115,38 +1231,73 @@ function toast(msg, tipo, titulo){
   const titulos = {sucesso:'Concluído', erro:'Atenção', alerta:'Aviso', info:'Informação'};
   const el = document.createElement('div');
   el.className = 'toast ' + tipo;
-  el.innerHTML = '<span class="ic">' + (icons[tipo] || 'ℹ️') + '</span><div class="txt"><b>' + esc(titulo || titulos[tipo]) + '</b>' + esc(msg) + '</div><span class="barra"></span>';
+  el.innerHTML = '<span class="ic" aria-hidden="true">' + (icons[tipo] || 'ℹ️') + '</span><div class="txt"><b>' + esc(titulo || titulos[tipo]) + '</b>' + esc(msg) + '</div><button type="button" class="toast-fechar" aria-label="Fechar notificação">×</button><span class="barra" aria-hidden="true"></span>';
   $('#toasts').appendChild(el);
-  const fechar = () => { el.classList.add('saindo'); setTimeout(() => el.remove(), 260); };
-  el.addEventListener('click', fechar);
+  let fechando = false;
+  const fechar = () => { if(fechando) return; fechando = true; el.classList.add('saindo'); setTimeout(() => el.remove(), 260); };
+  el.querySelector('.toast-fechar').addEventListener('click', fechar);
   setTimeout(fechar, 4300);
 }
 
 /* ---------------- modal ---------------- */
 function abrirModal(opts){
   return new Promise(resolve => {
+    const focoAnterior = document.activeElement;
+    const devolverFoco = focoAnterior && focoAnterior.closest && focoAnterior.closest('#acoesMenuPanel') ? $('#btnMenuAcoes') : null;
+    const tabelaAnterior = focoAnterior && focoAnterior.closest && focoAnterior.closest('.tabela-wrap');
+    const tituloId = 'titulo-modal-' + uid();
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.innerHTML =
-      '<div class="modal ' + (opts.largo ? 'largo' : '') + '" role="dialog" aria-modal="true">' +
-        '<header><span style="font-size:19px">' + (opts.icone || '📌') + '</span><h3>' + esc(opts.titulo || '') + '</h3></header>' +
+      '<div class="modal ' + (opts.largo ? 'largo' : '') + '" role="dialog" aria-modal="true" aria-labelledby="' + tituloId + '" tabindex="-1">' +
+        '<header><span class="modal-icone" aria-hidden="true">' + (opts.icone || '📌') + '</span><h3 id="' + tituloId + '">' + esc(opts.titulo || '') + '</h3></header>' +
         '<div class="corpo-modal">' + (opts.html || '') + '</div>' +
         '<footer>' +
-          (opts.cancelavel === false ? '' : '<button class="btn fantasma" data-act="cancel">' + esc(opts.cancelTexto || 'Cancelar') + '</button>') +
-          '<button class="btn ' + (opts.perigo ? 'perigo' : 'primario') + '" data-act="ok">' + esc(opts.okTexto || 'Confirmar') + '</button>' +
+          (opts.cancelavel === false ? '' : '<button type="button" class="btn fantasma" data-act="cancel">' + esc(opts.cancelTexto || 'Cancelar') + '</button>') +
+          '<button type="button" class="btn ' + (opts.perigo ? 'perigo' : 'primario') + '" data-act="ok">' + esc(opts.okTexto || 'Confirmar') + '</button>' +
         '</footer>' +
       '</div>';
     document.body.appendChild(overlay);
-    const fechar = (v) => { document.removeEventListener('keydown', tecla); overlay.remove(); resolve(v); };
-    const tecla = (e) => { if(e.key === 'Escape'){ e.preventDefault(); fechar(false); } };
-    document.addEventListener('keydown', tecla);
+    const modal = overlay.querySelector('.modal');
+    let fechada = false;
+    const focaveis = () => Array.from(modal.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'))
+      .filter(el => !el.closest('[hidden],[aria-hidden="true"]') && el.getClientRects().length > 0);
+    const fechar = (v) => {
+      if(fechada) return;
+      fechada = true;
+      modal.removeEventListener('keydown', tecla);
+      overlay.remove();
+      setTimeout(() => {
+        if(focoAnterior && focoAnterior.isConnected && focoAnterior.getClientRects().length){ focoAnterior.focus(); return; }
+        if(tabelaAnterior && tabelaAnterior.isConnected){ tabelaAnterior.setAttribute('tabindex','-1'); tabelaAnterior.focus(); return; }
+        if(devolverFoco && devolverFoco.isConnected && devolverFoco.getClientRects().length) devolverFoco.focus();
+      }, 0);
+      resolve(v);
+    };
+    const tecla = (e) => {
+      if(e.key === 'Escape'){
+        e.preventDefault(); e.stopPropagation();
+        if(opts.cancelavel !== false) fechar(false);
+        return;
+      }
+      if(e.key !== 'Tab') return;
+      const lista = focaveis();
+      if(!lista.length){ e.preventDefault(); modal.focus(); return; }
+      const primeiro = lista[0], ultimo = lista[lista.length - 1];
+      if(e.shiftKey && (document.activeElement === primeiro || !modal.contains(document.activeElement))){ e.preventDefault(); ultimo.focus(); }
+      else if(!e.shiftKey && (document.activeElement === ultimo || !modal.contains(document.activeElement))){ e.preventDefault(); primeiro.focus(); }
+    };
+    modal.addEventListener('keydown', tecla);
     overlay.addEventListener('click', e => {
       if(e.target === overlay && opts.cancelavel !== false){ fechar(false); return; }
       const b = e.target.closest('[data-act]');
       if(!b) return;
       fechar(b.dataset.act === 'ok');
     });
-    setTimeout(() => { const ok = overlay.querySelector('[data-act="ok"]'); if(ok) ok.focus(); }, 40);
+    setTimeout(() => {
+      const inicial = overlay.querySelector('[data-act="cancel"]') || overlay.querySelector('[data-act="ok"]');
+      if(inicial) inicial.focus(); else modal.focus();
+    }, 0);
   });
 }
 function modalInfo(titulo, html, icone){ return abrirModal({titulo, html, icone: icone || 'ℹ️', cancelavel:false, okTexto:'Entendi'}); }
@@ -1196,6 +1347,10 @@ function aplicarTema(){
   document.documentElement.setAttribute('data-efetivo', escuro ? 'escuro' : 'claro');
   $('#icTema').textContent = t === 'auto' ? '◐' : (escuro ? '🌙' : '☀️');
   $('#txtTema').textContent = t === 'auto' ? 'Auto' : (t === 'escuro' ? 'Escuro' : 'Claro');
+  const proximo = {auto:'claro', claro:'escuro', escuro:'automático'}[t] || 'automático';
+  const rotuloTema = 'Tema atual: ' + (t === 'auto' ? 'automático' : t) + '. Próximo tema: ' + proximo + '.';
+  $('#btnTema').setAttribute('aria-label', rotuloTema);
+  $('#btnTema').title = rotuloTema;
 }
 if(window.matchMedia){
   try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if((state.prefs.tema || 'auto') === 'auto') aplicarTema(); }); }catch(e){}
@@ -1206,13 +1361,59 @@ let abaAtual = 'produtos';
 function irPara(tab, opts){
   if(tab === 'usuarios' && !pode('usuarios')){ negar(); return; }
   abaAtual = tab;
-  $$('.nav-item').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
-  $$('.painel').forEach(p => p.classList.toggle('ativo', p.id === 'tab-' + tab));
+  $$('.nav-item').forEach(b => {
+    if(b.dataset.tab === tab) b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+  });
+  $$('.painel').forEach(p => {
+    const ativo = p.id === 'tab-' + tab;
+    p.classList.toggle('ativo', ativo);
+    p.setAttribute('aria-hidden', String(!ativo));
+  });
   renderTudo();
   if(tab === 'usuarios') carregarUsuarios();
-  if(!opts || opts.scroll !== false) window.scrollTo({top:0, behavior:'smooth'});
+  if($('#navOperacao').classList.contains('aberto')) fecharMenuOperacao(true);
+  if(!opts || opts.scroll !== false) rolarTela(0);
 }
 $$('.nav-item').forEach(b => b.addEventListener('click', () => irPara(b.dataset.tab)));
+
+const menuCompacto = window.matchMedia ? window.matchMedia('(max-width:1024px), (max-height:500px) and (pointer:coarse)') : null;
+const navOperacao = $('#navOperacao'), menuAcoes = $('#acoesMenuPanel');
+const btnMenuOperacao = $('#btnMenuOperacao'), btnMenuAcoes = $('#btnMenuAcoes');
+function fecharMenuOperacao(restaurarFoco){
+  const estavaAberto = navOperacao.classList.contains('aberto');
+  navOperacao.classList.remove('aberto');
+  btnMenuOperacao.setAttribute('aria-expanded','false');
+  if(restaurarFoco && estavaAberto) btnMenuOperacao.focus();
+}
+function fecharMenuAcoes(restaurarFoco){
+  const estavaAberto = menuAcoes.classList.contains('aberto');
+  menuAcoes.classList.remove('aberto');
+  btnMenuAcoes.setAttribute('aria-expanded','false');
+  if(restaurarFoco && estavaAberto) btnMenuAcoes.focus();
+}
+btnMenuOperacao.addEventListener('click', () => {
+  const abrir = !navOperacao.classList.contains('aberto');
+  fecharMenuAcoes(false);
+  navOperacao.classList.toggle('aberto', abrir);
+  btnMenuOperacao.setAttribute('aria-expanded', String(abrir));
+});
+btnMenuAcoes.addEventListener('click', () => {
+  const abrir = !menuAcoes.classList.contains('aberto');
+  fecharMenuOperacao(false);
+  menuAcoes.classList.toggle('aberto', abrir);
+  btnMenuAcoes.setAttribute('aria-expanded', String(abrir));
+});
+menuAcoes.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if(b && b.id !== 'btnMenuAcoes') fecharMenuAcoes(true);
+});
+document.addEventListener('click', e => {
+  const alvo = e.target && e.target.closest ? e.target : null;
+  if(navOperacao.classList.contains('aberto') && alvo && !alvo.closest('#navOperacao,#btnMenuOperacao')) fecharMenuOperacao(false);
+  if(menuAcoes.classList.contains('aberto') && alvo && !alvo.closest('#acoesMenuPanel,#btnMenuAcoes')) fecharMenuAcoes(false);
+});
+if(menuCompacto && menuCompacto.addEventListener) menuCompacto.addEventListener('change', () => { fecharMenuOperacao(false); fecharMenuAcoes(false); });
 
 /* ---------------- relógio ---------------- */
 function tickRelogio(){
@@ -1234,6 +1435,55 @@ function renderTudo(){
   renderConferencia();
   renderUsuarios();
 }
+
+function prepararTabelasAcessiveis(){
+  $$('.tabela-wrap').forEach(wrap => {
+    const tabela = wrap.querySelector('table.tabela');
+    if(!tabela) return;
+    tabela.querySelectorAll('thead th').forEach(th => { if(!th.hasAttribute('scope')) th.setAttribute('scope','col'); });
+    const cartao = wrap.closest('.cartao');
+    const tituloCartao = cartao && cartao.querySelector('header h3');
+    const tituloPainel = wrap.closest('.painel') && wrap.closest('.painel').querySelector('.titulo-painel h2');
+    const nome = (tituloCartao && tituloCartao.textContent.trim()) || (tituloPainel && tituloPainel.textContent.trim()) || 'Dados do sistema';
+    const descricao = 'Tabela de ' + nome + '. Em telas estreitas, role horizontalmente para ver todas as colunas.';
+    if(wrap.getAttribute('aria-label') !== descricao) wrap.setAttribute('aria-label', descricao);
+    if(!wrap.hasAttribute('role')) wrap.setAttribute('role','region');
+    if(window.ResizeObserver && !wrap.dataset.observada){
+      observarTamanhoTabela(wrap);
+      wrap.dataset.observada = 'true';
+    }
+    const transbordou = wrap.scrollWidth > wrap.clientWidth + 2;
+    wrap.classList.toggle('tem-rolagem', transbordou);
+    let dica = Array.from(wrap.children).find(el => el.classList && el.classList.contains('tabela-scroll-hint'));
+    if(transbordou){
+      if(!dica){
+        dica = document.createElement('div');
+        dica.className = 'tabela-scroll-hint';
+        dica.setAttribute('aria-hidden','true');
+        dica.textContent = 'Deslize horizontalmente para ver todas as colunas';
+        wrap.insertBefore(dica, tabela);
+      }
+      wrap.setAttribute('tabindex','0');
+    } else {
+      if(dica) dica.remove();
+      wrap.removeAttribute('tabindex');
+    }
+  });
+}
+const observadorTamanhoTabela = window.ResizeObserver ? new ResizeObserver(() => agendarAcessibilidadeTabelas()) : null;
+function observarTamanhoTabela(wrap){ if(observadorTamanhoTabela) observadorTamanhoTabela.observe(wrap); }
+let atualizarTabelasPendente = false;
+function agendarAcessibilidadeTabelas(){
+  if(atualizarTabelasPendente) return;
+  atualizarTabelasPendente = true;
+  requestAnimationFrame(() => { atualizarTabelasPendente = false; prepararTabelasAcessiveis(); });
+}
+prepararTabelasAcessiveis();
+if(window.MutationObserver){
+  const observadorDomTabelas = new MutationObserver(agendarAcessibilidadeTabelas);
+  observadorDomTabelas.observe(document.body, {childList:true, subtree:true});
+}
+window.addEventListener('resize', agendarAcessibilidadeTabelas, {passive:true});
 
 function renderFaixa(){
   const el = $('#faixaStatus');
@@ -1259,8 +1509,8 @@ function renderFaixa(){
     html = '<span class="tag ok">Operação normal</span><span class="faixa-txt"><b>Estoque em dia</b> — nenhuma carga pendente e nenhum item abaixo do mínimo</span>';
   }
   if(ultima){
-    html += '<span class="tag" style="margin-left:auto">' + esc(ultima.tipo) + '</span>' +
-      '<span class="faixa-txt" style="flex:0 1 auto;font-size:12.5px">' + esc(fmtQ(ultima.quantidade)) + ' ' + esc(ultima.unidade || '') + ' · ' + esc(ultima.ft) + ' · ' + esc(fmtData(ultima.data)) + '</span>';
+    html += '<span class="tag push-right">' + esc(ultima.tipo) + '</span>' +
+      '<span class="faixa-txt faixa-ultima-data">' + esc(fmtQ(ultima.quantidade)) + ' ' + esc(ultima.unidade || '') + ' · ' + esc(ultima.ft) + ' · ' + esc(fmtData(ultima.data)) + '</span>';
   }
   el.className = 'faixa-in' + (alerta ? ' alerta' : '');
   el.innerHTML = html;
@@ -1296,7 +1546,7 @@ function renderProdutos(){
         '<td class="num ' + (baixo ? 'estoque-baixo' : 'estoque-ok') + '">' + esc(fmtQ(p.estoque)) + '</td>' +
         '<td class="num">' + esc(fmtQ(p.minimo)) + '</td>' +
         '<td class="num">' + esc(fmtBRL(p.preco)) + '</td>' +
-        '<td class="ft">' + (p.ean ? esc(p.ean) : '<span style="color:var(--ink-3)">—</span>') + '</td>' +
+        '<td class="ft">' + (p.ean ? esc(p.ean) : '<span class="text-muted">—</span>') + '</td>' +
         '<td class="ft">' + esc(p.medidas || '—') + '</td>' +
         '<td class="ft">' + esc(p.estrutura || '—') + '</td>' +
         '<td class="num">' + esc(fmtQ(p.pedidoMinimo)) + '</td>' +
@@ -1318,11 +1568,12 @@ function limparFormProduto(){
   $('#txtSalvarProduto').textContent = 'Cadastrar produto';
   $('#tagEditando').style.display = 'none';
   $('#btnCancelarEdicao').style.display = 'none';
-  $$('.erro-campo').forEach(e => { e.classList.remove('visivel'); e.textContent = ''; });
+  limparErrosCampos($('#formProduto'));
 }
 function editarProduto(id){
   if(!pode('produtos.editar')){ negar(); return; }
   const p = produto(id); if(!p) return;
+  limparErrosCampos($('#formProduto'));
   $('#pId').value = p.id; $('#pFt').value = p.ft; $('#pNome').value = p.nome; $('#pUnidade').value = p.unidade;
   $('#pEstoqueMin').value = p.minimo; $('#pPreco').value = p.preco ? String(p.preco).replace('.', ',') : '';
   $('#pEan').value = p.ean || ''; $('#pMedidas').value = p.medidas || ''; $('#pEstrutura').value = p.estrutura || '';
@@ -1334,7 +1585,7 @@ function editarProduto(id){
   $('#btnCancelarEdicao').style.display = '';
   irPara('produtos', {scroll:false});
   $('#pFt').focus();
-  window.scrollTo({top:0, behavior:'smooth'});
+  rolarTela(0);
 }
 async function excluirProduto(id){
   if(!pode('produtos.editar')){ negar(); return; }
@@ -1358,13 +1609,13 @@ $('#formProduto').addEventListener('submit', function(e){
   const ft = $('#pFt').value.trim(), nome = $('#pNome').value.trim();
   const ean = $('#pEan').value.trim();
   let erro = false;
-  const marcar = (campo, msg) => { const el = $(campo); el.textContent = msg; el.classList.add('visivel'); erro = true; };
-  $$('.erro-campo').forEach(x => { x.classList.remove('visivel'); x.textContent = ''; });
+  const marcar = (campo, msg) => { marcarErroCampo(campo, msg); erro = true; };
+  limparErrosCampos($('#formProduto'));
   if(!ft) marcar('#errFt', 'Informe o FT / código.');
   else if(state.produtos.some(p => norm(p.ft) === norm(ft) && p.id !== id)) marcar('#errFt', 'Já existe um produto com este FT.');
   if(!nome) marcar('#errNome', 'Informe o nome do produto.');
   if(ean && state.produtos.some(p => norm(p.ean) === norm(ean) && p.id !== id)) marcar('#errEan', 'Este código de barras já está em outro produto.');
-  if(erro){ toast('Corrija os campos destacados.', 'erro', 'Cadastro incompleto'); return; }
+  if(erro){ $('#formProduto [aria-invalid="true"]')?.focus(); toast('Corrija os campos destacados.', 'erro', 'Cadastro incompleto'); return; }
 
   const dados = {
     ft, nome, unidade: $('#pUnidade').value,
@@ -1390,7 +1641,7 @@ $('#formProduto').addEventListener('submit', function(e){
     toast('Produto cadastrado' + (qtdInicial > 0 ? ' com entrada inicial de ' + fmtQ(qtdInicial) + ' ' + p.unidade + '.' : '.'), 'sucesso');
   }
 });
-$('#btnNovoProduto').addEventListener('click', () => { limparFormProduto(); $('#pFt').focus(); window.scrollTo({top:0, behavior:'smooth'}); });
+$('#btnNovoProduto').addEventListener('click', () => { limparFormProduto(); $('#pFt').focus(); rolarTela(0); });
 $('#btnCancelarEdicao').addEventListener('click', limparFormProduto);
 $('#buscaProduto').addEventListener('input', renderProdutos);
 $('#btnVerBaixos').addEventListener('click', () => {
@@ -1428,7 +1679,7 @@ function renderEstoque(){
     const cls = {Entrada:'ok', Saída:'bad', Ajuste:'info'};
     tb.innerHTML = lista.map(m =>
       '<tr><td class="ft">' + esc(fmtData(m.data)) + '</td>' +
-      '<td class="forte">' + esc(m.nome || '') + '<br><span class="ft" style="color:var(--ink-3)">' + esc(m.ft || '') + '</span></td>' +
+      '<td class="forte">' + esc(m.nome || '') + '<br><span class="ft text-muted">' + esc(m.ft || '') + '</span></td>' +
       '<td><span class="tag ' + (cls[m.tipo] || '') + '">' + esc(m.tipo) + '</span></td>' +
       '<td class="num forte">' + esc(fmtQ(m.quantidade)) + ' ' + esc(m.unidade || '') + '</td>' +
       '<td class="num">' + esc(fmtQ(m.antes)) + '</td>' +
@@ -1513,7 +1764,7 @@ function renderItensCarga(){
     return est < it.qtd ? {ft:p.ft, nome:p.nome, unidade:p.unidade, necessario:it.qtd, estoque:est, falta:it.qtd - est} : null;
   }).filter(Boolean);
   aviso.innerHTML = faltas.length
-    ? '<div class="falta-linha" style="font-weight:800">⚠️ Itens sem estoque suficiente — a carga será salva como PENDENTE até haver reposição:</div>' + htmlFaltas(faltas)
+    ? '<div class="falta-linha status-falta">⚠️ Itens sem estoque suficiente — a carga será salva como PENDENTE até haver reposição:</div>' + htmlFaltas(faltas)
     : (itensCarga.length ? '<div class="ok-linha">✔ Todos os itens têm estoque disponível. A confirmação de saída dará baixa imediatamente.</div>' : '');
 }
 $('#btnAddItem').addEventListener('click', function(){
@@ -1592,7 +1843,7 @@ function renderCargas(){
           '<span class="carga-num">Carga nº ' + esc(c.numero) + '</span>' +
           '<span class="tag ' + (c.status === 'Carregado' ? 'ok' : 'warn') + '">' + esc(c.status) + '</span>' +
           '<span class="carga-destino">→ ' + esc(c.destino) + '</span>' +
-          '<span class="dica" style="margin-left:auto">' + esc(fmtData(c.status === 'Carregado' ? (c.confirmadoEm || c.criadoEm) : c.criadoEm)) + '</span>' +
+          '<span class="dica push-right">' + esc(fmtData(c.status === 'Carregado' ? (c.confirmadoEm || c.criadoEm) : c.criadoEm)) + '</span>' +
         '</div>' +
         '<div class="carga-meta">' +
           '<span>🚛 <b>Veículo:</b> ' + esc(c.veiculo) + '</span>' +
@@ -1600,9 +1851,9 @@ function renderCargas(){
           '<span>📅 <b>Data:</b> ' + esc(c.data ? new Date(c.data + 'T12:00:00').toLocaleDateString('pt-BR') : '—') + '</span>' +
           '<span>📦 <b>Itens:</b> ' + (c.itens || []).length + ' · ' + esc(fmtQ(totalQtd)) + ' volumes · ' + esc(fmtBRL(totalValor)) + '</span>' +
           (c.obs ? '<span>📝 ' + esc(c.obs) + '</span>' : '') +
-          (faltas.length ? '<span style="color:var(--bad);font-weight:700">⚠ ' + faltas.length + ' item(ns) sem estoque</span>' : '') +
+          (faltas.length ? '<span class="text-bad text-bold">⚠ ' + faltas.length + ' item(ns) sem estoque</span>' : '') +
         '</div>' +
-        '<div class="carga-itens"><div class="tabela-wrap"><table class="tabela" style="min-width:700px">' +
+        '<div class="carga-itens"><div class="tabela-wrap"><table class="tabela tabela-min-700">' +
           '<thead><tr><th>FT</th><th>Produto</th><th>Un</th><th class="num">Qtd.</th><th class="num">Em estoque</th><th>Situação</th></tr></thead>' +
           '<tbody>' + linhas + '</tbody></table></div></div>' +
         '<div class="carga-acoes">' +
@@ -1665,9 +1916,9 @@ function imprimirCarga(id){
     const p = produto(i.produtoId) || {ft:'—', nome:'Produto removido', unidade:'un', preco:0};
     const qtd = Number(i.conferido != null ? i.conferido : i.qtd) || 0;
     return '<tr><td>' + (idx + 1) + '</td><td>' + esc(p.ft) + '</td><td>' + esc(p.nome) + '</td><td>' + esc(p.unidade) + '</td>' +
-      '<td style="text-align:right">' + esc(fmtQ(qtd)) + '</td>' +
-      '<td style="text-align:right">' + esc(fmtBRL(p.preco)) + '</td>' +
-      '<td style="text-align:right">' + esc(fmtBRL(qtd * (Number(p.preco) || 0))) + '</td></tr>';
+      '<td class="text-right">' + esc(fmtQ(qtd)) + '</td>' +
+      '<td class="text-right">' + esc(fmtBRL(p.preco)) + '</td>' +
+      '<td class="text-right">' + esc(fmtBRL(qtd * (Number(p.preco) || 0))) + '</td></tr>';
   }).join('');
   const totalQ = (c.itens || []).reduce((s, i) => s + (Number(i.conferido != null ? i.conferido : i.qtd) || 0), 0);
   const totalV = (c.itens || []).reduce((s, i) => { const p = produto(i.produtoId); const q = Number(i.conferido != null ? i.conferido : i.qtd) || 0; return s + q * (p ? (Number(p.preco) || 0) : 0); }, 0);
@@ -1681,12 +1932,12 @@ function imprimirCarga(id){
     '<div class="bloco"><div><span>Destino / Cliente</span><b>' + esc(c.destino) + '</b></div>' +
     '<div><span>Veículo / Placa</span><b>' + esc(c.veiculo) + '</b></div>' +
     '<div><span>Motorista</span><b>' + esc(c.motorista) + '</b></div></div>' +
-    '<table><thead><tr><th>#</th><th>FT / Código</th><th>Produto</th><th>Un</th><th style="text-align:right">Qtd.</th><th style="text-align:right">Preço</th><th style="text-align:right">Total</th></tr></thead>' +
+    '<table><thead><tr><th>#</th><th>FT / Código</th><th>Produto</th><th>Un</th><th class="text-right">Qtd.</th><th class="text-right">Preço</th><th class="text-right">Total</th></tr></thead>' +
     '<tbody>' + linhas + '</tbody>' +
-    '<tfoot><tr><td colspan="4" style="text-align:right;font-weight:bold">Totais</td>' +
-    '<td style="text-align:right;font-weight:bold">' + esc(fmtQ(totalQ)) + '</td><td></td>' +
-    '<td style="text-align:right;font-weight:bold">' + esc(fmtBRL(totalV)) + '</td></tr></tfoot></table>' +
-    (c.obs ? '<p style="margin-top:14px;font-size:12px"><b>Observação:</b> ' + esc(c.obs) + '</p>' : '') +
+    '<tfoot><tr><td colspan="4" class="text-right text-bold">Totais</td>' +
+    '<td class="text-right text-bold">' + esc(fmtQ(totalQ)) + '</td><td></td>' +
+    '<td class="text-right text-bold">' + esc(fmtBRL(totalV)) + '</td></tr></tfoot></table>' +
+    (c.obs ? '<p class="observacao"><b>Observação:</b> ' + esc(c.obs) + '</p>' : '') +
     '<div class="assinaturas"><div>Conferente</div><div>Motorista</div><div>Expedição</div></div></div>';
   setTimeout(() => window.print(), 60);
 }
@@ -1729,9 +1980,9 @@ function renderTabelaReceb(){
         '<td class="forte">' + esc(p.nome) + '</td>' +
         '<td class="ft">' + esc(p.ft) + '</td>' +
         '<td class="ft">' + esc(it.codigo || p.ean || '—') + '</td>' +
-        '<td class="num"><input type="number" min="0" step="1" value="' + esc(esp) + '" data-esp="' + i + '" style="width:100px;text-align:right" class="mono"></td>' +
-        '<td class="num"><input type="number" min="0" step="1" value="' + esc(conf) + '" data-conf="' + i + '" style="width:100px;text-align:right" class="mono"></td>' +
-        '<td class="num forte" style="color:' + (diff === 0 ? 'var(--ok)' : 'var(--bad)') + '">' + (diff > 0 ? '+' : '') + esc(fmtQ(diff)) + '</td>' +
+        '<td class="num"><input type="number" min="0" step="1" value="' + esc(esp) + '" data-esp="' + i + '" class="mono qtd-input"></td>' +
+        '<td class="num"><input type="number" min="0" step="1" value="' + esc(conf) + '" data-conf="' + i + '" class="mono qtd-input"></td>' +
+        '<td class="num forte status-diff ' + (diff === 0 ? 'ok' : 'bad') + '">' + (diff > 0 ? '+' : '') + esc(fmtQ(diff)) + '</td>' +
         '<td>' + status + '</td>' +
         '<td><div class="acoes-linha"><button class="btn mini" data-mais="' + i + '" title="Somar 1 unidade">＋</button>' +
         '<button class="btn mini perigo" data-del="' + i + '" title="Remover linha">✕</button></div></td></tr>';
@@ -1784,8 +2035,8 @@ $('#btnLinhaManual').addEventListener('click', async function(){
   const opts = produtosOrdenados().map(p => '<option value="' + esc(p.id) + '">' + esc(p.nome) + ' — ' + esc(p.ft) + '</option>').join('');
   const ok = await abrirModal({titulo:'Adicionar linha manual', icone:'✍️', okTexto:'Adicionar linha',
     html:'<p class="dica">Selecione um produto e informe as quantidades esperadas e conferidas.</p>' +
-      '<div class="campo" style="margin-top:10px"><label for="mmProd">Produto</label><select id="mmProd">' + opts + '</select></div>' +
-      '<div class="grid" style="margin-top:10px"><div class="campo"><label for="mmEsp">Qtd. esperada</label><input type="number" id="mmEsp" min="0" step="1" value="0"></div>' +
+      '<div class="campo mt-10"><label for="mmProd">Produto</label><select id="mmProd">' + opts + '</select></div>' +
+      '<div class="grid mt-10"><div class="campo"><label for="mmEsp">Qtd. esperada</label><input type="number" id="mmEsp" min="0" step="1" value="0"></div>' +
       '<div class="campo"><label for="mmConf">Qtd. conferida</label><input type="number" id="mmConf" min="0" step="1" value="0"></div></div>'});
   if(!ok) return;
   const pid = $('#mmProd').value;
@@ -1806,7 +2057,7 @@ async function finalizarRecebimento(){
       const p = produto(i.produtoId) || {ft:'—', nome:'?', unidade:'un'};
       const esp = Number(i.esperado) || 0, conf = Number(i.conferido) || 0, d = conf - esp;
       return '<li><b class="mono">' + esc(p.ft) + '</b> ' + esc(p.nome) + ' — esperado ' + esc(fmtQ(esp)) + ', conferido ' + esc(fmtQ(conf)) +
-        ' → <b style="color:' + (d < 0 ? 'var(--bad)' : 'var(--warn)') + '">' + (d < 0 ? 'faltam ' + esc(fmtQ(-d)) : 'excedente ' + esc(fmtQ(d))) + ' ' + esc(p.unidade) + '</b></li>';
+        ' → <b class="status-delta ' + (d < 0 ? 'bad' : 'warn') + '">' + (d < 0 ? 'faltam ' + esc(fmtQ(-d)) : 'excedente ' + esc(fmtQ(d))) + ' ' + esc(p.unidade) + '</b></li>';
     }).join('');
     const ok = await abrirModal({titulo:'Divergências no recebimento', icone:'⚠️', perigo:true, okTexto:'Confirmar e dar entrada',
       html:'<p>Foram encontradas <b>' + divs.length + '</b> divergência(s). O estoque receberá a quantidade <b>conferida</b>:</p><ul>' + html + '</ul>'});
@@ -1851,10 +2102,10 @@ async function finalizarRecebimento(){
     modalInfo('Carregamentos liberados 🎉',
       '<p>Depois desta entrada, as cargas abaixo <b>passaram a ter estoque suficiente</b> e podem ser confirmadas:</p>' +
       liberadas.map(c => '<div class="ok-linha">Carga nº <b>' + esc(c.numero) + '</b> → ' + esc(c.destino) + '</div>').join('') +
-      (ainda.length ? '<p style="margin-top:12px">Ainda sem estoque suficiente:</p>' + ainda.map(x =>
+      (ainda.length ? '<p class="mt-12">Ainda sem estoque suficiente:</p>' + ainda.map(x =>
         '<div class="falta-linha">Carga nº <b>' + esc(x.c.numero) + '</b> → ' + esc(x.c.destino) + ' · ' +
         esc(x.faltas.map(f => f.ft + ': faltam ' + fmtQ(f.falta)).join(' | ')) + '</div>').join('') : '') +
-      '<p class="dica" style="margin-top:10px">Use “Confirmar saída” ou “Conferir” na aba Carregamentos.</p>', '📦');
+      '<p class="dica mt-10">Use “Confirmar saída” ou “Conferir” na aba Carregamentos.</p>', '📦');
   } else if(ainda.length){
     modalInfo('Recebimento concluído',
       '<p>Entrada registrada no estoque. Estas cargas pendentes <b>ainda não</b> têm estoque suficiente:</p>' +
@@ -1899,11 +2150,11 @@ function verRecebimento(id){
     const p = produto(i.produtoId) || {ft:'—', nome:'Produto removido', unidade:'un'};
     const d = (Number(i.conferido) || 0) - (Number(i.esperado) || 0);
     return '<tr><td class="ft">' + esc(p.ft) + '</td><td>' + esc(p.nome) + '</td><td class="num">' + esc(fmtQ(i.esperado)) + '</td>' +
-      '<td class="num">' + esc(fmtQ(i.conferido)) + '</td><td class="num" style="color:' + (d === 0 ? 'var(--ok)' : 'var(--bad)') + '">' + (d > 0 ? '+' : '') + esc(fmtQ(d)) + '</td></tr>';
+      '<td class="num">' + esc(fmtQ(i.conferido)) + '</td><td class="num status-diff ' + (d === 0 ? 'ok' : 'bad') + '">' + (d > 0 ? '+' : '') + esc(fmtQ(d)) + '</td></tr>';
   }).join('');
   modalInfo('Recebimento NF ' + r.nf,
     '<p><b>Fornecedor:</b> ' + esc(r.fornecedor) + ' · <b>Início:</b> ' + esc(fmtData(r.inicio)) + ' · <b>Finalizado:</b> ' + esc(fmtData(r.fim)) + '</p>' +
-    '<div class="tabela-wrap" style="border:1px solid var(--line);border-radius:8px;margin-top:10px"><table class="tabela" style="min-width:520px">' +
+    '<div class="tabela-wrap tabela-detalhe"><table class="tabela tabela-min-520">' +
     '<thead><tr><th>FT</th><th>Produto</th><th class="num">Esperado</th><th class="num">Conferido</th><th class="num">Dif.</th></tr></thead><tbody>' + linhas + '</tbody></table></div>', '📥');
 }
 
@@ -1981,9 +2232,9 @@ function renderTabelaConf(){
       return '<tr class="' + (conf > est ? 'baixo' : '') + '">' +
         '<td class="forte">' + esc(p.nome) + '</td><td class="ft">' + esc(p.ft) + '</td><td class="ft">' + esc(it.codigo || p.ean || '—') + '</td>' +
         '<td class="num">' + esc(fmtQ(esp)) + '</td>' +
-        '<td class="num"><input type="number" min="0" step="1" value="' + esc(conf) + '" data-cconf="' + i + '" style="width:100px;text-align:right" class="mono"></td>' +
+        '<td class="num"><input type="number" min="0" step="1" value="' + esc(conf) + '" data-cconf="' + i + '" class="mono qtd-input"></td>' +
         '<td class="num">' + esc(fmtQ(est)) + ' ' + esc(p.unidade) + '</td>' +
-        '<td class="num forte" style="color:' + (diff === 0 ? 'var(--ok)' : 'var(--bad)') + '">' + (diff > 0 ? '+' : '') + esc(fmtQ(diff)) + '</td>' +
+        '<td class="num forte status-diff ' + (diff === 0 ? 'ok' : 'bad') + '">' + (diff > 0 ? '+' : '') + esc(fmtQ(diff)) + '</td>' +
         '<td>' + status + '</td></tr>';
     }).join('');
   }
@@ -2026,7 +2277,7 @@ async function finalizarConferencia(){
       const p = produto(i.produtoId) || {ft:'—', nome:'?', unidade:'un'};
       const esp = Number(i.esperado) || 0, conf = Number(i.conferido) || 0, d = conf - esp;
       return '<li><b class="mono">' + esc(p.ft) + '</b> ' + esc(p.nome) + ' — esperado ' + esc(fmtQ(esp)) + ', conferido ' + esc(fmtQ(conf)) +
-        ' → <b style="color:' + (d < 0 ? 'var(--bad)' : 'var(--warn)') + '">' + (d < 0 ? 'faltam ' + esc(fmtQ(-d)) : 'excedente ' + esc(fmtQ(d))) + ' ' + esc(p.unidade) + '</b></li>';
+        ' → <b class="status-delta ' + (d < 0 ? 'bad' : 'warn') + '">' + (d < 0 ? 'faltam ' + esc(fmtQ(-d)) : 'excedente ' + esc(fmtQ(d))) + ' ' + esc(p.unidade) + '</b></li>';
     }).join('');
     const ok = await abrirModal({titulo:'Divergência entre carga e contagem', icone:'⚠️', perigo:true, okTexto:'Confirmar baixa pelo conferido',
       html:'<p>Há <b>' + divs.length + '</b> divergência(s). A baixa no estoque será feita pela quantidade <b>realmente conferida</b>:</p><ul>' + html + '</ul>'});
@@ -2052,7 +2303,7 @@ async function finalizarConferencia(){
   toast('Carga nº ' + c.numero + ' conferida e baixada (' + fmtQ(baixadas) + ' unidades). Status: Carregado.', 'sucesso');
   modalInfo('Carga nº ' + c.numero + ' finalizada',
     '<div class="ok-linha">✔ Baixa de <b>' + esc(fmtQ(baixadas)) + '</b> unidades no estoque, com movimentação “Saída” registrada.</div>' +
-    (divs.length ? '<div class="falta-linha" style="border-left-color:var(--warn);background:var(--warn-bg);color:var(--warn);border-color:var(--warn-line)">⚠ ' + divs.length + ' divergência(s) registrada(s) no histórico da carga.</div>' : '') +
+    (divs.length ? '<div class="falta-linha aviso-warn">⚠ ' + divs.length + ' divergência(s) registrada(s) no histórico da carga.</div>' : '') +
     '<p class="dica">O romaneio pode ser impresso na aba Carregamentos.</p>', '🚚');
 }
 $('#btnFinalizarConf').addEventListener('click', finalizarConferencia);
@@ -2168,6 +2419,7 @@ function celulaNum(ref, estilo, v){ return '<c r="' + ref + '" s="' + estilo + '
 function celulaTxt(ref, estilo, v){ return '<c r="' + ref + '" s="' + estilo + '" t="inlineStr"><is><t xml:space="preserve">' + xesc(v) + '</t></is></c>'; }
 
 function gerarXlsx(){
+  const corCabecalho = getComputedStyle(document.documentElement).getPropertyValue('--brand-green').trim().replace(/^#/, '').toUpperCase() || '548235';
   const linhas = [
     {item:1, ft:'2025/0771-CX', desc:'Cx. Biscoito Trigo Popular 12x250g', med:'385 x 225 x 205', est:'CEKR50', preco:1.947, ped:9000},
     {item:2, ft:'2025/0866-CX', desc:'Cx. Biscoito Folhado Maná 12x250g', med:'385 x 225 x 205', est:'CEKR50', preco:1.947, ped:9000},
@@ -2218,7 +2470,7 @@ function gerarXlsx(){
       '<font><sz val="11"/><color theme="1"/><name val="Arial"/><family val="2"/></font>' +
     '</fonts>' +
     '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>' +
-      '<fill><patternFill patternType="solid"><fgColor rgb="FF548235"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+      '<fill><patternFill patternType="solid"><fgColor rgb="FF' + corCabecalho + '"/><bgColor indexed="64"/></patternFill></fill></fills>' +
     '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>' +
       '<border><left style="thin"><color rgb="FFB7C7A8"/></left><right style="thin"><color rgb="FFB7C7A8"/></right>' +
       '<top style="thin"><color rgb="FFB7C7A8"/></top><bottom style="thin"><color rgb="FFB7C7A8"/></bottom><diagonal/></border></borders>' +
@@ -2272,7 +2524,7 @@ function gerarXlsx(){
     {name:'xl/worksheets/sheet1.xml', data:sheet}
   ]);
   if(baixarBlob(blob, 'Produtos-cadastro-inicial.xlsx'))
-    toast('Planilha Excel gerada: cabeçalho verde #548235, Arial, preço 0,000, linha congelada e nota de fonte.', 'sucesso', 'Planilha .xlsx');
+    toast('Planilha Excel gerada: cabeçalho verde #' + corCabecalho + ', Arial, preço 0,000, linha congelada e nota de fonte.', 'sucesso', 'Planilha .xlsx');
 }
 $('#btnXlsx').addEventListener('click', gerarXlsx);
 $('#btnXlsx2').addEventListener('click', gerarXlsx);
@@ -2613,7 +2865,9 @@ function setStatusNuvem(est, msg){
   const txt = { ok:'Sincronizado', sync:'Sincronizando…', offline:'Offline — pendente', erro:'Erro ao sincronizar', demo:'Demonstração' }[est] || '';
   el.className = 'nuvem ' + est;
   $('#nuvemTxt').textContent = txt;
-  el.title = (msg ? msg + ' — ' : '') + 'Clique para sincronizar agora';
+  const detalhe = msg ? msg + ' — ' : '';
+  el.title = detalhe + txt + '. Clique para sincronizar agora.';
+  el.setAttribute('aria-label', detalhe + 'Sincronização: ' + txt + '. Clique para sincronizar agora.');
 }
 $('#nuvemStatus').addEventListener('click', () => { if(Nuvem.ativo){ Nuvem.sujo ? enviar() : poll(); } });
 
@@ -2903,10 +3157,11 @@ function limparFormUsuario(){
   $('#tituloFormUsuario').textContent = 'Novo usuário';
   $('#txtSalvarUsuario').textContent = 'Cadastrar usuário';
   $('#tagEditandoUsr').style.display = 'none'; $('#btnCancelarUsr').style.display = 'none';
-  $$('#formUsuario .erro-campo').forEach(x => { x.classList.remove('visivel'); x.textContent = ''; });
+  limparErrosCampos($('#formUsuario'));
 }
 function editarUsuario(id){
   const u = usuarios.find(x => x.id === id); if(!u) return;
+  limparErrosCampos($('#formUsuario'));
   const eu = Auth.perfil && u.id === Auth.perfil.id;
   $('#uId').value = u.id; $('#uLogin').value = u.login; $('#uLogin').disabled = true;
   $('#uNome').value = u.nome; $('#uPerfil').value = u.perfil; $('#uAtivo').value = String(u.ativo);
@@ -2917,7 +3172,7 @@ function editarUsuario(id){
   $('#tituloFormUsuario').textContent = 'Editando usuário';
   $('#txtSalvarUsuario').textContent = 'Salvar alterações';
   $('#tagEditandoUsr').style.display = ''; $('#btnCancelarUsr').style.display = '';
-  window.scrollTo({ top:0, behavior:'smooth' });
+  rolarTela(0);
   $('#uNome').focus();
 }
 async function excluirUsuario(id){
@@ -2936,13 +3191,13 @@ $('#formUsuario').addEventListener('submit', async function(e){
   const id = $('#uId').value, login = $('#uLogin').value.trim().toLowerCase(), nome = $('#uNome').value.trim();
   const senha = $('#uSenha').value, perfil = $('#uPerfil').value, ativo = $('#uAtivo').value === 'true';
   let erro = false;
-  const marcar = (c, m) => { const el = $(c); el.textContent = m; el.classList.add('visivel'); erro = true; };
-  $$('#formUsuario .erro-campo').forEach(x => { x.classList.remove('visivel'); x.textContent = ''; });
+  const marcar = (c, m) => { marcarErroCampo(c, m); erro = true; };
+  limparErrosCampos($('#formUsuario'));
   if(!id && !/^[a-z0-9._-]{3,30}$/.test(login)) marcar('#errULogin', 'Use 3 a 30 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado.');
   if(nome.length < 2) marcar('#errUNome', 'Informe o nome.');
   if(!id && senha.length < 6) marcar('#errUSenha', 'A senha precisa ter ao menos 6 caracteres.');
   if(id && senha && senha.length < 6) marcar('#errUSenha', 'A nova senha precisa ter ao menos 6 caracteres.');
-  if(erro){ toast('Corrija os campos destacados.', 'erro', 'Cadastro incompleto'); return; }
+  if(erro){ $('#formUsuario [aria-invalid="true"]')?.focus(); toast('Corrija os campos destacados.', 'erro', 'Cadastro incompleto'); return; }
   const btn = $('#btnSalvarUsuario'); btn.disabled = true;
   try{
     if(id){
@@ -3006,6 +3261,10 @@ async function iniciarApp(){
 
 document.addEventListener('keydown', function(e){
   const k = String(e.key || '');
+  if(k === 'Escape'){
+    if(menuAcoes.classList.contains('aberto')){ fecharMenuAcoes(true); return; }
+    if(navOperacao.classList.contains('aberto')){ fecharMenuOperacao(true); return; }
+  }
   if((e.ctrlKey || e.metaKey) && k.toLowerCase() === 's'){ e.preventDefault(); $('#btnBackup').click(); }
 });
 
