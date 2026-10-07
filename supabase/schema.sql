@@ -291,11 +291,21 @@ grant  execute on function public.admin_excluir_usuario(uuid) to authenticated;
 revoke execute on function public.usuario_ativo(), public.eh_admin() from public, anon;
 grant  execute on function public.usuario_ativo(), public.eh_admin() to authenticated;
 
+-- funções de trigger não precisam ser chamáveis por anon/authenticated
+revoke execute on function public.marcar_autor() from public, anon, authenticated;
+do $$ begin
+  if to_regprocedure('public.rls_auto_enable()') is not null then
+    revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+  end if;
+end $$;
+
 -- ---------------------------------------------------------------------
 -- 5) PRIMEIRO ADMINISTRADOR  (execute UMA vez, depois de trocar login/nome/senha)
 --    Apague a senha deste arquivo depois de usar.
 -- ---------------------------------------------------------------------
--- select public._criar_usuario('admin', 'Administrador', 'TROQUE_ESTA_SENHA', 'administrador');
+-- select public._criar_usuario('adStoki', 'Administrador Stoki', 'TROQUE_ESTA_SENHA', 'administrador');
+-- (o login é gravado em minúsculas: adstoki -> adstoki@sysestoque.app. Nunca versione a senha real;
+--  use um arquivo supabase/*.local.sql, que o .gitignore já ignora.)
 
 -- Alternativa caso a função acima falhe no seu projeto: Authentication > Users > Add user
 --   e-mail: admin@sysestoque.app  + uma senha (marque "Auto Confirm User"), e então:
