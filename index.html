@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stoki SDY</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#e9eff7;font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif}
+  @media (prefers-color-scheme: dark){ html,body{background:#0a1220} }
+  #app{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;border:0;display:block;background:transparent}
+  .pill{position:fixed;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));z-index:10;display:flex;align-items:center;gap:10px;
+    padding:8px 12px;border-radius:999px;background:rgba(10,18,32,.92);color:#e8f0fb;
+    font-size:12.5px;letter-spacing:.3px;box-shadow:0 10px 30px -12px rgba(0,0,0,.6);
+    opacity:.72;transition:opacity .25s,transform .25s;transform:translateY(0)}
+  .pill:hover,.pill:focus-within{opacity:1;transform:translateY(-2px)}
+  .pill a{color:#86c7ff;font-weight:700;text-decoration:none;border-bottom:1px dashed rgba(134,199,255,.5);min-height:44px;display:inline-flex;align-items:center}
+  .pill a:hover{color:#fff}
+  .pill a:focus-visible{outline:3px solid #86c7ff;outline-offset:3px;border-radius:4px}
+  .fallback img{display:block;width:min(168px,55vw);max-height:140px;object-fit:contain;margin:0 auto 10px}
+  .pill .dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#4aa8ff;box-shadow:0 0 8px #4aa8ff}
+  .fallback{position:fixed;inset:0;display:none;place-items:center;padding:calc(24px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));text-align:center;overflow:auto}
+  .fallback .card{width:min(520px,100%);background:#fff;border:1px solid #d3dfee;border-radius:14px;padding:clamp(20px,5vw,28px);box-shadow:0 30px 70px -30px rgba(11,27,51,.45)}
+  .fallback h1{font-size:20px;margin:0 0 8px;letter-spacing:.4px;text-transform:uppercase}
+  .fallback p{color:#33486a;font-size:14px;margin:0 0 16px;overflow-wrap:anywhere}
+  .fallback a.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;background:#0b57c9;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px}
+  @media (max-width:1024px){.pill{display:none}}
+  @media (prefers-reduced-motion:reduce){.pill{transition:none;transform:none}.pill:hover,.pill:focus-within{transform:none}}
+</style>
+</head>
+<body>
+<iframe id="app" src="Sistema-Estoque.html" title="Stoki SDY"></iframe>
+
+<div class="pill"><span class="dot"></span><span>Sistema-Estoque.html</span><a href="Sistema-Estoque.html" target="_blank" rel="noopener">↗ abrir em tela cheia</a></div>
+
+<div class="fallback" id="fallback">
+  <div class="card">
+    <img src="logo-stoki-sdy.png" alt="" aria-hidden="true" width="168" height="139">
+    <h1>Stoki SDY</h1>
+    <p>O sistema não pôde ser incorporado nesta página. Abra o arquivo <b>Sistema-Estoque.html</b> diretamente no navegador (dois cliques) — é preciso estar conectado à internet para entrar (login e banco de dados no Supabase).</p>
+    <a class="btn" href="Sistema-Estoque.html">Abrir o sistema</a>
+  </div>
+</div>
+
+<noscript>
+  <div style="position:fixed;inset:0;display:grid;place-items:center;background:#e9eff7">
+    <p style="font-size:15px">Ative o JavaScript e abra <a href="Sistema-Estoque.html">Sistema-Estoque.html</a>.</p>
+  </div>
+</noscript>
+
+<script>
+/* Se o navegador bloquear o iframe (ex.: file:// restrito), mostra o cartão de acesso direto */
+(function(){
+  var ok = false;
+  var f = document.getElementById('app');
+  f.addEventListener('load', function(){ ok = true; });
+  setTimeout(function(){
+    if(!ok){
+      try{ if(f.contentWindow && f.contentWindow.document && f.contentWindow.document.body && f.contentWindow.document.body.childNodes.length) ok = true; }catch(e){ ok = true; }
+    }
+    if(!ok){
+      f.style.display = 'none';
+      document.getElementById('fallback').style.display = 'grid';
+      document.querySelector('.pill').style.display = 'none';
+    }
+  }, 3000);
+})();
+</script>
+</body>
+</html>
