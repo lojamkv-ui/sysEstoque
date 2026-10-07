@@ -2,29 +2,35 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Stoki SDY</title>
 <style>
-  html,body{margin:0;padding:0;height:100%;background:#e9eff7;font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif}
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#e9eff7;font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif}
   @media (prefers-color-scheme: dark){ html,body{background:#0a1220} }
-  #app{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;background:transparent}
-  .pill{position:fixed;left:14px;bottom:14px;z-index:10;display:flex;align-items:center;gap:10px;
-    padding:8px 12px;border-radius:999px;background:rgba(10,18,32,.88);color:#e8f0fb;
+  #app{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;border:0;display:block;background:transparent}
+  .pill{position:fixed;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));z-index:10;display:flex;align-items:center;gap:10px;
+    padding:8px 12px;border-radius:999px;background:rgba(10,18,32,.92);color:#e8f0fb;
     font-size:12.5px;letter-spacing:.3px;box-shadow:0 10px 30px -12px rgba(0,0,0,.6);
-    opacity:.35;transition:opacity .25s,transform .25s;transform:translateY(0)}
-  .pill:hover{opacity:1;transform:translateY(-2px)}
-  .pill a{color:#86c7ff;font-weight:700;text-decoration:none;border-bottom:1px dashed rgba(134,199,255,.5)}
+    opacity:.72;transition:opacity .25s,transform .25s;transform:translateY(0)}
+  .pill:hover,.pill:focus-within{opacity:1;transform:translateY(-2px)}
+  .pill a{color:#86c7ff;font-weight:700;text-decoration:none;border-bottom:1px dashed rgba(134,199,255,.5);min-height:40px;display:inline-flex;align-items:center}
   .pill a:hover{color:#fff}
-  .pill .dot{width:8px;height:8px;border-radius:50%;background:#4aa8ff;box-shadow:0 0 8px #4aa8ff}
-  .fallback{position:fixed;inset:0;display:none;place-items:center;padding:24px;text-align:center}
-  .fallback .card{max-width:520px;background:#fff;border:1px solid #d3dfee;border-radius:14px;padding:28px;box-shadow:0 30px 70px -30px rgba(11,27,51,.45)}
+  .pill .dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#4aa8ff;box-shadow:0 0 8px #4aa8ff}
+  .fallback{position:fixed;inset:0;display:none;place-items:center;padding:calc(24px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));text-align:center;overflow:auto}
+  .fallback .card{width:min(520px,100%);background:#fff;border:1px solid #d3dfee;border-radius:14px;padding:clamp(20px,5vw,28px);box-shadow:0 30px 70px -30px rgba(11,27,51,.45)}
   .fallback h1{font-size:20px;margin:0 0 8px;letter-spacing:.4px;text-transform:uppercase}
-  .fallback p{color:#33486a;font-size:14px;margin:0 0 16px}
-  .fallback a.btn{display:inline-block;background:#0b57c9;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px}
+  .fallback p{color:#33486a;font-size:14px;margin:0 0 16px;overflow-wrap:anywhere}
+  .fallback a.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;background:#0b57c9;color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:9px}
+  @media (max-width:640px){
+    .pill{left:calc(10px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));gap:7px;padding:5px 9px;max-width:calc(100vw - 20px);opacity:.96;font-size:11.5px}
+    .pill>span:nth-child(2){display:none}
+    .pill a{min-height:40px}
+  }
 </style>
 </head>
 <body>
-<iframe id="app" src="Sistema-Estoque.html" title="Stoki SDY" allow="camera"></iframe>
+<iframe id="app" src="Sistema-Estoque.html" title="Stoki SDY"></iframe>
 
 <div class="pill"><span class="dot"></span><span>Sistema-Estoque.html</span><a href="Sistema-Estoque.html" target="_blank" rel="noopener">↗ abrir em tela cheia</a></div>
 
