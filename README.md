@@ -10,7 +10,28 @@
   | Restaurar backup (substitui tudo) | ✅ | ❌ |
   | Produtos, estoque, carregamentos, receber, conferir | ✅ | ✅ |
 - **Banco de dados no Supabase**: produtos, movimentações, carregamentos, recebimentos e contadores são gravados na nuvem e compartilhados entre os usuários (atualiza sozinho a cada 30 s).
+- **Relatório de movimentação** (aba *Relatórios*): filtros por período (data **e hora**), produto, tipo, origem, usuário e busca livre; dashboard com indicadores, gráficos, **curva do produto (ABC)**; download em **Excel (.xlsx)**, CSV e impressão/PDF. Ver detalhes abaixo.
 - O controle de acesso vale **no servidor** (RLS + funções `admin_*`), não só na tela.
+
+## Relatório de movimentação (aba *Relatórios*)
+
+Aba **Análise › Relatórios** — traz **toda a movimentação de estoque**, sempre com **data e hora**.
+
+**Filtros** (aplicam na tela, no Excel, no CSV e na impressão)
+- Período: data/hora inicial e data/hora final + atalhos (Hoje, 7 dias, 30 dias, Este mês, Este ano, Tudo).
+- Produto, tipo (entrada/saída/ajuste), **origem** (Manual, Ajuste, Carregamento, Conferência, Recebimento, Cadastro inicial) e usuário.
+- Busca livre por nome, FT, observação, origem ou usuário.
+
+**Dashboard**
+- Indicadores: movimentações, entradas, saídas, ajustes, saldo líquido e valor movimentado (R$).
+- Gráficos: movimentações por dia/semana/mês (barras empilhadas por tipo) e por hora do dia; **curva do produto (ABC)** em gráfico de Pareto + tabela com classe A/B/C, % do total e % acumulado (critério: valor em R$, quantidade ou nº de movimentações).
+- Tabelas: totais por período e a lista completa das movimentações (Data, Hora, Produto, Tipo, Origem, Qtd., Antes, Depois, Valor, Observação, Usuário).
+
+**Download**
+- **Excel .xlsx** com 5 abas: *Resumo* (indicadores, destaques e filtros usados), *Movimentações* (todas as linhas, com data, hora e data/hora em formatos de data do Excel, filtro automático e cabeçalho congelado), *Curva ABC*, *Por dia* e *Por hora*.
+- **CSV** (`;` + BOM UTF-8) e **Imprimir / PDF**.
+
+> As movimentações passam a gravar automaticamente **origem** e **operador** (quem estava logado). Registros antigos, sem esses campos, têm a origem deduzida pela observação (ex.: “Saída — Carga nº …” ⇒ Carregamento) e o usuário aparece como “—”.
 
 ## Acesso Demo
 Na tela de login, **“Entrar no acesso Demo”** abre o sistema com dados de exemplo, **sem usar o Supabase** e sem gravar nada (nem no navegador). Serve para apresentar o sistema.
