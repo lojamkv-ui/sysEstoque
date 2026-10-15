@@ -1,0 +1,3 @@
+// Arquivo normalmente gerado pelo "npx cap sync" (variáveis dos plugins Cordova).
+// Este projeto não usa plugins Cordova, então ele fica vazio — mas precisa existir,
+// porque app/capacitor.build.gradle faz "apply from" nele.

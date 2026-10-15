@@ -60,6 +60,8 @@ Ao ler esse QR (ou receber o texto por WhatsApp e colar no campo digitado), o si
 
 O app fica em **`mobile/`** (projeto *Capacitor 6* + `www/`). Ele é **100 % offline**: guarda o catálogo no próprio aparelho (importe o *CSV de produtos* exportado pelo sistema), faz leitura por QR/EAN, entrada/saída/contagem e monta a **requisição** com QR para o sistema do computador ler.
 
+> **Guia completo do app** (instalação, uso, problemas comuns e detalhes técnicos): [`mobile/README-APP.md`](mobile/README-APP.md).
+
 ### Instalar por link (mais rápido, sem loja)
 O app é uma **PWA**: abra no celular
 `https://lojamkv-ui.github.io/sysEstoque/mobile/www/index.html`
@@ -109,6 +111,7 @@ bash testes/rodar.sh
 | `testes/03-relatorio-movimentacao.js` | filtros, dashboard, curva ABC e Excel do relatório |
 | `testes/04-origem-movimentacoes.js` | origem/operador em cada tipo de movimentação |
 | `testes/05-validacao-telas.js` | todas as abas abrem, permissões do perfil conferente |
+| `testes/06-projeto-android.js` | projeto Android (módulos do Gradle, manifest, ícones) e sincronia entre `mobile/www` e os assets do APK |
 
 ## Acesso Demo
 Na tela de login, **“Entrar no acesso Demo”** abre o sistema com dados de exemplo, **sem usar o Supabase** e sem gravar nada (nem no navegador). Serve para apresentar o sistema.
@@ -144,3 +147,6 @@ Use um **token novo** (fine-grained, só neste repositório, permissão *Content
 - **Câmera**: o navegador só libera em **https** ou *localhost*. Em `file://`/http continue usando *Ler de uma foto* ou a digitação. No app Android a câmera funciona sempre (permissão pedida na 1ª leitura).
 - **Catálogo do app**: o celular guarda a própria cópia dos produtos (funciona offline). Ele não lê o banco do computador sozinho — para o estoque oficial, exporte o *CSV de produtos* no sistema e importe no app, e mande as baixas por **requisição (QR)**.
 - **Sem JDK/Android SDK** na máquina de build: o APK não compila. Instale o Android Studio (JDK 17 + SDK) ou use só a **instalação por link** (PWA).
+- **Leitor nativo de códigos** (Android/Chrome): o app pergunta ao aparelho quais formatos o `BarcodeDetector` aceita e manda só esses — se o leitor nativo falhar, ele cai automaticamente para o leitor em JavaScript. Nada disso derruba mais a câmera.
+- **Atualização do app instalado**: a página usa *rede primeiro* no service worker, então basta fechar e abrir o app para pegar a versão nova. A versão aparece no topo (ex.: `· v2`).
+- **Mudou o app?** Rode `bash mobile/scripts/sincronizar.sh` para copiar `mobile/www` para dentro do Android — a bateria `testes/06-projeto-android.js` avisa se ficar fora de sincronia.

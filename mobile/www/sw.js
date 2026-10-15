@@ -1,6 +1,7 @@
 /* Service worker do Stoki SDY — permite instalar pelo link e abrir sem internet.
-   Estratégia: primeiro o cache (o app é estático), atualizando em segundo plano. */
-const VERSAO = 'stoki-sdy-v1';
+   - Página (index.html): rede primeiro, para o app receber correções assim que houver internet.
+   - Bibliotecas, ícones e manifest: cache primeiro (raramente mudam). */
+const VERSAO = 'stoki-sdy-v2';
 const ARQUIVOS = [
   './',
   './index.html',
@@ -36,6 +37,26 @@ self.addEventListener('fetch', evento => {
   if(req.method !== 'GET') return;
   const url = new URL(req.url);
   if(url.origin !== location.origin) return;   /* não intercepta terceiros */
+
+  const url2 = new URL(url); // evita reclamação de lint em navegadores antigos
+  const ehPagina = req.mode === 'navigate' || req.destination === 'document' || /\.html?$/.test(url2.pathname);
+
+  if(ehPagina){
+    /* rede primeiro: sempre a versão mais nova do app; sem internet, usa a cópia local */
+    evento.respondWith(
+      fetch(req)
+        .then(resp => {
+          if(resp && resp.ok){
+            const copia = resp.clone();
+            caches.open(VERSAO).then(c => c.put(req, copia)).catch(() => {});
+          }
+          return resp;
+        })
+        .catch(() => caches.match(req, {ignoreSearch:true}).then(cacheado => cacheado || caches.match('./index.html')))
+    );
+    return;
+  }
+
   evento.respondWith(
     caches.match(req, {ignoreSearch:true}).then(cacheado => {
       const rede = fetch(req).then(resp => {
@@ -44,7 +65,7 @@ self.addEventListener('fetch', evento => {
           caches.open(VERSAO).then(c => c.put(req, copia)).catch(() => {});
         }
         return resp;
-      }).catch(() => cacheado || caches.match('./index.html'));
+      }).catch(() => cacheado);
       return cacheado || rede;
     })
   );

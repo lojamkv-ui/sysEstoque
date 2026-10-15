@@ -301,11 +301,74 @@
    ===================================================================== */
 'use strict';
 
+const VERSAO_APP = 'v2';       /* aparece no topo do app — serve para conferir se a versão nova chegou */
 const CHAVE = 'stoki-sdy-app-v2';
 const ECO_MS = 2500;
 const MAX_HIST = 400;
 const MAX_LEITURAS = 40;
-const FORMATOS = ['EAN_13','EAN_8','UPC_A','UPC_E','CODE_128','CODE_39','ITF','CODABAR','QR_CODE','DATA_MATRIX','PDF_417'];
+/* Formatos que queremos ler. A biblioteca exige os VALORES NUMÉRICOS do enum dela
+   (window.Html5QrcodeSupportedFormats) — passar texto faz o leitor nativo do Android
+   recusar a câmera com "Hint option provided, but is empty". */
+const FORMATOS_NOMES = ['QR_CODE','EAN_13','EAN_8','UPC_A','UPC_E','CODE_128','CODE_39','CODE_93','ITF','CODABAR','DATA_MATRIX','PDF_417'];
+/* Nome do enum → nome usado pelo BarcodeDetector do aparelho. */
+const FORMATOS_NATIVOS = {
+  QR_CODE:'qr_code', EAN_13:'ean_13', EAN_8:'ean_8', UPC_A:'upc_a', UPC_E:'upc_e', CODE_128:'code_128',
+  CODE_39:'code_39', CODE_93:'code_93', ITF:'itf', CODABAR:'codabar', DATA_MATRIX:'data_matrix', PDF_417:'pdf417'
+};
+function formatosLeitura(){
+  const F = (typeof window !== 'undefined' && window.Html5QrcodeSupportedFormats) || {};
+  const lista = FORMATOS_NOMES.map(n => F[n]).filter(v => typeof v === 'number');
+  return lista.length ? lista : null;
+}
+/* Só os formatos que o leitor nativo deste aparelho realmente aceita (no Android a lista é
+   menor que no computador; um formato desconhecido derruba a construção do detector). */
+async function formatosNativos(){
+  try{
+    if(typeof BarcodeDetector === 'undefined' || typeof BarcodeDetector.getSupportedFormats !== 'function') return null;
+    const aceitos = (await BarcodeDetector.getSupportedFormats()) || [];
+    const F = window.Html5QrcodeSupportedFormats || {};
+    const lista = FORMATOS_NOMES
+      .filter(n => aceitos.indexOf(FORMATOS_NATIVOS[n]) > -1)
+      .map(n => F[n])
+      .filter(v => typeof v === 'number');
+    return lista.length ? lista : null;
+  }catch(e){ return null; }
+}
+/* Cria o leitor com o decodificador nativo quando dá, senão com o decodificador em JavaScript. */
+async function criarLeitor(id, usarNativo){
+  const nativos = usarNativo ? await formatosNativos() : null;
+  const opt = {verbose:false};
+  if(nativos){
+    opt.formatsToSupport = nativos;
+    opt.useBarCodeDetectorIfSupported = true;
+    opt.experimentalFeatures = {useBarCodeDetectorIfSupported:true};
+  } else {
+    const formatos = formatosLeitura();
+    if(formatos) opt.formatsToSupport = formatos;
+  }
+  return {scanner:new Html5Qrcode(id, opt), nativo:!!nativos};
+}
+/* 1ª tentativa: leitor nativo (rápido). Se o aparelho recusar, 2ª tentativa: leitor em
+   JavaScript — a câmera continua funcionando, mesmo sem o decodificador nativo. */
+async function leitorComRecuo(id, acao){
+  let scanner = null, nativo = true;
+  try{
+    const l = await criarLeitor(id, true);
+    scanner = l.scanner; nativo = l.nativo;
+    l.retorno = await acao(scanner, nativo);
+    return l;
+  }catch(e){
+    if(scanner){
+      try{ await scanner.stop(); }catch(_){}
+      try{ scanner.clear(); }catch(_){}
+    }
+    if(!nativo) throw e;   /* já estava no leitor em JavaScript: não há outra tentativa */
+    console.warn('Leitor nativo recusado — seguindo com o leitor em JavaScript.', e);
+    const l2 = await criarLeitor(id, false);
+    l2.retorno = await acao(l2.scanner, false);
+    return l2;
+  }
+}
 
 const PADRAO = {
   produtos: [], movimentacoes: [], leituras: [], requisicoes: [], rascunhoReq: null,
@@ -488,7 +551,6 @@ async function iniciarCamera(){
   APP.rodando = true;
   msgLeitor('Autorize o uso da câmera…');
   try{
-    APP.scanner = new Html5Qrcode('leitor', {formatsToSupport:FORMATOS, useBarCodeDetectorIfSupported:true, verbose:false});
     let camera = {facingMode:'environment'};
     try{
       const cams = await Html5Qrcode.getCameras();
@@ -498,9 +560,13 @@ async function iniciarCamera(){
         if(cams.length > 1) $('#btnLanterna').style.display = '';
       }
     }catch(e){ /* sem permissão para listar: segue com a câmera traseira padrão */ }
-    await APP.scanner.start(camera, {fps:10, qrbox:a => ({width:Math.round(a.width * .86), height:Math.round(a.height * .55)}), aspectRatio:1.333},
-      texto => { if(!APP.lendo){ APP.lendo = true; registrarLeitura(texto, 'câmera'); setTimeout(() => { APP.lendo = false; }, 400); } },
-      () => {});
+    const leitor = await leitorComRecuo('leitor', async (scanner, nativo) => {
+      await scanner.start(camera, {fps:10, qrbox:a => ({width:Math.round(a.width * .86), height:Math.round(a.height * .55)}), aspectRatio:1.333,
+        experimentalFeatures:{useBarCodeDetectorIfSupported:!!nativo}},
+        texto => { if(!APP.lendo){ APP.lendo = true; registrarLeitura(texto, 'câmera'); setTimeout(() => { APP.lendo = false; }, 400); } },
+        () => {});
+    });
+    APP.scanner = leitor.scanner;
     msgLeitor('Aponte para o QR Code ou o código de barras do produto.');
     try{
       const caps = APP.scanner.getRunningTrackCapabilities ? APP.scanner.getRunningTrackCapabilities() : null;
@@ -509,6 +575,9 @@ async function iniciarCamera(){
     if($('#btnLanterna').style.display !== 'none' && !APP.torch) $('#btnLanterna').style.display = 'none';
   }catch(e){
     APP.rodando = false;
+    try{ if(APP.scanner) APP.scanner.clear(); }catch(_){}
+    APP.scanner = null;
+    $('#caixaLeitor').classList.add('ativa');
     $('#btnParar').style.display = 'none';
     const aviso = $('#avisoLeitor');
     aviso.style.display = '';
@@ -533,10 +602,12 @@ async function lerFoto(arquivo){
   try{
     const eraRodando = APP.rodando;
     if(eraRodando) await pararCamera(true);
-    const tmp = new Html5Qrcode('leitor', {formatsToSupport:FORMATOS, useBarCodeDetectorIfSupported:true, verbose:false});
-    const texto = await tmp.scanFile(arquivo, false);
-    try{ tmp.clear(); }catch(e){}
-    registrarLeitura(texto, 'foto');
+    const leitor = await leitorComRecuo('leitor', async (scanner) => {
+      const texto = await scanner.scanFile(arquivo, false);
+      try{ scanner.clear(); }catch(_){}
+      return texto;
+    });
+    registrarLeitura(leitor.retorno, 'foto');
     msgLeitor('Código lido da imagem.');
     if(eraRodando) iniciarCamera();
   }catch(e){
@@ -1009,18 +1080,22 @@ function iniciarApp(){
   carregar();
   eventos();
   renderProduto(); renderLeituras(); renderRequisicao(); renderProdutos(); renderHistorico();
+  const sub = $('#subTopo');
+  if(sub) sub.textContent = 'Conferência por QR Code / EAN · funciona sem internet · ' + VERSAO_APP;
   irPara(DADOS.prefs.ultimaAba || 'conferir');
   if(typeof Html5Qrcode !== 'function' || typeof qrcode !== 'function'){
     toast('Alguma biblioteca de QR/código de barras não carregou — o app continua funcionando com digitação.', 'alerta', 'Aviso');
   }
   /* service worker apenas quando aberto como site (dentro do app Android não é necessário) */
   if('serviceWorker' in navigator && location.protocol === 'https:' && !/^localhost$|^127\./.test(location.hostname)){
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js', {updateViaCache:'none'})
+      .then(reg => { if(reg && reg.update) reg.update().catch(() => {}); })
+      .catch(() => {});
   }
   if(window.Capacitor) document.documentElement.classList.add('capacitor');
 }
 document.addEventListener('DOMContentLoaded', iniciarApp);
-window.__app = {acharProduto, registrarLeitura, movimentar, ajustar, payloadReq, qrSvg, addItemReq, salvarProduto, importarCsvProdutos, parseCsv, irPara, iniciarApp, DADOS:() => DADOS, APP, semAcento};
+window.__app = {acharProduto, registrarLeitura, movimentar, ajustar, payloadReq, qrSvg, addItemReq, salvarProduto, importarCsvProdutos, parseCsv, irPara, iniciarApp, iniciarCamera, pararCamera, lerFoto, formatosLeitura, formatosNativos, DADOS:() => DADOS, APP, semAcento};
 </script>
 </body>
 </html>
