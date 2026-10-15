@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0b57c9">
+<meta name="description" content="Stoki SDY — conferência de estoque por QR Code e EAN, requisição de material e conferência de cargas no celular.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stoki SDY">
+<title>Stoki SDY — conferência por QR Code / EAN</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-192.png">
+<style>
+  :root{
+    --azul:#0b57c9; --azul-esc:#083d8d; --ciano:#2e9bff;
+    --tinta:#0f1a2b; --tinta-2:#5a6b83; --linha:#dce4ef; --fundo:#f2f5fa; --branco:#fff;
+    --ok:#137a45; --ok-bg:#e6f6ec; --erro:#b3261e; --erro-bg:#fdecea; --alerta:#8a5300; --alerta-bg:#fff5e0;
+    --sombra:0 6px 18px rgba(15,26,43,.09);
+    --raio:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    color:var(--tinta); background:var(--fundo);
+    padding-bottom:calc(78px + env(safe-area-inset-bottom));
+    -webkit-tap-highlight-color:transparent;
+  }
+  header.topo{
+    position:sticky; top:0; z-index:30; background:linear-gradient(135deg,var(--azul-esc),var(--azul) 60%,var(--ciano));
+    color:#fff; padding:calc(10px + env(safe-area-inset-top)) 14px 12px; box-shadow:var(--sombra);
+  }
+  header.topo h1{margin:0; font-size:19px; letter-spacing:.2px; display:flex; align-items:center; gap:8px}
+  header.topo small{display:block; opacity:.9; font-size:12.5px; margin-top:2px}
+  .topo-linha{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+  .chip-instalar{
+    background:#fff; color:var(--azul-esc); border:0; border-radius:999px; font-weight:700; font-size:12.5px;
+    padding:8px 12px; box-shadow:var(--sombra); display:none;
+  }
+  main{padding:12px 12px 6px}
+  .tela{display:none}
+  .tela.ativa{display:block; animation:surge .16s ease-out}
+  @keyframes surge{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+  .cartao{background:var(--branco); border:1px solid var(--linha); border-radius:var(--raio); box-shadow:var(--sombra); margin:0 0 12px; overflow:hidden}
+  .cartao > header{display:flex; align-items:center; gap:8px; padding:12px 13px; border-bottom:1px solid var(--linha)}
+  .cartao h2{margin:0; font-size:15.5px; flex:1}
+  .cartao .corpo{padding:13px}
+  .ic{font-size:18px; line-height:1}
+  p.dica{color:var(--tinta-2); font-size:13.5px; margin:8px 0 0}
+  .btn{
+    appearance:none; border:1px solid var(--linha); background:var(--branco); color:var(--tinta);
+    font:inherit; font-weight:600; border-radius:12px; padding:12px 13px; min-height:46px;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; width:100%;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.primario{background:var(--azul); border-color:var(--azul); color:#fff}
+  .btn.ok{background:var(--ok); border-color:var(--ok); color:#fff}
+  .btn.perigo{background:var(--erro); border-color:var(--erro); color:#fff}
+  .btn.fantasma{background:#eef3fb; border-color:#d7e2f3; color:var(--azul-esc)}
+  .btn.mini{padding:8px 10px; min-height:38px; font-size:13.5px; width:auto}
+  .btn.grande{min-height:58px; font-size:17px}
+  .linha-btn{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:9px}
+  .linha-btn.tres{grid-template-columns:repeat(3,1fr)}
+  input,select,textarea{
+    font:inherit; width:100%; padding:12px; border:1px solid var(--linha); border-radius:12px; background:#fbfdff; color:var(--tinta)
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid #cfe0fb; border-color:var(--azul)}
+  label.campo{display:block; margin:10px 0 0; font-size:13px; color:var(--tinta-2); font-weight:600}
+  label.campo input,label.campo select,label.campo textarea{margin-top:5px; font-weight:500; color:var(--tinta)}
+  /* leitor */
+  #caixaLeitor{position:relative; border-radius:14px; overflow:hidden; background:#0b1220; min-height:210px; display:none}
+  #caixaLeitor.ativa{display:block}
+  #video{width:100%}
+  #caixaLeitor .moldura{position:absolute; inset:12% 8%; border:3px solid rgba(255,255,255,.85); border-radius:14px; box-shadow:0 0 0 9999px rgba(0,0,0,.28)}
+  .aviso-leitor{color:#fff; font-size:13.5px; text-align:center; padding:18px 14px}
+  #statusLeitor{margin-top:9px; font-size:13.5px; color:var(--tinta-2); min-height:19px}
+  /* produto */
+  .produto-topo{display:flex; gap:12px; align-items:flex-start}
+  .produto-foto{
+    width:56px; height:56px; border-radius:14px; flex:0 0 auto; display:grid; place-items:center;
+    background:linear-gradient(140deg,#eaf2ff,#d6e6ff); color:var(--azul-esc); font-size:25px
+  }
+  .produto-topo h3{margin:0 0 3px; font-size:16.5px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .tag{display:inline-block; font-size:11.5px; font-weight:700; padding:3px 8px; border-radius:999px; background:#eef3fb; color:var(--azul-esc)}
+  .tag.ok{background:var(--ok-bg); color:var(--ok)}
+  .tag.erro{background:var(--erro-bg); color:var(--erro)}
+  .tag.alerta{background:var(--alerta-bg); color:var(--alerta)}
+  .grade-dados{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:12px}
+  .grade-dados .cx{background:#f7faff; border:1px solid var(--linha); border-radius:12px; padding:9px 11px}
+  .grade-dados span{display:block; font-size:11.5px; color:var(--tinta-2); font-weight:600; text-transform:uppercase; letter-spacing:.4px}
+  .grade-dados b{font-size:17px}
+  /* listas */
+  ul.lista{list-style:none; margin:0; padding:0}
+  ul.lista li{display:flex; gap:10px; align-items:center; padding:11px 0; border-bottom:1px dashed var(--linha)}
+  ul.lista li:last-child{border-bottom:0}
+  ul.lista .principal{flex:1; min-width:0}
+  ul.lista b{display:block; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  ul.lista small{color:var(--tinta-2); font-size:12.5px}
+  .vazio{color:var(--tinta-2); font-size:14px; text-align:center; padding:16px 6px}
+  /* QR */
+  #qrArea{display:grid; place-items:center; padding:6px 0}
+  #qrArea svg{width:auto; max-width:100%; height:auto; border:10px solid #fff; border-radius:10px; box-shadow:var(--sombra); background:#fff}
+  #payloadCaixa{font-family:ui-monospace,Menlo,monospace; font-size:11.5px; word-break:break-all; background:#f7faff; border:1px solid var(--linha); border-radius:12px; padding:9px; margin-top:9px}
+  /* navegação inferior */
+  nav.abas{
+    position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(255,255,255,.97);
+    border-top:1px solid var(--linha); display:grid; grid-template-columns:repeat(4,1fr);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom)); backdrop-filter:blur(8px);
+  }
+  nav.abas button{
+    appearance:none; background:none; border:0; font:inherit; font-size:11.5px; font-weight:600; color:var(--tinta-2);
+    display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 2px; border-radius:12px; cursor:pointer; min-height:56px
+  }
+  nav.abas button .ic{font-size:21px}
+  nav.abas button[aria-current="true"]{color:var(--azul); background:#eef4ff}
+  /* toast */
+  #toasts{position:fixed; left:10px; right:10px; bottom:calc(84px + env(safe-area-inset-bottom)); z-index:60; display:flex; flex-direction:column; gap:8px; pointer-events:none}
+  .toast{background:#0f1a2b; color:#fff; border-radius:12px; padding:11px 13px; box-shadow:0 10px 24px rgba(0,0,0,.28); font-size:14px; animation:surge .18s}
+  .toast b{display:block; font-size:12.5px; opacity:.85; margin-bottom:2px}
+  .toast.ok{background:#0f6b3f} .toast.erro{background:#8f1f18} .toast.alerta{background:#7a4800}
+  @media (min-width:620px){ main{max-width:720px; margin:0 auto} }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-linha">
+    <div>
+      <h1><span class="ic">📷</span> Stoki SDY</h1>
+      <small id="subTopo">Conferência por QR Code / EAN · funciona sem internet</small>
+    </div>
+    <button class="chip-instalar" id="btnInstalar" type="button">⬇︎ Instalar app</button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ CONFERIR ============ -->
+  <section class="tela ativa" id="tela-conferir">
+    <div class="cartao">
+      <header><span class="ic">🎯</span><h2>Ler código do produto</h2><span class="tag" id="tagOffline">offline</span></header>
+      <div class="corpo">
+        <button class="btn primario grande" id="btnLer" type="button"><span class="ic">📷</span> Abrir câmera e ler</button>
+        <div id="caixaLeitor">
+          <div id="leitor" style="width:100%"></div>
+          <div class="moldura"></div>
+          <div class="aviso-leitor" id="avisoLeitor" style="display:none"></div>
+        </div>
+        <div id="statusLeitor"></div>
+        <div class="linha-btn">
+          <button class="btn" id="btnFoto" type="button"><span class="ic">🖼️</span> Ler de foto</button>
+          <button class="btn fantasma" id="btnLanterna" type="button" style="display:none"><span class="ic">🔆</span> Lanterna</button>
+        </div>
+        <input type="file" id="arquivo" accept="image/*" capture="environment" style="display:none">
+        <button class="btn" id="btnParar" type="button" style="display:none"><span class="ic">⏹</span> Fechar câmera</button>
+
+        <label class="campo">Digitar o código (EAN, FT/Código ou requisição)
+          <input id="manual" class="mono" inputmode="text" autocomplete="off" placeholder="Ex.: 7891234500014 ou 2025/0771-CX">
+        </label>
+        <button class="btn fantasma" id="btnManual" type="button" style="margin-top:9px"><span class="ic">⌨️</span> Buscar produto digitado</button>
+      </div>
+    </div>
+
+    <div class="cartao" id="cartaoProduto" style="display:none">
+      <header><span class="ic">📦</span><h2>Produto lido</h2><span class="tag" id="tagVia">—</span></header>
+      <div class="corpo" id="produtoBox"></div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🕒</span><h2>Últimas leituras</h2>
+        <button class="btn mini fantasma" id="btnLimparLeituras" type="button">Limpar</button></header>
+      <div class="corpo" id="leiturasBox"></div>
+    </div>
+  </section>
+
+  <!-- ============ REQUISIÇÃO ============ -->
+  <section class="tela" id="tela-requisicao">
+    <div class="cartao">
+      <header><span class="ic">📱</span><h2>Montar requisição de material</h2><span class="tag" id="tagReq">—</span></header>
+      <div class="corpo">
+        <label class="campo">Solicitante
+          <input id="reqUsuario" autocomplete="name" placeholder="Seu nome (fica gravado)">
+        </label>
+        <label class="campo">Tipo
+          <select id="reqTipo">
+            <option value="SAIDA">Saída de material (baixa no estoque)</option>
+            <option value="ENTRADA">Entrada de material (devolução/compra)</option>
+            <option value="MATERIAL">Pedido de material (só lista, sem baixa)</option>
+          </select>
+        </label>
+        <label class="campo">Observação (opcional)
+          <input id="reqObs" placeholder="Ex.: separar até as 18h">
+        </label>
+
+        <label class="campo">Adicionar item por código
+          <input id="reqCodigo" class="mono" autocomplete="off" placeholder="Bipe/digite o EAN ou FT/Código">
+        </label>
+        <div class="linha-btn">
+          <button class="btn fantasma" id="btnReqAdd" type="button"><span class="ic">➕</span> Adicionar</button>
+          <button class="btn fantasma" id="btnReqLer" type="button"><span class="ic">📷</span> Ler com a câmera</button>
+        </div>
+
+        <div id="reqItensBox" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🔲</span><h2>QR da requisição</h2>
+        <button class="btn mini fantasma" id="btnReqGerar" type="button">Gerar</button></header>
+      <div class="corpo">
+        <p class="dica">Mostre este QR para o sistema do computador (aba <b>Conferência QR/EAN</b>) ou envie o texto por WhatsApp. O sistema lê e dá baixa/entrada no estoque.</p>
+        <div id="qrArea"></div>
+        <div id="payloadCaixa" style="display:none"></div>
+        <div class="linha-btn">
+          <button class="btn" id="btnReqCopiar" type="button"><span class="ic">📋</span> Copiar texto</button>
+          <button class="btn" id="btnReqCompartilhar" type="button"><span class="ic">📤</span> Compartilhar</button>
+        </div>
+        <button class="btn ok" id="btnReqSalvar" type="button" style="margin-top:9px"><span class="ic">💾</span> Salvar requisição no aparelho</button>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🗂️</span><h2>Requisições salvas</h2></header>
+      <div class="corpo" id="reqSalvasBox"></div>
+    </div>
+  </section>
+
+  <!-- ============ PRODUTOS ============ -->
+  <section class="tela" id="tela-produtos">
+    <div class="cartao">
+      <header><span class="ic">📚</span><h2>Catálogo do aparelho</h2><span class="tag" id="tagTotal">0</span></header>
+      <div class="corpo">
+        <p class="dica">Este catálogo é guardado no celular e funciona sem internet. Importe o arquivo <b>CSV de produtos</b> exportado pelo sistema do computador (botão “CSV” na aba Produtos) para deixar FT, EAN, nome e estoque iguais.</p>
+        <div class="linha-btn">
+          <button class="btn fantasma" id="btnImportar" type="button"><span class="ic">📥</span> Importar CSV</button>
+          <button class="btn fantasma" id="btnExportar" type="button"><span class="ic">📤</span> Exportar CSV</button>
+        </div>
+        <input type="file" id="arquivoCsv" accept=".csv,text/csv,text/plain" style="display:none">
+        <label class="campo">Buscar produto
+          <input id="buscaProduto" placeholder="Nome, FT ou EAN" autocomplete="off">
+        </label>
+        <div id="listaProdutosBox" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">✚</span><h2>Novo produto / editar</h2></header>
+      <div class="corpo">
+        <label class="campo">FT / Código interno <input id="pFT" class="mono" placeholder="2025/0771-CX"></label>
+        <label class="campo">Código de barras (EAN/QR) <input id="pEan" class="mono" inputmode="numeric" placeholder="7891234500014"></label>
+        <label class="campo">Nome <input id="pNome" placeholder="Cx. Biscoito Trigo Popular 12x250g"></label>
+        <div class="linha-btn">
+          <label class="campo">Unidade <input id="pUnidade" value="un" style="margin-top:5px"></label>
+          <label class="campo">Estoque <input id="pEstoque" type="number" step="any" value="0" style="margin-top:5px"></label>
+        </div>
+        <div class="linha-btn">
+          <button class="btn primario" id="btnSalvarProduto" type="button"><span class="ic">💾</span> Salvar</button>
+          <button class="btn fantasma" id="btnCancelarProduto" type="button">Limpar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HISTÓRICO ============ -->
+  <section class="tela" id="tela-historico">
+    <div class="cartao">
+      <header><span class="ic">📈</span><h2>Movimentações no aparelho</h2><span class="tag" id="tagMov">0</span></header>
+      <div class="corpo">
+        <div class="grade-dados" id="resumoBox"></div>
+        <div class="linha-btn">
+          <button class="btn fantasma" id="btnExpMov" type="button"><span class="ic">📤</span> Exportar movimentações</button>
+          <button class="btn fantasma" id="btnBackup" type="button"><span class="ic">🗄️</span> Backup JSON</button>
+        </div>
+        <button class="btn perigo" id="btnZerar" type="button" style="margin-top:9px"><span class="ic">🧹</span> Zerar movimentações do aparelho</button>
+      </div>
+    </div>
+    <div class="cartao">
+      <header><span class="ic">🧾</span><h2>Histórico</h2></header>
+      <div class="corpo" id="listaMovBox"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="abas" id="abas">
+  <button type="button" data-tela="conferir" aria-current="true"><span class="ic">🎯</span>Conferir</button>
+  <button type="button" data-tela="requisicao"><span class="ic">📱</span>Requisição</button>
+  <button type="button" data-tela="produtos"><span class="ic">📚</span>Produtos</button>
+  <button type="button" data-tela="historico"><span class="ic">📈</span>Histórico</button>
+</nav>
+<div id="toasts"></div>
+
+<script src="vendor/html5-qrcode.min.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script>
+/* =====================================================================
+   Stoki SDY — app Android/web (Capacitor)
+   Conferência de produto por QR Code / EAN, requisição de material.
+   Funciona 100% offline; todo o funcionamento fica no próprio aparelho.
+   ===================================================================== */
+'use strict';
+
+const VERSAO_APP = 'v2';       /* aparece no topo do app — serve para conferir se a versão nova chegou */
+const CHAVE = 'stoki-sdy-app-v2';
+const ECO_MS = 2500;
+const MAX_HIST = 400;
+const MAX_LEITURAS = 40;
+/* Formatos que queremos ler. A biblioteca exige os VALORES NUMÉRICOS do enum dela
+   (window.Html5QrcodeSupportedFormats) — passar texto faz o leitor nativo do Android
+   recusar a câmera com "Hint option provided, but is empty". */
+const FORMATOS_NOMES = ['QR_CODE','EAN_13','EAN_8','UPC_A','UPC_E','CODE_128','CODE_39','CODE_93','ITF','CODABAR','DATA_MATRIX','PDF_417'];
+/* Nome do enum → nome usado pelo BarcodeDetector do aparelho. */
+const FORMATOS_NATIVOS = {
+  QR_CODE:'qr_code', EAN_13:'ean_13', EAN_8:'ean_8', UPC_A:'upc_a', UPC_E:'upc_e', CODE_128:'code_128',
+  CODE_39:'code_39', CODE_93:'code_93', ITF:'itf', CODABAR:'codabar', DATA_MATRIX:'data_matrix', PDF_417:'pdf417'
+};
+function formatosLeitura(){
+  const F = (typeof window !== 'undefined' && window.Html5QrcodeSupportedFormats) || {};
+  const lista = FORMATOS_NOMES.map(n => F[n]).filter(v => typeof v === 'number');
+  return lista.length ? lista : null;
+}
+/* Só os formatos que o leitor nativo deste aparelho realmente aceita (no Android a lista é
+   menor que no computador; um formato desconhecido derruba a construção do detector). */
+async function formatosNativos(){
+  try{
+    if(typeof BarcodeDetector === 'undefined' || typeof BarcodeDetector.getSupportedFormats !== 'function') return null;
+    const aceitos = (await BarcodeDetector.getSupportedFormats()) || [];
+    const F = window.Html5QrcodeSupportedFormats || {};
+    const lista = FORMATOS_NOMES
+      .filter(n => aceitos.indexOf(FORMATOS_NATIVOS[n]) > -1)
+      .map(n => F[n])
+      .filter(v => typeof v === 'number');
+    return lista.length ? lista : null;
+  }catch(e){ return null; }
+}
+/* Cria o leitor com o decodificador nativo quando dá, senão com o decodificador em JavaScript. */
+async function criarLeitor(id, usarNativo){
+  const nativos = usarNativo ? await formatosNativos() : null;
+  const opt = {verbose:false};
+  if(nativos){
+    opt.formatsToSupport = nativos;
+    opt.useBarCodeDetectorIfSupported = true;
+    opt.experimentalFeatures = {useBarCodeDetectorIfSupported:true};
+  } else {
+    const formatos = formatosLeitura();
+    if(formatos) opt.formatsToSupport = formatos;
+  }
+  return {scanner:new Html5Qrcode(id, opt), nativo:!!nativos};
+}
+/* 1ª tentativa: leitor nativo (rápido). Se o aparelho recusar, 2ª tentativa: leitor em
+   JavaScript — a câmera continua funcionando, mesmo sem o decodificador nativo. */
+async function leitorComRecuo(id, acao){
+  let scanner = null, nativo = true;
+  try{
+    const l = await criarLeitor(id, true);
+    scanner = l.scanner; nativo = l.nativo;
+    l.retorno = await acao(scanner, nativo);
+    return l;
+  }catch(e){
+    if(scanner){
+      try{ await scanner.stop(); }catch(_){}
+      try{ scanner.clear(); }catch(_){}
+    }
+    if(!nativo) throw e;   /* já estava no leitor em JavaScript: não há outra tentativa */
+    console.warn('Leitor nativo recusado — seguindo com o leitor em JavaScript.', e);
+    const l2 = await criarLeitor(id, false);
+    l2.retorno = await acao(l2.scanner, false);
+    return l2;
+  }
+}
+
+const PADRAO = {
+  produtos: [], movimentacoes: [], leituras: [], requisicoes: [], rascunhoReq: null,
+  prefs: { usuario: '', tipo: 'SAIDA', seq: 1, ultimaAba: 'conferir' }
+};
+let DADOS = null;
+let APP = {
+  scanner: null, rodando: false, lendo: false, ultimoCodigo: '', ultimoEm: 0, ecos: 0,
+  produtoId: null, qtd: 1, ultimaReq: null, torch: null, faixa: null, foto: null
+};
+
+/* ---------------- utilidades ---------------- */
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const agora = () => new Date().toISOString();
+const uid = pref => (pref || 'id') + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+const num = v => { if(typeof v === 'number') return isFinite(v) ? v : 0; const n = parseFloat(String(v == null ? '' : v).replace(/\./g, '').replace(',', '.')); return isFinite(n) ? n : 0; };
+const q = v => (Number(v) || 0).toLocaleString('pt-BR', {maximumFractionDigits:3});
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const semAcento = v => String(v == null ? '' : v).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7E]/g, '');
+const digitos = v => String(v == null ? '' : v).replace(/\D+/g, '');
+function dataHora(iso){
+  const d = new Date(iso); if(isNaN(d.getTime())) return '—';
+  const p = n => String(n).padStart(2, '0');
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function toast(msg, tipo, titulo){
+  const el = document.createElement('div');
+  el.className = 'toast ' + (tipo || '');
+  el.innerHTML = (titulo ? '<b>' + esc(titulo) + '</b>' : '') + esc(msg);
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+function vibrar(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+function bipe(tipo){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    const ctx = new AC(); const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = tipo === 'erro' ? 300 : (tipo === 'alerta' ? 620 : 980);
+    g.gain.value = .07; o.connect(g).connect(ctx.destination); o.start();
+    setTimeout(() => { o.stop(); ctx.close(); }, tipo === 'erro' ? 260 : 120);
+  }catch(e){}
+}
+
+/* ---------------- armazenamento ---------------- */
+function carregar(){
+  try{
+    const bruto = localStorage.getItem(CHAVE);
+    DADOS = bruto ? Object.assign(JSON.parse(JSON.stringify(PADRAO)), JSON.parse(bruto)) : JSON.parse(JSON.stringify(PADRAO));
+  }catch(e){ DADOS = JSON.parse(JSON.stringify(PADRAO)); }
+  DADOS.prefs = Object.assign({}, PADRAO.prefs, DADOS.prefs || {});
+  if(!Array.isArray(DADOS.produtos)) DADOS.produtos = [];
+  if(!Array.isArray(DADOS.movimentacoes)) DADOS.movimentacoes = [];
+  if(!Array.isArray(DADOS.leituras)) DADOS.leituras = [];
+  if(!Array.isArray(DADOS.requisicoes)) DADOS.requisicoes = [];
+}
+function salvar(){
+  try{ localStorage.setItem(CHAVE, JSON.stringify(DADOS)); }
+  catch(e){ toast('Não foi possível gravar no aparelho (memória cheia?).', 'erro'); }
+}
+const produtos = () => DADOS.produtos;
+const produto = id => produtos().find(p => p.id === id) || null;
+function produtoPorCodigo(codigo){
+  const c = String(codigo == null ? '' : codigo).trim(); if(!c) return null;
+  const d = digitos(c);
+  return produtos().find(p => p.id === c) ||
+    (p => p)(produtos().find(p => p.ft && p.ft.toLowerCase() === c.toLowerCase())) ||
+    (d && produtos().find(p => (p.ean || '') === d)) ||
+    (d.length > 8 && produtos().find(p => (p.ean || '').length === 12 && '0' + (p.ean || '') === d)) ||
+    (d.length === 13 && produtos().find(p => (p.ean || '') === d.slice(1))) ||
+    (d && produtos().find(p => p.ean && digitos(p.ean) === d)) || null;
+}
+function acharProduto(bruto){
+  const texto = String(bruto == null ? '' : bruto).trim();
+  if(!texto) return {ok:false, msg:'Leitura vazia.'};
+  /* etiqueta do sistema: STOKI;<EAN>;<FT> */
+  const et = texto.match(/^STOKI\s*[;:]\s*([^;]*);\s*(.+)$/i);
+  if(et){
+    const p = produtoPorCodigo(et[1]) || produtoPorCodigo(et[2]);
+    return p ? {ok:true, produto:p, codigo:digitos(et[1]) || et[2], campo:'etiqueta Stoki'} : {ok:false, codigo:digitos(et[1]), msg:'Produto da etiqueta não está no catálogo.'};
+  }
+  /* URL com ?ean= / &codigo= */
+  const url = texto.match(/[?&](?:ean|codigo|code|ft)=([^&\s]+)/i);
+  if(url){
+    let v = decodeURIComponent(url[1]);
+    v = v.replace(/[?].*$/, '');
+    const p = produtoPorCodigo(v);
+    if(p) return {ok:true, produto:p, codigo:digitos(v) || v, campo:'link'};
+  }
+  const p = produtoPorCodigo(texto);
+  if(p) return {ok:true, produto:p, codigo:texto, campo:'código'};
+  const d = digitos(texto);
+  if(d && d.length >= 4){
+    const p2 = produtos().find(pr => pr.ean && digitos(pr.ean).indexOf(d) > -1) || produtos().find(pr => pr.ft && digitos(pr.ft) === d);
+    if(p2) return {ok:true, produto:p2, codigo:d, campo:'código parcial'};
+  }
+  return {ok:false, codigo:d || texto, msg:'Nenhum produto com este código no catálogo do aparelho.'};
+}
+
+/* ---------------- movimentação ---------------- */
+function registrarMov(prod){
+  const hist = {id:uid('mov'), produtoId:prod.id, ft:prod.ft, nome:prod.nome, unidade:prod.unidade, tipo:prod.__tipo,
+    quantidade:prod.__qtd, antes:prod.__antes, depois:prod.estoque, obs:prod.__obs || '', origem:prod.__origem || 'Leitura', em:agora()};
+  DADOS.movimentacoes.unshift(hist);
+  if(DADOS.movimentacoes.length > MAX_HIST) DADOS.movimentacoes.length = MAX_HIST;
+  return hist;
+}
+function movimentar(produtoId, tipo, qtd, obs, origem){
+  const p = produto(produtoId);
+  if(!p) return {ok:false, msg:'Produto não está no catálogo do aparelho.'};
+  qtd = Number(qtd) || 0;
+  if(qtd <= 0) return {ok:false, msg:'Quantidade inválida.'};
+  const antes = Number(p.estoque) || 0;
+  if(tipo === 'Saída' && qtd > antes) return {ok:false, msg:'Saída maior que o estoque do aparelho.', falta:qtd - antes};
+  const depois = tipo === 'Entrada' ? antes + qtd : antes - qtd;
+  p.estoque = Math.round(depois * 1000) / 1000;
+  p.atualizadoEm = agora();
+  p.__tipo = tipo; p.__qtd = qtd; p.__antes = antes; p.__obs = obs || ''; p.__origem = origem || 'Leitura';
+  const hist = registrarMov(p);
+  ['__tipo','__qtd','__antes','__obs','__origem'].forEach(k => delete p[k]);
+  return {ok:true, historico:hist, antes, depois};
+}
+function ajustar(produtoId, novoTotal, obs){
+  const p = produto(produtoId);
+  if(!p) return {ok:false, msg:'Produto não está no catálogo.'};
+  novoTotal = Math.max(0, Number(novoTotal) || 0);
+  const antes = Number(p.estoque) || 0, diff = novoTotal - antes;
+  p.estoque = novoTotal;
+  p.atualizadoEm = agora();
+  p.__tipo = 'Contagem'; p.__qtd = Math.abs(diff); p.__antes = antes; p.__obs = obs || 'Contagem por leitura';
+  p.__origem = 'Contagem';
+  DADOS.movimentacoes.unshift({id:uid('mov'), produtoId:p.id, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo:'Contagem',
+    quantidade:Math.abs(diff), antes:antes, depois:novoTotal, obs:p.__obs, origem:'Contagem', em:agora()});
+  if(DADOS.movimentacoes.length > MAX_HIST) DADOS.movimentacoes.length = MAX_HIST;
+  ['__tipo','__qtd','__antes','__obs','__origem'].forEach(k => delete p[k]);
+  return {ok:true, diff};
+}
+
+/* ---------------- entrada de leitura ---------------- */
+function registrarLeitura(texto, via){
+  const bruto = String(texto == null ? '' : texto).trim();
+  if(!bruto) return;
+  const ts = Date.now();
+  if(via !== 'digitado' && bruto === APP.ultimoCodigo && (ts - APP.ultimoEm) < ECO_MS){
+    APP.ecos++; $('#statusLeitor').textContent = 'Mesmo código repetido — ignorado (' + APP.ecos + '×).';
+    return;
+  }
+  APP.ultimoCodigo = bruto; APP.ultimoEm = ts;
+
+  /* requisição vinda de outro aparelho/sistema */
+  if(/^STOKIREQ\s*[;:]/i.test(bruto)){ importarRequisicao(bruto); return; }
+
+  const r = acharProduto(bruto);
+  DADOS.leituras.unshift({codigo:bruto, ok:r.ok, ft:r.ok ? r.produto.ft : '', nome:r.ok ? r.produto.nome : '', via:via || 'câmera', em:agora()});
+  if(DADOS.leituras.length > MAX_LEITURAS) DADOS.leituras.length = MAX_LEITURAS;
+
+  if(r.ok){
+    APP.produtoId = r.produto.id;
+    bipe('ok'); vibrar(60);
+    toast(r.produto.nome + ' · ' + q(r.produto.estoque) + ' ' + (r.produto.unidade || 'un') + ' no aparelho', 'ok', '✔ ' + r.produto.ft);
+  } else {
+    APP.produtoId = null;
+    APP.codigoDesconhecido = r.codigo || bruto;
+    bipe('erro'); vibrar([60, 60, 60]);
+    toast(r.msg, 'erro', 'Código não encontrado');
+    $('#pEan').value = /^\d{6,}$/.test(digitos(bruto)) ? digitos(bruto) : '';
+    $('#pFT').value = /^\d{6,}$/.test(digitos(bruto)) ? '' : bruto;
+  }
+  salvar(); renderProduto(); renderLeituras();
+}
+
+/* ---------------- câmera ---------------- */
+function msgLeitor(t, erro){ $('#statusLeitor').textContent = t || ''; if(erro) $('#statusLeitor').style.color = 'var(--erro)'; }
+async function iniciarCamera(){
+  if(APP.rodando) return;
+  if(typeof Html5Qrcode !== 'function'){ msgLeitor('Biblioteca de leitura não carregou neste aparelho.', true); return; }
+  $('#caixaLeitor').classList.add('ativa');
+  $('#avisoLeitor').style.display = 'none';
+  $('#btnParar').style.display = '';
+  APP.rodando = true;
+  msgLeitor('Autorize o uso da câmera…');
+  try{
+    let camera = {facingMode:'environment'};
+    try{
+      const cams = await Html5Qrcode.getCameras();
+      if(cams && cams.length){
+        const tras = cams.find(c => /back|traseira|rear|environment|trás/i.test(c.label || '')) || cams[cams.length - 1];
+        if(tras) camera = tras.id;
+        if(cams.length > 1) $('#btnLanterna').style.display = '';
+      }
+    }catch(e){ /* sem permissão para listar: segue com a câmera traseira padrão */ }
+    const leitor = await leitorComRecuo('leitor', async (scanner, nativo) => {
+      await scanner.start(camera, {fps:10, qrbox:a => ({width:Math.round(a.width * .86), height:Math.round(a.height * .55)}), aspectRatio:1.333,
+        experimentalFeatures:{useBarCodeDetectorIfSupported:!!nativo}},
+        texto => { if(!APP.lendo){ APP.lendo = true; registrarLeitura(texto, 'câmera'); setTimeout(() => { APP.lendo = false; }, 400); } },
+        () => {});
+    });
+    APP.scanner = leitor.scanner;
+    msgLeitor('Aponte para o QR Code ou o código de barras do produto.');
+    try{
+      const caps = APP.scanner.getRunningTrackCapabilities ? APP.scanner.getRunningTrackCapabilities() : null;
+      if(caps && caps.torch) APP.torch = true;
+    }catch(e){}
+    if($('#btnLanterna').style.display !== 'none' && !APP.torch) $('#btnLanterna').style.display = 'none';
+  }catch(e){
+    APP.rodando = false;
+    try{ if(APP.scanner) APP.scanner.clear(); }catch(_){}
+    APP.scanner = null;
+    $('#caixaLeitor').classList.add('ativa');
+    $('#btnParar').style.display = 'none';
+    const aviso = $('#avisoLeitor');
+    aviso.style.display = '';
+    aviso.innerHTML = '<b>Não foi possível abrir a câmera.</b><br>' + esc(semAcento(e && (e.message || e.name || e.code)) || 'erro desconhecido') +
+      '<br><br>Use <b>Ler de foto</b> ou digite o código abaixo. A câmera dentro do app precisa da permissão de câmera (Ajustes → Apps → Stoki SDY → Permissões).';
+    msgLeitor('Câmera indisponível.', true);
+  }
+}
+async function pararCamera(silencioso){
+  const estava = APP.rodando;
+  APP.rodando = false;
+  try{ if(APP.scanner && estava){ await APP.scanner.stop(); APP.scanner.clear(); } }catch(e){}
+  $('#caixaLeitor').classList.remove('ativa');
+  $('#btnParar').style.display = 'none';
+  $('#btnLanterna').style.display = 'none';
+  APP.torch = null;
+  if(!silencioso) msgLeitor('');
+}
+async function lerFoto(arquivo){
+  if(typeof Html5Qrcode !== 'function'){ toast('Biblioteca de leitura não carregou.', 'erro'); return; }
+  msgLeitor('Lendo a imagem…');
+  try{
+    const eraRodando = APP.rodando;
+    if(eraRodando) await pararCamera(true);
+    const leitor = await leitorComRecuo('leitor', async (scanner) => {
+      const texto = await scanner.scanFile(arquivo, false);
+      try{ scanner.clear(); }catch(_){}
+      return texto;
+    });
+    registrarLeitura(leitor.retorno, 'foto');
+    msgLeitor('Código lido da imagem.');
+    if(eraRodando) iniciarCamera();
+  }catch(e){
+    bipe('erro');
+    msgLeitor('Não encontrei nenhum código na imagem. Aproxime mais e melhore a luz.', true);
+    toast('Não encontrei nenhum código na imagem.', 'erro');
+  }
+}
+async function alternarLanterna(){
+  try{
+    if(!APP.scanner || !APP.scanner.getRunningTrackCapabilities) return;
+    const caps = APP.scanner.getRunningTrackCapabilities() || {};
+    if(!caps.torch) { toast('Este aparelho não tem lanterna disponível para a câmera.', 'alerta'); return; }
+    const ligada = !!APP.lanterna;
+    await APP.scanner.applyVideoConstraints({advanced:[{torch:!ligada}]});
+    APP.lanterna = !ligada;
+    toast('Lanterna ' + (APP.lanterna ? 'ligada' : 'desligada') + '.', 'ok');
+  }catch(e){ toast('Não foi possível acionar a lanterna neste aparelho.', 'alerta'); }
+}
+
+/* ---------------- requisição ---------------- */
+function lerRascunho(){
+  if(!DADOS.rascunhoReq) DADOS.rascunhoReq = {usuario:DADOS.prefs.usuario || '', tipo:DADOS.prefs.tipo || 'SAIDA', obs:'', itens:[]};
+  return DADOS.rascunhoReq;
+}
+function addItemReq(codigo, qtd){
+  const r = acharProduto(codigo);
+  const rasc = lerRascunho();
+  const chave = r.ok ? r.produto.ft : String(codigo).trim();
+  const existente = rasc.itens.find(i => (i.ft || '').toLowerCase() === chave.toLowerCase());
+  const quantidade = Math.max(0.001, Number(qtd) || 1);
+  if(existente){ existente.qtd = Math.round((existente.qtd + quantidade) * 1000) / 1000; }
+  else rasc.itens.push({ft:chave, ean:r.ok ? (r.produto.ean || '') : '', nome:r.ok ? r.produto.nome : '', unidade:r.ok ? (r.produto.unidade || 'un') : 'un', qtd:quantidade, cadastrado:r.ok});
+  salvar(); renderRequisicao();
+  toast((r.ok ? r.produto.nome : chave) + ' · ' + q(quantidade) + ' — ' + (existente ? 'somado no item' : 'item adicionado'), 'ok', '📱 Requisição');
+}
+function payloadReq(){
+  const rasc = lerRascunho();
+  const itens = rasc.itens.map(i => semAcento(i.ft).replace(/[;|:]/g, '-') + ':' + q(i.qtd).replace(/\./g, '')).join('|');
+  const numero = 'REQ-' + String(DADOS.prefs.seq).padStart(4, '0');
+  const partes = ['STOKIREQ', numero, String(rasc.tipo || 'MATERIAL').toUpperCase(), semAcento(rasc.usuario || 'App').replace(/[;|]/g, '-'), itens];
+  if(rasc.obs) partes.push(semAcento(rasc.obs).replace(/[;|]/g, '-'));
+  return partes.join(';');
+}
+function qrSvg(texto, escala){
+  if(typeof qrcode !== 'function') return '';
+  const qr = qrcode(0, 'M');
+  qr.addData(texto);
+  qr.make();
+  return qr.createSvgTag({cellSize:escala || 5, margin:2, scalable:true});
+}
+function gerarQrReq(){
+  const rasc = lerRascunho();
+  if(!rasc.itens.length){ toast('Adicione pelo menos um item antes de gerar o QR.', 'alerta'); return; }
+  const texto = payloadReq();
+  APP.ultimaReq = texto;
+  const svg = qrSvg(texto, 5);
+  if(!svg){ toast('Gerador de QR não carregou.', 'erro'); return; }
+  $('#qrArea').innerHTML = svg;
+  $('#payloadCaixa').style.display = '';
+  $('#payloadCaixa').textContent = texto;
+  $('#tagReq').textContent = 'REQ-' + String(DADOS.prefs.seq).padStart(4, '0');
+  toast('QR pronto: mostre para o sistema do computador ler.', 'ok', '📱 Requisição');
+}
+function importarRequisicao(texto){
+  const campos = String(texto).replace(/^STOKIREQ\s*[;:]/i, '').split(';').map(c => c.trim());
+  const req = {numero:campos[0] || '—', tipo:(campos[1] || 'MATERIAL').toUpperCase(), usuario:campos[2] || '—',
+    itens:(campos[3] || '').split(/[|\n]+/).filter(Boolean).map(item => {
+      const [chave, qtd] = item.split(/[:=]/);
+      const p = produtoPorCodigo((chave || '').trim());
+      return {ft:(chave || '').trim(), qtd:num((qtd || '1').replace(',', '.')), nome:p ? p.nome : '', cadastrado:!!p, produtoId:p ? p.id : null};
+    }), obs:campos.slice(4).join('; '), em:agora(), bruto:texto};
+  bipe('alerta'); vibrar([40, 40, 40]);
+  DADOS.requisicoes.unshift(req);
+  if(DADOS.requisicoes.length > 60) DADOS.requisicoes.length = 60;
+  salvar(); renderRequisicao();
+  toast('Requisição ' + req.numero + ' de ' + req.usuario + ' · ' + req.itens.length + ' item(ns)', 'alerta', '📥 Requisição recebida');
+}
+function salvarRequisicao(){
+  if(!APP.ultimaReq){ toast('Gere o QR antes de salvar.', 'alerta'); return; }
+  const rasc = lerRascunho();
+  DADOS.requisicoes.unshift({numero:'REQ-' + String(DADOS.prefs.seq).padStart(4, '0'), tipo:rasc.tipo, usuario:rasc.usuario || 'App',
+    itens:rasc.itens.map(i => ({ft:i.ft, qtd:i.qtd, nome:i.nome, cadastrado:i.cadastrado})), obs:rasc.obs, em:agora(), bruto:APP.ultimaReq});
+  if(DADOS.requisicoes.length > 60) DADOS.requisicoes.length = 60;
+  DADOS.prefs.seq++;
+  DADOS.rascunhoReq = {usuario:rasc.usuario, tipo:rasc.tipo, obs:'', itens:[]};
+  APP.ultimaReq = null;
+  salvar(); renderRequisicao();
+  toast('Requisição salva no aparelho. Gere o próximo QR quando precisar.', 'ok', '💾 Requisição');
+}
+
+/* ---------------- arquivos ---------------- */
+function baixar(nome, texto, tipo){
+  try{
+    const blob = new Blob([texto], {type:(tipo || 'text/plain') + ';charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = nome; document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+    toast('Arquivo ' + nome + ' gerado. Se não abriu, use Compartilhar.', 'ok', '📤 Exportar');
+    return true;
+  }catch(e){ return false; }
+}
+async function compartilhar(texto, titulo){
+  try{
+    if(navigator.share){ await navigator.share({title:titulo || 'Stoki SDY', text:texto}); return true; }
+  }catch(e){ if(e && e.name === 'AbortError') return true; }
+  try{ await navigator.clipboard.writeText(texto); toast('Texto copiado — cole onde precisar.', 'ok', '📋 Copiar'); return true; }
+  catch(e){ toast('Não foi possível compartilhar neste aparelho.', 'erro'); return false; }
+}
+function csv(linhas){ return '\uFEFF' + linhas.map(l => l.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(';')).join('\r\n'); }
+function parseCsv(texto){
+  const t = String(texto).replace(/^\uFEFF/, '');
+  const sep = (t.split(';').length >= t.split(',').length) ? ';' : ',';
+  const linhas = []; let campo = '', linha = [], aspas = false;
+  for(let i = 0; i < t.length; i++){
+    const c = t[i];
+    if(aspas){
+      if(c === '"' && t[i + 1] === '"'){ campo += '"'; i++; }
+      else if(c === '"') aspas = false;
+      else campo += c;
+    } else if(c === '"') aspas = true;
+    else if(c === sep){ linha.push(campo); campo = ''; }
+    else if(c === '\n'){ linha.push(campo); campo = ''; linhas.push(linha); linha = []; }
+    else if(c === '\r'){ /* ignora */ }
+    else campo += c;
+  }
+  if(campo || linha.length){ linha.push(campo); linhas.push(linha); }
+  return linhas.filter(l => l.some(v => String(v).trim() !== ''));
+}
+function importarCsvProdutos(texto){
+  const linhas = parseCsv(texto);
+  if(linhas.length < 2){ toast('Arquivo vazio ou sem cabeçalho.', 'erro'); return; }
+  const norm = v => String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  const cab = linhas[0].map(norm);
+  const col = (...nomes) => { for(const n of nomes){ const i = cab.findIndex(c => c === norm(n) || c.indexOf(norm(n)) > -1); if(i > -1) return i; } return -1; };
+  const cFT = col('ft/codigo', 'ft', 'codigo', 'cod'), cNome = col('nome', 'descricao', 'produto'),
+        cUn = col('unidade', 'un'), cEst = col('estoque atual', 'estoque', 'saldo'), cEan = col('codigo de barras', 'ean', 'barras');
+  if(cFT < 0 || cNome < 0){ toast('O CSV precisa das colunas FT/Código e Nome.', 'erro', 'Importar'); return; }
+  let novos = 0, atualizados = 0;
+  linhas.slice(1).forEach(l => {
+    const ft = String(l[cFT] || '').trim(); const nome = String(l[cNome] || '').trim();
+    if(!ft || !nome) return;
+    const ean = cEan > -1 ? digitos(l[cEan]) : '';
+    const existente = produtos().find(p => p.ft.toLowerCase() === ft.toLowerCase());
+    if(existente){
+      existente.nome = nome;
+      if(ean) existente.ean = ean;
+      if(cUn > -1 && l[cUn]) existente.unidade = String(l[cUn]).trim();
+      if(cEst > -1) existente.estoque = num(l[cEst]);
+      existente.atualizadoEm = agora();
+      atualizados++;
+    } else {
+      produtos().push({id:uid('prd'), ft:ft, nome:nome, ean:ean, unidade:(cUn > -1 && l[cUn]) ? String(l[cUn]).trim() : 'un',
+        estoque:cEst > -1 ? num(l[cEst]) : 0, atualizadoEm:agora()});
+      novos++;
+    }
+  });
+  salvar(); renderProdutos();
+  toast(novos + ' novo(s) e ' + atualizados + ' atualizado(s) de ' + (linhas.length - 1) + ' linha(s).', 'ok', '📥 Catálogo importado');
+}
+
+/* ---------------- telas ---------------- */
+function irPara(nome){
+  if(nome !== 'conferir' && APP.rodando) pararCamera(true);
+  $$('.tela').forEach(s => s.classList.toggle('ativa', s.id === 'tela-' + nome));
+  $$('#abas button').forEach(b => b.setAttribute('aria-current', String(b.dataset.tela === nome)));
+  DADOS.prefs.ultimaAba = nome; salvar();
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(nome === 'requisicao') renderRequisicao();
+  if(nome === 'produtos') renderProdutos();
+  if(nome === 'historico') renderHistorico();
+}
+
+/* ---------------- render: conferir ---------------- */
+function renderProduto(){
+  const box = $('#produtoBox');
+  const p = APP.produtoId ? produto(APP.produtoId) : null;
+  if(!p){
+    $('#cartaoProduto').style.display = 'none';
+    if(APP.codigoDesconhecido){
+      $('#cartaoProduto').style.display = '';
+      $('#tagVia').textContent = 'não encontrado';
+      box.innerHTML = '<p class="dica">O código <b class="mono">' + esc(APP.codigoDesconhecido) + '</b> não está no catálogo do aparelho.</p>' +
+        '<div class="linha-btn"><button class="btn fantasma" id="btnIrCadastrar" type="button"><span class="ic">✚</span> Cadastrar produto</button>' +
+        '<button class="btn fantasma" id="btnIrImportar" type="button"><span class="ic">📥</span> Importar CSV</button></div>';
+      const a = $('#btnIrCadastrar'); if(a) a.addEventListener('click', () => irPara('produtos'));
+      const b = $('#btnIrImportar'); if(b) b.addEventListener('click', () => irPara('produtos'));
+    }
+    return;
+  }
+  $('#cartaoProduto').style.display = '';
+  $('#tagVia').textContent = APP.ultimoCodigo ? 'lido agora' : 'selecionado';
+  const est = Number(p.estoque) || 0;
+  const classe = est <= 0 ? 'erro' : (est < (Number(p.minimo) || 0) ? 'alerta' : 'ok');
+  box.innerHTML =
+    '<div class="produto-topo"><div class="produto-foto">📦</div><div style="flex:1;min-width:0">' +
+      '<h3>' + esc(p.nome) + '</h3>' +
+      '<div><span class="tag mono">' + esc(p.ft) + '</span> ' + (p.ean ? '<span class="tag mono">EAN ' + esc(p.ean) + '</span>' : '') + '</div>' +
+      '<div style="margin-top:6px"><span class="tag ' + classe + '">' + (est > 0 ? 'estoque ' + q(est) + ' ' + esc(p.unidade || 'un') : 'sem estoque') + '</span></div>' +
+    '</div></div>' +
+    '<label class="campo">Quantidade da operação <input id="qtdOp" type="number" inputmode="decimal" step="any" min="0" value="' + q(APP.qtd) + '"></label>' +
+    '<div class="linha-btn tres">' +
+      '<button class="btn ok" id="btnEntrada" type="button"><span class="ic">▲</span> Entrada</button>' +
+      '<button class="btn perigo" id="btnSaida" type="button"><span class="ic">▼</span> Saída</button>' +
+      '<button class="btn fantasma" id="btnContagem" type="button"><span class="ic">🧮</span> Contagem</button>' +
+    '</div>' +
+    '<div class="linha-btn"><button class="btn" id="btnReqItem" type="button"><span class="ic">📱</span> Adicionar à requisição</button>' +
+    '<button class="btn fantasma" id="btnEditarProd" type="button"><span class="ic">✏️</span> Editar cadastro</button></div>' +
+    '<p class="dica">Movimentações feitas aqui ficam no aparelho. Para o estoque oficial, envie uma <b>requisição</b> — o sistema do computador lê o QR e dá a baixa/entrada.</p>';
+
+  $('#qtdOp').addEventListener('input', e => { APP.qtd = Math.max(0.001, num(e.target.value) || 1); });
+  const mov = (tipo, fn) => { const b = $('#' + tipo); if(b) b.addEventListener('click', fn); };
+  mov('btnEntrada', () => {
+    const r = movimentar(p.id, 'Entrada', APP.qtd, 'Entrada pelo app (aparelho)', 'App');
+    if(!r.ok){ toast(r.msg, 'erro'); return; }
+    bipe('ok'); vibrar(60); salvar(); toast('+' + q(APP.qtd) + ' ' + (p.unidade || 'un') + ' → agora ' + q(r.depois), 'ok', '▲ Entrada'); renderProduto(); renderHistorico();
+  });
+  mov('btnSaida', () => {
+    const r = movimentar(p.id, 'Saída', APP.qtd, 'Saída pelo app (aparelho)', 'App');
+    if(!r.ok){ bipe('erro'); toast(r.msg + (r.falta ? ' Faltam ' + q(r.falta) + '.' : ''), 'erro', '▼ Saída'); return; }
+    bipe('ok'); vibrar(60); salvar(); toast('−' + q(APP.qtd) + ' ' + (p.unidade || 'un') + ' → agora ' + q(r.depois), 'ok', '▼ Saída'); renderProduto(); renderHistorico();
+  });
+  mov('btnContagem', () => {
+    const total = APP.qtd;
+    const r = ajustar(p.id, total, 'Contagem pelo app');
+    if(!r.ok){ toast(r.msg, 'erro'); return; }
+    bipe('ok'); salvar();
+    toast('Estoque contado: ' + q(total) + ' ' + (p.unidade || 'un') + ' (diferença ' + (r.diff >= 0 ? '+' : '') + q(r.diff) + ').', 'ok', '🧮 Contagem');
+    renderProduto(); renderHistorico();
+  });
+  mov('btnReqItem', () => {
+    const rasc = lerRascunho();
+    rasc.itens.push({ft:p.ft, ean:p.ean || '', nome:p.nome, unidade:p.unidade || 'un', qtd:APP.qtd, cadastrado:true});
+    salvar(); renderRequisicao(); irPara('requisicao');
+    toast(p.nome + ' · ' + q(APP.qtd) + ' ' + (p.unidade || 'un') + ' na requisição.', 'ok', '📱 Requisição');
+  });
+  mov('btnEditarProd', () => { preencherProduto(p); irPara('produtos'); });
+}
+function renderLeituras(){
+  const box = $('#leiturasBox');
+  if(!DADOS.leituras.length){ box.innerHTML = '<p class="vazio">Nenhuma leitura ainda. Aponte a câmera para o QR Code ou o EAN do produto.</p>'; return; }
+  box.innerHTML = '<ul class="lista">' + DADOS.leituras.map(l =>
+    '<li><span class="produto-foto" style="width:38px;height:38px;font-size:17px">' + (l.ok ? '📦' : '❓') + '</span>' +
+    '<span class="principal"><b>' + esc(l.ok ? l.nome : l.codigo) + '</b><small class="mono">' + esc(l.codigo) + ' · ' + esc(l.via) + ' · ' + esc(dataHora(l.em)) + '</small></span>' +
+    (l.ok ? '<span class="tag ok">ok</span>' : '<span class="tag erro">novo</span>') + '</li>').join('') + '</ul>';
+}
+
+/* ---------------- render: requisição ---------------- */
+function renderRequisicao(){
+  const rasc = lerRascunho();
+  $('#reqUsuario').value = rasc.usuario || '';
+  $('#reqTipo').value = rasc.tipo || 'SAIDA';
+  $('#reqObs').value = rasc.obs || '';
+  $('#tagReq').textContent = rasc.itens.length ? rasc.itens.length + ' item(ns)' : 'vazia';
+  const box = $('#reqItensBox');
+  if(!rasc.itens.length){ box.innerHTML = '<p class="vazio">Nenhum item. Bipe o código do produto ou adicione digitando o FT/Código.</p>'; }
+  else{
+    box.innerHTML = '<ul class="lista">' + rasc.itens.map((i, idx) =>
+      '<li><span class="principal"><b>' + esc(i.nome || i.ft) + '</b><small class="mono">' + esc(i.ft) + (i.cadastrado ? '' : ' · sem cadastro') + '</small></span>' +
+      '<input type="number" class="mono" data-item="' + idx + '" step="any" min="0" value="' + q(i.qtd) + '" style="width:88px;text-align:right">' +
+      '<button class="btn mini fantasma" data-remover="' + idx + '" type="button" aria-label="Remover">✕</button></li>').join('') + '</ul>' +
+      '<div class="linha-btn"><button class="btn fantasma" id="btnReqLimpar" type="button"><span class="ic">🧹</span> Limpar itens</button>' +
+      '<span class="btn fantasma" style="cursor:default"><span class="ic">Σ</span> ' + q(rasc.itens.reduce((a, i) => a + i.qtd, 0)) + ' no total</span></div>';
+    $$('#reqItensBox input[data-item]').forEach(inp => inp.addEventListener('change', e => {
+      rasc.itens[Number(e.target.dataset.item)].qtd = Math.max(0.001, num(e.target.value) || 1); salvar(); renderRequisicao();
+    }));
+    $$('#reqItensBox button[data-remover]').forEach(b => b.addEventListener('click', () => {
+      rasc.itens.splice(Number(b.dataset.remover), 1); salvar(); renderRequisicao();
+    }));
+    const l = $('#btnReqLimpar'); if(l) l.addEventListener('click', () => { rasc.itens = []; salvar(); renderRequisicao(); toast('Itens removidos.', 'ok'); });
+  }
+  const salv = $('#reqSalvasBox');
+  if(!DADOS.requisicoes.length){ salv.innerHTML = '<p class="vazio">Nenhuma requisição salva ou recebida.</p>'; }
+  else{
+    salv.innerHTML = '<ul class="lista">' + DADOS.requisicoes.slice(0, 12).map((r, idx) =>
+      '<li><span class="produto-foto" style="width:38px;height:38px;font-size:17px">' + (r.recebida || r.bruto && r.origem === 'recebida' ? '📥' : '📤') + '</span>' +
+      '<span class="principal"><b>' + esc(r.numero) + ' · ' + esc(r.usuario) + '</b><small>' + r.itens.length + ' item(ns) · ' + esc(dataHora(r.em)) + '</small></span>' +
+      '<button class="btn mini fantasma" data-qr="' + idx + '" type="button">QR</button>' +
+      '<button class="btn mini fantasma" data-aba="' + idx + '" type="button">Abrir</button></li>').join('') + '</ul>';
+    $$('#reqSalvasBox button[data-qr]').forEach(b => b.addEventListener('click', () => {
+      const r = DADOS.requisicoes[Number(b.dataset.qr)];
+      $('#qrArea').innerHTML = qrSvg(r.bruto, 5);
+      $('#payloadCaixa').style.display = ''; $('#payloadCaixa').textContent = r.bruto;
+      toast('QR da requisição ' + r.numero + ' gerado.', 'ok');
+      $('#qrArea').scrollIntoView({behavior:'smooth', block:'center'});
+    }));
+    $$('#reqSalvasBox button[data-aba]').forEach(b => b.addEventListener('click', () => {
+      const r = DADOS.requisicoes[Number(b.dataset.aba)];
+      DADOS.rascunhoReq = {usuario:r.usuario, tipo:r.tipo, obs:r.obs || '', itens:r.itens.map(i => Object.assign({cadastrado:true}, i))};
+      salvar(); renderRequisicao(); toast('Requisição ' + r.numero + ' carregada no rascunho.', 'ok');
+    }));
+  }
+  const temItens = rasc.itens.length > 0;
+  $('#btnReqGerar').disabled = !temItens;
+}
+
+/* ---------------- render: produtos ---------------- */
+function renderProdutos(){
+  $('#tagTotal').textContent = produtos().length + ' produto(s)';
+  const termo = ($('#buscaProduto').value || '').trim().toLowerCase();
+  const lista = produtos().filter(p => !termo || [p.nome, p.ft, p.ean].join(' ').toLowerCase().indexOf(termo) > -1)
+    .sort((a, b) => String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+  const box = $('#listaProdutosBox');
+  if(!produtos().length){
+    box.innerHTML = '<p class="vazio">Catálogo vazio. Importe o CSV do sistema (aba Produtos → botão “CSV”) ou cadastre o primeiro produto aqui embaixo.</p>';
+    return;
+  }
+  if(!lista.length){ box.innerHTML = '<p class="vazio">Nenhum produto com “' + esc(termo) + '”.</p>'; return; }
+  box.innerHTML = '<ul class="lista">' + lista.slice(0, 120).map(p =>
+    '<li><span class="produto-foto" style="width:38px;height:38px;font-size:17px">📦</span>' +
+    '<span class="principal"><b>' + esc(p.nome) + '</b><small class="mono">' + esc(p.ft) + (p.ean ? ' · ' + esc(p.ean) : '') + '</small></span>' +
+    '<span class="tag ' + ((Number(p.estoque) || 0) > 0 ? 'ok' : 'erro') + '">' + q(p.estoque) + ' ' + esc(p.unidade || 'un') + '</span>' +
+    '<button class="btn mini fantasma" data-editar="' + esc(p.id) + '" type="button">✏️</button></li>').join('') + '</ul>' +
+    (lista.length > 120 ? '<p class="dica">Mostrando 120 de ' + lista.length + '. Use a busca para achar os outros.</p>' : '');
+  $$('#listaProdutosBox button[data-editar]').forEach(b => b.addEventListener('click', () => {
+    const p = produto(b.dataset.editar); if(p){ preencherProduto(p); window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'}); }
+  }));
+}
+function preencherProduto(p){
+  APP.editando = p.id;
+  $('#pFT').value = p.ft || ''; $('#pEan').value = p.ean || ''; $('#pNome').value = p.nome || '';
+  $('#pUnidade').value = p.unidade || 'un'; $('#pEstoque').value = p.estoque || 0;
+}
+function salvarProduto(){
+  const ft = $('#pFT').value.trim() || ($('#pEan').value.trim() ? $('#pEan').value.trim() : '');
+  const nome = $('#pNome').value.trim();
+  const ean = digitos($('#pEan').value);
+  if(!nome){ toast('Informe o nome do produto.', 'alerta'); return; }
+  if(!ft){ toast('Informe o FT/Código ou o código de barras.', 'alerta'); return; }
+  const duplicado = produtos().find(p => p.ft.toLowerCase() === ft.toLowerCase() && p.id !== APP.editando);
+  if(duplicado){ toast('Já existe um produto com o FT ' + ft + '.', 'erro'); return; }
+  const estoque = num($('#pEstoque').value);
+  if(APP.editando && produto(APP.editando)){
+    const p = produto(APP.editando);
+    const antes = Number(p.estoque) || 0;
+    Object.assign(p, {ft:ft, nome:nome, ean:ean, unidade:$('#pUnidade').value.trim() || 'un', estoque:estoque, atualizadoEm:agora()});
+    if(Math.abs(estoque - antes) > 1e-9){
+      DADOS.movimentacoes.unshift({id:uid('mov'), produtoId:p.id, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo:'Ajuste',
+        quantidade:Math.abs(estoque - antes), antes:antes, depois:estoque, obs:'Ajuste no cadastro pelo app', origem:'Ajuste', em:agora()});
+    }
+    toast('Produto atualizado.', 'ok');
+  } else {
+    const p = {id:uid('prd'), ft:ft, nome:nome, ean:ean, unidade:$('#pUnidade').value.trim() || 'un', estoque:estoque, atualizadoEm:agora()};
+    produtos().push(p);
+    if(estoque > 0) DADOS.movimentacoes.unshift({id:uid('mov'), produtoId:p.id, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo:'Entrada',
+      quantidade:estoque, antes:0, depois:estoque, obs:'Estoque inicial informado no app', origem:'Cadastro', em:agora()});
+    APP.produtoId = p.id;
+    toast('Produto cadastrado no aparelho.', 'ok');
+  }
+  APP.editando = null;
+  $('#pFT').value = ''; $('#pEan').value = ''; $('#pNome').value = ''; $('#pEstoque').value = '0';
+  salvar(); renderProdutos(); renderProduto(); renderHistorico();
+}
+
+/* ---------------- render: histórico ---------------- */
+function renderHistorico(){
+  const movs = DADOS.movimentacoes;
+  $('#tagMov').textContent = movs.length;
+  const entra = movs.filter(m => m.tipo === 'Entrada').reduce((a, m) => a + m.quantidade, 0);
+  const sai = movs.filter(m => m.tipo === 'Saída').reduce((a, m) => a + m.quantidade, 0);
+  $('#resumoBox').innerHTML =
+    '<div class="cx"><span>Produtos</span><b>' + produtos().length + '</b></div>' +
+    '<div class="cx"><span>Movimentações</span><b>' + movs.length + '</b></div>' +
+    '<div class="cx"><span>Entradas</span><b>' + q(entra) + '</b></div>' +
+    '<div class="cx"><span>Saídas</span><b>' + q(sai) + '</b></div>';
+  const box = $('#listaMovBox');
+  if(!movs.length){ box.innerHTML = '<p class="vazio">Nenhuma movimentação registrada no aparelho.</p>'; return; }
+  box.innerHTML = '<ul class="lista">' + movs.slice(0, 90).map(m =>
+    '<li><span class="produto-foto" style="width:38px;height:38px;font-size:17px">' + (m.tipo === 'Entrada' ? '▲' : (m.tipo === 'Saída' ? '▼' : '🧮')) + '</span>' +
+    '<span class="principal"><b>' + esc(m.nome) + '</b><small>' + esc(m.tipo) + ' · ' + q(m.quantidade) + ' ' + esc(m.unidade || 'un') + ' · ' + esc(m.origem || '') + ' · ' + esc(dataHora(m.em)) + '</small></span>' +
+    '<span class="tag">' + q(m.depois) + '</span></li>').join('') + '</ul>';
+  $('#btnExpMov').disabled = !movs.length;
+}
+
+/* ---------------- eventos ---------------- */
+function eventos(){
+  $$('#abas button').forEach(b => b.addEventListener('click', () => {
+    if(b.dataset.tela === 'requisicao' || b.dataset.tela === 'produtos' || b.dataset.tela === 'historico') irPara(b.dataset.tela);
+    else irPara('conferir');
+  }));
+
+  /* conferir */
+  $('#btnLer').addEventListener('click', () => { APP.rodando ? pararCamera() : iniciarCamera(); });
+  $('#btnParar').addEventListener('click', () => pararCamera());
+  $('#btnFoto').addEventListener('click', () => $('#arquivo').click());
+  $('#arquivo').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if(f) lerFoto(f); e.target.value = ''; });
+  $('#btnLanterna').addEventListener('click', alternarLanterna);
+  $('#btnManual').addEventListener('click', () => {
+    const v = $('#manual').value.trim();
+    if(!v){ toast('Digite o código do produto.', 'alerta'); return; }
+    registrarLeitura(v, 'digitado'); $('#manual').value = '';
+  });
+  $('#manual').addEventListener('keydown', e => { if(e.key === 'Enter') $('#btnManual').click(); });
+  $('#btnLimparLeituras').addEventListener('click', () => { DADOS.leituras = []; salvar(); renderLeituras(); });
+
+  /* requisição */
+  $('#btnReqAdd').addEventListener('click', () => {
+    const v = $('#reqCodigo').value.trim();
+    if(!v){ toast('Informe o código do produto.', 'alerta'); return; }
+    addItemReq(v, APP.qtd); $('#reqCodigo').value = '';
+  });
+  $('#reqCodigo').addEventListener('keydown', e => { if(e.key === 'Enter') $('#btnReqAdd').click(); });
+  $('#btnReqLer').addEventListener('click', () => { irPara('conferir'); toast('Bipe o produto e toque em “Adicionar à requisição”.', 'info', '📷 Ler produto'); iniciarCamera(); });
+  $('#reqUsuario').addEventListener('change', e => { lerRascunho().usuario = e.target.value.trim(); DADOS.prefs.usuario = e.target.value.trim(); salvar(); });
+  $('#reqTipo').addEventListener('change', e => { lerRascunho().tipo = e.target.value; DADOS.prefs.tipo = e.target.value; salvar(); });
+  $('#reqObs').addEventListener('change', e => { lerRascunho().obs = e.target.value.trim(); salvar(); });
+  $('#btnReqGerar').addEventListener('click', gerarQrReq);
+  $('#btnReqCopiar').addEventListener('click', () => {
+    const t = APP.ultimaReq || payloadReq();
+    navigator.clipboard.writeText(t).then(() => toast('Texto da requisição copiado.', 'ok'), () => toast(t, 'info'));
+  });
+  $('#btnReqCompartilhar').addEventListener('click', () => compartilhar(APP.ultimaReq || payloadReq(), 'Requisição Stoki SDY'));
+  $('#btnReqSalvar').addEventListener('click', salvarRequisicao);
+
+  /* produtos */
+  $('#buscaProduto').addEventListener('input', renderProdutos);
+  $('#btnImportar').addEventListener('click', () => $('#arquivoCsv').click());
+  $('#arquivoCsv').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const leitor = new FileReader();
+    leitor.onload = () => { try{ importarCsvProdutos(leitor.result); }catch(err){ toast('Não consegui ler o CSV.', 'erro'); } };
+    leitor.readAsText(f, 'utf-8');
+    e.target.value = '';
+  });
+  $('#btnExportar').addEventListener('click', () => {
+    if(!produtos().length){ toast('Catálogo vazio.', 'alerta'); return; }
+    const linhas = [['FT/Código','Nome','Unidade','Estoque atual','Código de barras/EAN']].concat(
+      produtos().map(p => [p.ft, p.nome, p.unidade || 'un', String(p.estoque).replace('.', ','), p.ean || '']));
+    baixar('produtos-aparelho.csv', csv(linhas), 'text/csv');
+  });
+  $('#btnSalvarProduto').addEventListener('click', salvarProduto);
+  $('#btnCancelarProduto').addEventListener('click', () => {
+    APP.editando = null; ['pFT','pEan','pNome'].forEach(i => $('#' + i).value = ''); $('#pUnidade').value = 'un'; $('#pEstoque').value = '0';
+  });
+
+  /* histórico */
+  $('#btnExpMov').addEventListener('click', () => {
+    if(!DADOS.movimentacoes.length){ toast('Nada para exportar.', 'alerta'); return; }
+    const linhas = [['Data','Hora','FT/Código','Produto','Unidade','Tipo','Quantidade','Antes','Depois','Origem','Observação']].concat(
+      DADOS.movimentacoes.map(m => [dataHora(m.em).split(' ')[0], dataHora(m.em).split(' ')[1], m.ft, m.nome, m.unidade || 'un', m.tipo,
+        String(m.quantidade).replace('.', ','), String(m.antes).replace('.', ','), String(m.depois).replace('.', ','), m.origem || '', m.obs || '']));
+    baixar('movimentacoes-aparelho.csv', csv(linhas), 'text/csv');
+  });
+  $('#btnBackup').addEventListener('click', () => baixar('backup-stoki-sdy-app.json', JSON.stringify(DADOS, null, 2), 'application/json'));
+  $('#btnZerar').addEventListener('click', () => {
+    if(!DADOS.movimentacoes.length){ toast('Nada para zerar.', 'alerta'); return; }
+    if(!confirm('Zerar as ' + DADOS.movimentacoes.length + ' movimentações do aparelho? O catálogo é mantido.')) return;
+    DADOS.movimentacoes = []; salvar(); renderHistorico(); toast('Movimentações zeradas.', 'ok');
+  });
+
+  /* instalação (PWA) */
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); APP.instalar = e; $('#btnInstalar').style.display = '';
+  });
+  $('#btnInstalar').addEventListener('click', async () => {
+    if(!APP.instalar) return;
+    APP.instalar.prompt();
+    try{ await APP.instalar.userChoice; }catch(e){}
+    $('#btnInstalar').style.display = 'none';
+  });
+  window.addEventListener('appinstalled', () => { toast('App instalado na tela inicial.', 'ok'); $('#btnInstalar').style.display = 'none'; });
+
+  document.addEventListener('visibilitychange', () => { if(document.hidden && APP.rodando) pararCamera(true); });
+}
+
+/* ---------------- início ---------------- */
+function iniciarApp(){
+  carregar();
+  eventos();
+  renderProduto(); renderLeituras(); renderRequisicao(); renderProdutos(); renderHistorico();
+  const sub = $('#subTopo');
+  if(sub) sub.textContent = 'Conferência por QR Code / EAN · funciona sem internet · ' + VERSAO_APP;
+  irPara(DADOS.prefs.ultimaAba || 'conferir');
+  if(typeof Html5Qrcode !== 'function' || typeof qrcode !== 'function'){
+    toast('Alguma biblioteca de QR/código de barras não carregou — o app continua funcionando com digitação.', 'alerta', 'Aviso');
+  }
+  /* service worker apenas quando aberto como site (dentro do app Android não é necessário) */
+  if('serviceWorker' in navigator && location.protocol === 'https:' && !/^localhost$|^127\./.test(location.hostname)){
+    navigator.serviceWorker.register('sw.js', {updateViaCache:'none'})
+      .then(reg => { if(reg && reg.update) reg.update().catch(() => {}); })
+      .catch(() => {});
+  }
+  if(window.Capacitor) document.documentElement.classList.add('capacitor');
+}
+document.addEventListener('DOMContentLoaded', iniciarApp);
+window.__app = {acharProduto, registrarLeitura, movimentar, ajustar, payloadReq, qrSvg, addItemReq, salvarProduto, importarCsvProdutos, parseCsv, irPara, iniciarApp, iniciarCamera, pararCamera, lerFoto, formatosLeitura, formatosNativos, DADOS:() => DADOS, APP, semAcento};
+</script>
+</body>
+</html>

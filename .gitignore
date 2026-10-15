@@ -1,2 +1,5 @@
 # SQL files locais podem conter credenciais de instalação; nunca versionar.
 *.local.sql
+
+# dependências de desenvolvimento dos testes (não versionar)
+node_modules/

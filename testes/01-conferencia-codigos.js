@@ -278,6 +278,49 @@ w.addEventListener('load', async () => {
     $('#btnCodSaida').click();
     testar('saída maior que o estoque é bloqueada', w.eval('state.movimentacoes.length') === movsAntes && w.eval('state.produtos[0].estoque') === est0, w.eval('state.produtos[0].estoque'));
     digitarQtd(1);
+    /* ---------- formatos de leitura e recuo do leitor nativo ---------- */
+    const enumD = w.Html5QrcodeSupportedFormats;
+    const formatosD = w.eval('codFormatos()');
+    testar('formatos do sistema são os números do enum', Array.isArray(formatosD) && formatosD.length > 5 &&
+      formatosD.every(x => typeof x === 'number') && formatosD.indexOf(enumD.EAN_13) > -1, JSON.stringify(formatosD));
+    testar('sem BarcodeDetector o sistema não pede o leitor nativo', (await w.eval('codFormatosNativos()')) === null);
+    w.BarcodeDetector = function(){};
+    w.BarcodeDetector.getSupportedFormats = () => Promise.resolve(['qr_code','ean_13','ean_8','upc_a','itf']);
+    const nativosD = await w.eval('codFormatosNativos()');
+    testar('só os formatos aceitos pelo navegador', Array.isArray(nativosD) && nativosD.length === 5 &&
+      nativosD.indexOf(enumD.DATA_MATRIX) === -1 && nativosD.indexOf(enumD.EAN_8) > -1, JSON.stringify(nativosD));
+    w.BarcodeDetector.getSupportedFormats = () => Promise.resolve([]);
+    testar('lista vazia cai para o leitor em JavaScript', (await w.eval('codFormatosNativos()')) === null);
+
+    /* erro real do Android/Chrome: o leitor nativo pode ser recusado na construção */
+    await w.codPararCamera(true);
+    w.BarcodeDetector.getSupportedFormats = () => Promise.resolve(['qr_code','ean_13']);
+    const tentativas = [];
+    w.Html5Qrcode = function(id, cfg){
+      tentativas.push(cfg);
+      const nativo = !!(cfg && (cfg.useBarCodeDetectorIfSupported || (cfg.experimentalFeatures || {}).useBarCodeDetectorIfSupported));
+      const f = cfg && cfg.formatsToSupport;
+      if(nativo){
+        if(!f || !f.length || f.some(x => typeof x !== 'number')) throw new TypeError("Failed to construct 'BarcodeDetector': Hint option provided, but is empty.");
+        throw new TypeError("Failed to construct 'BarcodeDetector': Unsupported format.");
+      }
+      this.opts = cfg;
+      this.start = () => Promise.resolve();
+      this.stop = () => Promise.resolve();
+      this.clear = () => {};
+      this.getRunningTrackCameraCapabilities = () => null;
+    };
+    w.Html5Qrcode.getCameras = () => Promise.resolve([{id:'cam1', label:'Camera traseira'}]);
+    w.eval('COD.scanner = null; COD.cameras = [];');
+    await w.codIniciarCamera();
+    testar('câmera liga mesmo com o leitor nativo recusando', w.eval('COD.rodando') === true && tentativas.length === 2, 'tentativas=' + tentativas.length);
+    testar('2ª tentativa vai sem o leitor nativo', tentativas[1] && tentativas[1].useBarCodeDetectorIfSupported !== true);
+    testar('formatos enviados são números nas duas tentativas', tentativas.every(c => Array.isArray(c.formatsToSupport) && c.formatsToSupport.every(x => typeof x === 'number')));
+    testar('sem aviso de erro quando o recuo funciona', w.eval("$('#codLeitorAviso').textContent") === '', w.eval("$('#codLeitorAviso').textContent"));
+    w.eval("$('#codLeitorAviso').textContent = ''");
+    await w.codPararCamera(true);
+    delete w.BarcodeDetector;
+
     testar('movimentações rápidas com origem Leitura', w.eval('state.movimentacoes[0].origem') === 'Leitura', w.eval('state.movimentacoes[0].origem'));
 
     /* ---------- requisição enviada pelo app Android ---------- */

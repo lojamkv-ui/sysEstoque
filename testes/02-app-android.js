@@ -185,6 +185,68 @@ function criarDesktop(){
     testar('CSV de saída tem cabeçalho e linhas', csvProdutos.length === 3 && csvProdutos[0].length === 5, JSON.stringify(csvProdutos[0]));
     testar('backup JSON serializa tudo', JSON.stringify(dados()).length > 500);
 
+    /* ---------- câmera: formatos numéricos e recuo do leitor nativo ---------- */
+    /* Reproduz o erro real do Android: a biblioteca exige os VALORES NUMÉRICOS do enum
+       (passar texto faz o BarcodeDetector recusar com "Hint option provided, but is empty"). */
+    function stubBiblioteca(w, opcoes){
+      const reg = {configs:[], starts:0, nativo:0};
+      w.Html5Qrcode = function(id, cfg){
+        reg.configs.push(cfg);
+        const cfgNativo = !!(cfg && (cfg.useBarCodeDetectorIfSupported || (cfg.experimentalFeatures || {}).useBarCodeDetectorIfSupported));
+        const formatos = cfg && cfg.formatsToSupport;
+        if(cfgNativo){
+          if(!formatos || !formatos.length || formatos.some(f => typeof f !== 'number')){
+            throw new TypeError("Failed to construct 'BarcodeDetector': Hint option provided, but is empty.");
+          }
+          if(opcoes && opcoes.nativoFalha) throw new TypeError("Failed to construct 'BarcodeDetector': Unsupported format.");
+          reg.nativo++;
+        }
+        this.opts = cfg;
+        this.start = (cam, config, ok) => { reg.starts++; this.ok = ok; return Promise.resolve(); };
+        this.stop = () => Promise.resolve();
+        this.clear = () => {};
+        this.getRunningTrackCapabilities = () => ({torch:false});
+      };
+      w.Html5Qrcode.getCameras = () => Promise.resolve([{id:'cam1', label:'Câmera traseira'}, {id:'cam2', label:'Câmera frontal'}]);
+      return reg;
+    }
+    const enumr = w.Html5QrcodeSupportedFormats;
+    testar('enum de formatos da biblioteca disponível no app', !!enumr && typeof enumr.EAN_13 === 'number', enumr && enumr.EAN_13);
+    const semNativo = stubBiblioteca(w);
+    await APP.iniciarCamera();
+    testar('câmera abre mesmo sem BarcodeDetector', APP.APP.rodando === true && semNativo.starts === 1, 'start=' + semNativo.starts);
+    testar('formatos passados são números do enum', Array.isArray(semNativo.configs[0].formatsToSupport) &&
+      semNativo.configs[0].formatsToSupport.every(f => typeof f === 'number') && semNativo.configs[0].formatsToSupport.indexOf(enumr.EAN_13) > -1,
+      JSON.stringify(semNativo.configs[0].formatsToSupport));
+    testar('sem leitor nativo, a biblioteca é criada no modo JavaScript', semNativo.configs[0].useBarCodeDetectorIfSupported !== true);
+    await APP.pararCamera(true);
+
+    w.BarcodeDetector = function(){};
+    w.BarcodeDetector.getSupportedFormats = () => Promise.resolve(['qr_code', 'ean_13', 'ean_8', 'upc_a', 'itf']);
+    const comNativo = stubBiblioteca(w);
+    await APP.iniciarCamera();
+    testar('câmera abre com o leitor nativo do aparelho', APP.APP.rodando === true && comNativo.nativo === 1, 'nativo=' + comNativo.nativo);
+    testar('só os formatos aceitos pelo aparelho são enviados', comNativo.configs[0].formatsToSupport.length === 5 &&
+      comNativo.configs[0].formatsToSupport.indexOf(enumr.EAN_13) > -1 && comNativo.configs[0].formatsToSupport.indexOf(enumr.DATA_MATRIX) === -1,
+      JSON.stringify(comNativo.configs[0].formatsToSupport));
+    testar('leitor nativo é pedido quando o aparelho aceita', comNativo.configs[0].useBarCodeDetectorIfSupported === true);
+    await APP.pararCamera(true);
+
+    w.BarcodeDetector.getSupportedFormats = () => Promise.resolve([]);
+    const listaVazia = stubBiblioteca(w);
+    await APP.iniciarCamera();
+    testar('lista de formatos vazia não derruba a câmera', APP.APP.rodando === true && listaVazia.starts === 1 && listaVazia.nativo === 0, 'nativo=' + listaVazia.nativo);
+    await APP.pararCamera(true);
+
+    w.BarcodeDetector.getSupportedFormats = () => Promise.resolve(['qr_code', 'ean_13']);
+    const recuo = stubBiblioteca(w, {nativoFalha:true});
+    await APP.iniciarCamera();
+    testar('leitor nativo que falha cai para o leitor em JavaScript', APP.APP.rodando === true && recuo.starts === 1 && recuo.configs.length >= 2, 'tentativas=' + recuo.configs.length);
+    testar('2ª tentativa vai sem o leitor nativo', recuo.configs[1].useBarCodeDetectorIfSupported !== true);
+    testar('aviso de erro não aparece quando o recuo funciona', $('#avisoLeitor').style.display === 'none');
+    await APP.pararCamera(true);
+    delete w.BarcodeDetector;
+
     /* navegação */
     APP.irPara('historico');
     testar('aba Histórico ativa', $('#tela-historico').classList.contains('ativa') && $('#abas button[data-tela="historico"]').getAttribute('aria-current') === 'true');

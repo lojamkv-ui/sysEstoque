@@ -90,12 +90,12 @@ lint/tmp/
 *.hprof
 
 # Cordova plugins for Capacitor
-capacitor-cordova-android-plugins
+# (este projeto não usa plugins Cordova, mas a pasta é necessária para o Gradle)
+# capacitor-cordova-android-plugins
 
-# Copied web assets
-app/src/main/assets/public
-
-# Generated Config files
-app/src/main/assets/capacitor.config.json
-app/src/main/assets/capacitor.plugins.json
+# Copiados de mobile/www — versionados de propósito, para o APK compilar
+# sem precisar de npm/node (veja mobile/README-APP.md)
+# app/src/main/assets/public
+# app/src/main/assets/capacitor.config.json
+# app/src/main/assets/capacitor.plugins.json
 app/src/main/res/xml/config.xml

@@ -3831,19 +3831,77 @@ function codLibOk(){ return typeof Html5Qrcode !== 'undefined'; }
 function codAvisoLeitor(txt){
   const el = $('#codLeitorAviso');
   if(!el) return;
-  if(txt){ el.textContent = txt; el.style.display = ''; } else el.style.display = 'none';
+  el.textContent = txt || '';            /* limpa de verdade: o aviso antigo não pode reaparecer */
+  el.style.display = txt ? '' : 'none';
 }
 function codStatus(txt, classe){
   const el = $('#codTagStatus');
   if(el){ el.textContent = txt; el.className = 'tag' + (classe ? ' ' + classe : ''); }
 }
+/* Formatos aceitos pela lista da própria biblioteca (valores numéricos do enum). */
+const COD_FORMATOS_NOMES = ['QR_CODE','EAN_13','EAN_8','UPC_A','UPC_E','CODE_128','CODE_39','CODE_93','ITF','CODABAR','DATA_MATRIX','PDF_417'];
+/* Nome do enum → nome usado pelo leitor nativo (BarcodeDetector) do navegador. */
+const COD_FORMATOS_NATIVOS = {
+  QR_CODE:'qr_code', EAN_13:'ean_13', EAN_8:'ean_8', UPC_A:'upc_a', UPC_E:'upc_e', CODE_128:'code_128',
+  CODE_39:'code_39', CODE_93:'code_93', ITF:'itf', CODABAR:'codabar', DATA_MATRIX:'data_matrix', PDF_417:'pdf417'
+};
 function codFormatos(){
   try{
     const F = window.Html5QrcodeSupportedFormats || {};
-    const nomes = ['QR_CODE','EAN_13','EAN_8','UPC_A','UPC_E','CODE_128','CODE_39','CODE_93','ITF','CODABAR','DATA_MATRIX'];
-    const lista = nomes.map(n => F[n]).filter(v => v !== undefined);
+    const lista = COD_FORMATOS_NOMES.map(n => F[n]).filter(v => typeof v === 'number');
     return lista.length ? lista : null;
   }catch(e){ return null; }
+}
+/* Só os formatos que o leitor nativo do aparelho realmente aceita — no Android a lista é
+   menor que a do navegador do computador, e passar um formato desconhecido derruba a câmera
+   ("Hint option provided, but is empty" / "Unsupported format"). */
+async function codFormatosNativos(){
+  try{
+    if(!window.BarcodeDetector || typeof window.BarcodeDetector.getSupportedFormats !== 'function') return null;
+    const aceitos = (await window.BarcodeDetector.getSupportedFormats()) || [];
+    const F = window.Html5QrcodeSupportedFormats || {};
+    const lista = COD_FORMATOS_NOMES
+      .filter(n => aceitos.indexOf(COD_FORMATOS_NATIVOS[n]) > -1)
+      .map(n => F[n])
+      .filter(v => typeof v === 'number');
+    return lista.length ? lista : null;
+  }catch(e){ return null; }
+}
+/* Cria o leitor: com o decodificador nativo quando o aparelho aceita os formatos,
+   senão com o decodificador em JavaScript (funciona em qualquer navegador). */
+async function codCriarLeitor(id, usarNativo){
+  const nativos = usarNativo ? await codFormatosNativos() : null;
+  const opt = {verbose:false};
+  if(nativos){
+    opt.formatsToSupport = nativos;
+    opt.useBarCodeDetectorIfSupported = true;
+    opt.experimentalFeatures = {useBarCodeDetectorIfSupported:true};
+  } else {
+    const formatos = codFormatos();
+    if(formatos) opt.formatsToSupport = formatos;
+  }
+  return {scanner:new Html5Qrcode(id, opt), nativo:!!nativos};
+}
+async function codLeitorComRecuo(id, acao){
+  /* 1ª tentativa: decodificador nativo (rápido). Se o navegador recusar por qualquer motivo,
+     a 2ª tentativa usa o decodificador em JavaScript — a leitura continua funcionando. */
+  let scanner = null, nativo = true;
+  try{
+    const l = await codCriarLeitor(id, true);
+    scanner = l.scanner; nativo = l.nativo;
+    l.retorno = await acao(scanner, nativo);
+    return l;
+  }catch(e){
+    if(scanner){
+      try{ await scanner.stop(); }catch(_){}
+      try{ scanner.clear(); }catch(_){}
+    }
+    if(!nativo) throw e;   /* já estava no leitor em JavaScript: não há outra tentativa */
+    console.warn('Leitor nativo recusado — seguindo com o leitor em JavaScript.', e);
+    const l2 = await codCriarLeitor(id, false);
+    l2.retorno = await acao(l2.scanner, false);
+    return l2;
+  }
 }
 async function codListarCameras(){
   if(!codLibOk()) return [];
@@ -3886,25 +3944,24 @@ async function codIniciarCamera(){
   $('#codLeitorVazio').style.display = 'none';
   caixa.classList.add('ativo');
   try{
-    if(!COD.scanner){
-      const formatos = codFormatos();
-      const opt = { verbose:false, useBarCodeDetectorIfSupported:true };
-      if(formatos) opt.formatsToSupport = formatos;
-      COD.scanner = new Html5Qrcode('codLeitorVideo', opt);
-    }
     if(!COD.cameras.length) await codListarCameras();
     let cameraId = COD.cameraId;
     if(!cameraId){
       const traseira = COD.cameras.find(c => /back|traseira|rear|environment|trás/i.test(c.label || ''));
       cameraId = (traseira || COD.cameras[COD.cameras.length - 1] || {}).id || '';
     }
-    const config = {
-      fps: 10,
-      aspectRatio: 1.7777778,
-      qrbox: function(w, h){ const m = Math.min(w, h); return {width: Math.round(m * 0.92), height: Math.round(m * 0.62)}; },
-      experimentalFeatures: { useBarCodeDetectorIfSupported: true }
-    };
-    await COD.scanner.start(cameraId ? {deviceId:{exact:cameraId}} : {facingMode:'environment'}, config, codAoLer, () => {});
+    if(!COD.scanner){
+      const leitor = await codLeitorComRecuo('codLeitorVideo', async (scanner, nativo) => {
+        const config = {
+          fps: 10,
+          aspectRatio: 1.7777778,
+          qrbox: function(w, h){ const m = Math.min(w, h); return {width: Math.round(m * 0.92), height: Math.round(m * 0.62)}; },
+          experimentalFeatures: { useBarCodeDetectorIfSupported: !!nativo }
+        };
+        await scanner.start(cameraId ? {deviceId:{exact:cameraId}} : {facingMode:'environment'}, config, codAoLer, () => {});
+      });
+      COD.scanner = leitor.scanner;
+    }
     COD.rodando = true;
     $('#btnCamLigar').style.display = 'none';
     $('#btnCamDesligar').style.display = '';
@@ -3924,6 +3981,9 @@ async function codIniciarCamera(){
       : /NotFound|no camera|devices/i.test(nome + ' ' + (e && e.message))
         ? 'Nenhuma câmera encontrada neste aparelho. Use “Ler de uma foto” ou digite o código.'
         : 'Não foi possível abrir a câmera (' + ((e && (e.message || e.name || e.code)) || 'erro desconhecido') + '). Use “Ler de uma foto” ou digite o código.';
+    try{ if(COD.scanner) COD.scanner.clear(); }catch(_){}
+    COD.scanner = null;   /* permite tentar de novo (o leitor anterior pode ter ficado quebrado) */
+    COD.rodando = false;
     codAvisoLeitor(msg);
     toast(msg, 'alerta', 'Câmera');
     console.warn('Falha ao iniciar a câmera', e);
@@ -3965,13 +4025,14 @@ async function codLerArquivo(arq){
   if(!arq) return;
   if(!codLibOk()){ toast('Biblioteca de leitura não carregada.', 'erro'); return; }
   toast('Lendo a imagem…', 'info', 'QR / código de barras');
-  const temp = new Html5Qrcode('codLeitorVideoLeitura', {verbose:false, useBarCodeDetectorIfSupported:true});
   try{
-    const texto = await temp.scanFile(arq, true);
-    temp.clear();
-    codRegistrarLeitura(texto, 'foto');
+    const leitor = await codLeitorComRecuo('codLeitorVideoLeitura', async (scanner) => {
+      const texto = await scanner.scanFile(arq, true);
+      try{ scanner.clear(); }catch(_){}
+      return texto;
+    });
+    codRegistrarLeitura(leitor.retorno, 'foto');
   }catch(e){
-    try{ temp.clear(); }catch(err){}
     bipe('grave');
     toast('Não foi possível ler o código nesta imagem. Aproxime mais a etiqueta, melhore a luz e tente de novo.', 'erro', 'Código não lido');
   }
