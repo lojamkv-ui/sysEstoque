@@ -1,0 +1,8 @@
+{
+  "appId": "br.com.stokisdy.app",
+  "appName": "Stoki SDY",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": { "allowMixedContent": true },
+  "server": { "androidScheme": "https" }
+}

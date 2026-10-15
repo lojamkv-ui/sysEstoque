@@ -1,0 +1,4 @@
+// A biblioteca @capacitor/android está VENDORIZADA em ./capacitor-android (cópia do pacote npm
+// @capacitor/android 6.2.0), então o projeto compila sem precisar de node_modules/npm.
+include ':capacitor-android'
+project(':capacitor-android').projectDir = new File('./capacitor-android')

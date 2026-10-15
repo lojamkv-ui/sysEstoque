@@ -354,6 +354,97 @@ tr.baixo td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
 .ok-linha{background:var(--ok-bg);border:1px solid var(--ok-line);border-left:4px solid var(--ok);border-radius:8px;
   padding:9px 12px;margin-bottom:7px;font-size:13.5px;color:var(--ok);font-weight:600}
 
+/* ============ CONFERÊNCIA POR QR CODE / EAN ============ */
+.grid.grid-cod-modo{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.linha-botao{display:flex;gap:8px;align-items:stretch}
+.linha-botao input{flex:1;min-width:0}
+.leitor{position:relative;margin-top:14px;border:1px solid var(--line-2);border-radius:var(--radius);overflow:hidden;
+  background:#050a14;min-height:250px;display:grid;place-items:center}
+.leitor video{width:100%!important;height:auto!important;max-height:60vh;display:block;object-fit:cover}
+.leitor canvas,.leitor img{max-width:100%}
+.leitor .leitor-vazio{padding:34px 20px;text-align:center;color:#9fb4d0;font-size:13.5px}
+.leitor .leitor-vazio .ic{font-size:38px;display:block;margin-bottom:8px;opacity:.7}
+.leitor .leitor-vazio b{display:block;color:#e8f0fb;font-size:15px;margin-bottom:4px}
+.leitor .mira{position:absolute;inset:10% 6%;border:3px solid rgba(134,199,255,.85);border-radius:14px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(4,10,20,.42);display:none}
+.leitor.ativo .mira{display:block}
+.leitor .mira::after{content:'';position:absolute;left:0;right:0;top:50%;height:2px;
+  background:linear-gradient(90deg,transparent,#86c7ff,transparent);animation:varre 2.2s ease-in-out infinite}
+@keyframes varre{0%,100%{transform:translateY(-45%)}50%{transform:translateY(45%)}}
+.leitor .aviso{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;background:rgba(4,10,20,.82);color:#e8f0fb;
+  font-size:12.5px;text-align:center}
+@media (prefers-reduced-motion:reduce){ .leitor .mira::after{animation:none} }
+.cod-produto .cod-topo{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.cod-produto .cod-topo h4{font-family:var(--font-display);font-size:clamp(18px,2.4vw,25px);margin:0;letter-spacing:.4px;color:var(--ink)}
+.cod-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-bottom:12px}
+.cod-kpis .cx{border:1px solid var(--line);border-radius:var(--radius);padding:9px 12px;background:var(--surface-2)}
+.cod-kpis .cx span{display:block;font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);font-weight:800}
+.cod-kpis .cx b{font-family:var(--font-display);font-size:19px;letter-spacing:.4px;color:var(--ink)}
+.cod-kpis .cx small{display:block;font-size:11.5px;color:var(--ink-3)}
+.cod-kpis .cx.alerta b{color:var(--bad)}
+.cod-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:12px;border-top:1px dashed var(--line-2)}
+.cod-acoes .qtd{width:96px}
+.cod-qr{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px;line-height:0}
+.cod-qr svg{width:118px;height:118px;display:block}
+.etiquetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:12px}
+.etiqueta{border:1px dashed var(--line-2);border-radius:10px;padding:10px;background:#fff;color:#0b1b33;text-align:center;
+  display:flex;flex-direction:column;gap:6px;align-items:center;break-inside:avoid}
+.etiqueta .et-nome{font-size:12.5px;font-weight:700;line-height:1.25;min-height:32px;display:flex;align-items:center}
+.etiqueta .et-ft{font-family:var(--font-mono);font-size:11.5px;color:#33486a}
+.etiqueta .et-ean{font-family:var(--font-mono);font-size:11px;letter-spacing:.5px}
+.etiqueta svg.et-qr,.etiqueta .et-qr svg{width:112px;height:112px}
+.etiqueta svg.et-barra{width:100%;max-width:170px;height:46px;display:block}
+.etiqueta .et-un{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:#52647f}
+.etiqueta.vazia{justify-content:center;color:var(--ink-3);background:var(--surface-2)}
+@media print{
+  .doc .etiquetas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .doc .etiqueta{border:1px solid #bbb;page-break-inside:avoid}
+}
+.tag.ean{font-family:var(--font-mono);letter-spacing:.6px}
+.tag.eco{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+
+/* ============ RELATÓRIO / DASHBOARD DE MOVIMENTAÇÃO ============ */
+input[type=time]{font-family:var(--font-body);font-size:14px;color:var(--ink);background:var(--surface-2);
+  border:1px solid var(--line-2);border-radius:8px;padding:9px 11px;width:100%;transition:border-color .16s,box-shadow .16s,background .16s}
+input[type=time]:focus{outline:none;border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.filtros-rel .grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.filtros-rel .atalhos{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line-2)}
+.filtros-rel .atalhos .rot-atalhos{font-size:11.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);margin-right:2px}
+.rel-dash{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));margin-bottom:16px}
+.rel-dash .cartao{margin-bottom:0;display:flex;flex-direction:column}
+.rel-dash .cartao .corpo{flex:1;display:flex;flex-direction:column;gap:10px}
+.graf{position:relative;width:100%}
+.graf svg{display:block;width:100%;height:auto;max-height:320px;overflow:visible}
+.graf .g-leg{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--ink-3);font-weight:800;letter-spacing:.7px;text-transform:uppercase;margin-bottom:4px}
+.graf .g-leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.graf .g-vazio{padding:30px 16px;text-align:center;color:var(--ink-3);font-size:13px}
+.graf text{font-family:var(--font-mono);font-size:9.5px;fill:var(--ink-3)}
+.graf .g-tit{font-family:var(--font-display);font-size:11px;letter-spacing:.6px;fill:var(--ink-2);font-weight:700}
+.rel-lista{display:flex;flex-direction:column;gap:7px}
+.rel-lista .linha-rel{display:grid;grid-template-columns:minmax(118px,1.5fr) minmax(70px,1fr) auto;gap:10px;align-items:center;font-size:13px;color:var(--ink-2)}
+.rel-lista .linha-rel b{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rel-barra{position:relative;height:9px;border-radius:999px;background:var(--surface-3);overflow:hidden}
+.rel-barra span{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--accent);min-width:2px}
+.rel-barra span.a{background:var(--ok)} .rel-barra span.b{background:var(--warn)} .rel-barra span.c{background:var(--info)}
+.curva-resumo{display:flex;gap:10px;flex-wrap:wrap}
+.curva-resumo .cx{border:1px solid var(--line);border-radius:var(--radius);padding:9px 12px;background:var(--surface-2);min-width:128px;flex:1 1 128px}
+.curva-resumo .cx span{display:block;font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);font-weight:800}
+.curva-resumo .cx b{font-family:var(--font-display);font-size:19px;letter-spacing:.4px;color:var(--ink)}
+.curva-resumo .cx small{display:block;font-size:11.5px;color:var(--ink-3)}
+.tag.classe-a{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.tag.classe-b{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+.tag.classe-c{background:var(--info-bg);border-color:var(--info-line);color:var(--info)}
+.rel-scroll{max-height:320px;overflow:auto;border-bottom:1px solid var(--line)}
+.rel-scroll table tbody tr:last-child td{border-bottom:0}
+#relTabelaMov td.cel-data{white-space:nowrap}
+.rel-periodo-txt{font-size:12px;color:var(--ink-3)}
+@media (max-width:1024px){ .rel-dash{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:760px){
+  .rel-lista .linha-rel{grid-template-columns:minmax(84px,1.2fr) minmax(55px,1fr) auto;font-size:12px;gap:8px}
+  .curva-resumo .cx{min-width:0;flex:1 1 44%}
+  .graf svg{max-height:260px}
+}
+
 /* ============ IMPRESSÃO ============ */
 #printArea{display:none}
 .doc{font-family:var(--font-body);color:#000;padding:24px}
@@ -582,6 +673,7 @@ body:not(.autenticado) .toasts{display:block!important}
       <button type="button" class="btn mini" id="btnRestaurar" title="Carrega um backup .json"><span class="ic" aria-hidden="true">📂</span>Restaurar backup</button>
       <button type="button" class="btn mini" id="btnCsv" title="Exporta os produtos em CSV (;) para o Excel"><span class="ic" aria-hidden="true">📄</span>Exportar produtos (CSV)</button>
       <button type="button" class="btn mini" id="btnXlsx" title="Gera a planilha .xlsx dos produtos de cadastro inicial"><span class="ic" aria-hidden="true">📊</span>Planilha .xlsx</button>
+      <button type="button" class="btn mini" id="btnRelTopo" title="Abre o relatório de movimentação com filtros e download em Excel"><span class="ic" aria-hidden="true">📈</span>Relatório de movimentação</button>
       <button type="button" class="btn mini fantasma" id="btnTema" title="Alternar tema (auto / claro / escuro)"><span class="ic" id="icTema" aria-hidden="true">◐</span><span id="txtTema">Auto</span></button>
       <input type="file" id="arquivoBackup" accept="application/json,.json" class="sr">
     </div>
@@ -601,6 +693,11 @@ body:not(.autenticado) .toasts{display:block!important}
       <button type="button" class="nav-item" id="navCargas" data-tab="cargas" aria-controls="tab-cargas"><span class="ic" aria-hidden="true">🚚</span>Carregamentos<small id="cntCargas">0</small></button>
       <button type="button" class="nav-item" id="navReceber" data-tab="receber" aria-controls="tab-receber"><span class="ic" aria-hidden="true">📥</span>Receber<small id="cntReceb">0</small></button>
       <button type="button" class="nav-item" id="navConferir" data-tab="conferir" aria-controls="tab-conferir"><span class="ic" aria-hidden="true">🔍</span>Conferir carga<small id="cntConf">0</small></button>
+      <button type="button" class="nav-item" id="navCodigos" data-tab="codigos" aria-controls="tab-codigos"><span class="ic" aria-hidden="true">📷</span>Bipar código<small id="cntEan">0</small></button>
+    </div>
+    <div class="nav-grupo" role="group" aria-label="Análise">
+      <div class="rotulo">Análise</div>
+      <button type="button" class="nav-item" id="navRelatorios" data-tab="relatorios" aria-controls="tab-relatorios"><span class="ic" aria-hidden="true">📈</span>Relatórios<small id="cntRel">0</small></button>
     </div>
     <div id="navAdmin" class="nav-grupo nav-admin" role="group" aria-label="Administração" style="display:none">
       <div class="rotulo">Administração</div>
@@ -773,6 +870,7 @@ body:not(.autenticado) .toasts{display:block!important}
             <option value="Ajuste">Somente ajustes</option>
           </select>
           <span class="tag" id="tagMov">0 registros</span>
+          <button type="button" class="btn mini" id="btnIrRelatorio"><span class="ic" aria-hidden="true">📈</span>Relatório completo</button>
         </div>
       </header>
       <div class="tabela-wrap">
@@ -962,6 +1060,259 @@ body:not(.autenticado) .toasts{display:block!important}
       </div>
     </div>
   </section>
+  <!-- ============ ABA 6 — BIPAR CÓDIGO (QR CODE / EAN) ============ -->
+  <section class="painel" id="tab-codigos" aria-labelledby="navCodigos" aria-hidden="true">
+    <div class="titulo-painel">
+      <div>
+        <h2>Conferência por <i>QR Code / EAN</i></h2>
+        <p>Bipe a etiqueta do produto com a câmera — ou digite o código / leia de uma foto — e confira o estoque na hora.</p>
+      </div>
+      <div class="lado">
+        <button type="button" class="btn primario" id="btnCamLigar"><span class="ic" aria-hidden="true">📷</span>Iniciar câmera</button>
+        <button type="button" class="btn" id="btnCamDesligar" style="display:none"><span class="ic" aria-hidden="true">⏹</span>Parar câmera</button>
+        <button type="button" class="btn fantasma" id="btnCodFoto"><span class="ic" aria-hidden="true">🖼️</span>Ler de uma foto</button>
+        <button type="button" class="btn fantasma" id="btnCodEtiquetas"><span class="ic" aria-hidden="true">🏷️</span>Etiquetas dos produtos</button>
+        <input type="file" id="codArquivo" accept="image/*" class="sr">
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">📷</span><h3>Leitor de código</h3>
+        <div class="lado">
+          <select id="codCamera" aria-label="Câmera"><option value="">Câmera traseira (automática)</option></select>
+          <span class="tag" id="codTagStatus">câmera desligada</span>
+        </div>
+      </header>
+      <div class="corpo">
+        <div class="grid grid-cod-modo">
+          <div class="campo">
+            <label for="codModo">Modo da sessão</label>
+            <select id="codModo">
+              <option value="checklist">Checklist — só registra a leitura</option>
+              <option value="contagem">Contagem — soma as quantidades lidas</option>
+              <option value="carga">Conferência de carga — atualiza o romaneio</option>
+              <option value="recebimento">Recebimento — atualiza a NF em andamento</option>
+            </select>
+          </div>
+          <div class="campo" id="wrapCodCarga">
+            <label for="codCarga">Carregamento / NF em andamento</label>
+            <select id="codCarga"></select>
+          </div>
+          <div class="campo">
+            <label for="codQtdLeitura">Quantidade por leitura</label>
+            <input type="number" id="codQtdLeitura" min="1" step="1" value="1">
+            <span class="dica">Cada bipe soma esta quantidade (modo Contagem).</span>
+          </div>
+          <div class="campo">
+            <label for="codManual">Digitar / colar o código</label>
+            <div class="linha-botao">
+              <input type="text" id="codManual" class="mono" placeholder="EAN, FT/Código ou etiqueta STOKI;EAN;FT" autocomplete="off" spellcheck="false">
+              <button type="button" class="btn" id="btnCodManual">Procurar</button>
+            </div>
+          </div>
+        </div>
+        <div class="leitor" id="codLeitorCaixa">
+          <div id="codLeitorVideo"></div>
+          <button type="button" class="btn mini" id="btnCodLuz" aria-pressed="false" style="position:absolute;top:10px;right:10px;z-index:3;display:none"><span class="ic" aria-hidden="true">🔦</span>Lanterna</button>
+          <div id="codLeitorVideoLeitura" class="sr" aria-hidden="true"></div>
+          <div class="mira" aria-hidden="true"></div>
+          <div class="leitor-vazio" id="codLeitorVazio"><span class="ic" aria-hidden="true">📷</span><b>A câmera está desligada</b>Toque em “Iniciar câmera” para bipar o QR Code ou o código de barras.</div>
+          <div class="aviso" id="codLeitorAviso" style="display:none"></div>
+        </div>
+        <p class="dica mt-10">Formatos aceitos: <b>QR Code</b>, <b>EAN-13/EAN-8</b> (código de barras do produto), UPC, CODE-128, CODE-39, ITF e CODABAR. Use “Ler de uma foto” quando a câmera não estiver disponível.</p>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🔎</span><h3>Produto lido</h3>
+        <div class="lado"><span class="tag" id="codTagEco">—</span></div>
+      </header>
+      <div class="corpo" id="codProdutoBox"></div>
+    </div>
+
+    <div class="cartao" id="codReqCartao" style="display:none">
+      <header><span class="ic">📱</span><h3>Requisição recebida do app</h3>
+        <div class="lado"><span class="tag accent" id="codReqTag">—</span>
+          <button type="button" class="btn mini fantasma" id="btnCodReqFechar">Fechar</button></div>
+      </header>
+      <div class="corpo" id="codReqBox"></div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🧾</span><h3>Sessão de conferência</h3>
+        <div class="lado">
+          <span class="tag" id="codTagSessao">nenhuma leitura</span>
+          <button type="button" class="btn mini" id="btnCodAplicar"><span class="ic" aria-hidden="true">✔</span>Aplicar contagem</button>
+          <button type="button" class="btn mini" id="btnCodXlsx"><span class="ic" aria-hidden="true">📊</span>Excel</button>
+          <button type="button" class="btn mini fantasma" id="btnCodLimparSessao">Zerar sessão</button>
+        </div>
+      </header>
+      <div class="corpo" id="codSessaoBox"></div>
+      <div class="tabela-wrap tabela-interna rel-scroll">
+        <table class="tabela tabela-min-820">
+          <thead><tr><th>Hora</th><th>Produto</th><th>FT / Código</th><th>Código lido</th><th class="num">Qtd. lida</th><th class="num">Estoque agora</th><th>Modo</th></tr></thead>
+          <tbody id="codSessaoTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🏷️</span><h3>Etiquetas com QR Code e código de barras</h3>
+        <div class="lado">
+          <select id="codEtiquetaProduto" aria-label="Produto da etiqueta"><option value="">Todos os produtos</option></select>
+          <button type="button" class="btn mini" id="btnCodEtiquetaQr"><span class="ic" aria-hidden="true">🔳</span>Gerar QR do selecionado</button>
+          <button type="button" class="btn mini primario" id="btnCodEtiquetaImprimir"><span class="ic" aria-hidden="true">🖨️</span>Imprimir etiquetas</button>
+        </div>
+      </header>
+      <div class="corpo">
+        <p class="dica">Imprima, cole no produto e bipe com o app: o QR traz o EAN e o FT/Código, então a leitura funciona mesmo se o código de barras estiver danificado.</p>
+        <div class="etiquetas" id="codEtiquetasGrade"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABA 7 — RELATÓRIOS / MOVIMENTAÇÃO ============ -->
+  <section class="painel" id="tab-relatorios" aria-labelledby="navRelatorios" aria-hidden="true">
+    <div class="titulo-painel">
+      <div>
+        <h2>Relatório de <i>movimentação</i></h2>
+        <p>Todas as entradas, saídas e ajustes de estoque — com data e hora, filtros, dashboard e download em Excel.</p>
+      </div>
+      <div class="lado">
+        <button type="button" class="btn primario" id="btnRelXlsx"><span class="ic">📊</span>Baixar Excel (.xlsx)</button>
+        <button type="button" class="btn" id="btnRelCsv"><span class="ic">📄</span>Baixar CSV</button>
+        <button type="button" class="btn fantasma" id="btnRelImprimir"><span class="ic">🖨️</span>Imprimir / PDF</button>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🔎</span><h3>Filtros do relatório</h3>
+        <div class="lado"><span class="tag accent" id="tagRelRecorte">—</span></div>
+      </header>
+      <div class="corpo filtros-rel">
+        <div class="grid">
+          <div class="campo"><label for="rfDe">De (data)</label><input type="date" id="rfDe"></div>
+          <div class="campo"><label for="rfDeHora">Hora inicial</label><input type="time" id="rfDeHora"></div>
+          <div class="campo"><label for="rfAte">Até (data)</label><input type="date" id="rfAte"></div>
+          <div class="campo"><label for="rfAteHora">Hora final</label><input type="time" id="rfAteHora"></div>
+          <div class="campo"><label for="rfProduto">Produto</label><select id="rfProduto"></select></div>
+          <div class="campo"><label for="rfTipo">Tipo de movimentação</label><select id="rfTipo">
+            <option value="">Todos os tipos</option>
+            <option value="Entrada">▲ Somente entradas</option>
+            <option value="Saída">▼ Somente saídas</option>
+            <option value="Ajuste">＝ Somente ajustes</option>
+          </select></div>
+          <div class="campo"><label for="rfOrigem">Origem</label><select id="rfOrigem"></select></div>
+          <div class="campo"><label for="rfOperador">Usuário</label><select id="rfOperador"></select></div>
+          <div class="campo col-2"><label for="rfBusca">Busca livre</label>
+            <input type="search" id="rfBusca" placeholder="🔎 Produto, FT, observação, origem…">
+            <span class="dica">Aceita qualquer trecho do produto, FT, observação, origem ou usuário.</span>
+          </div>
+        </div>
+        <div class="atalhos">
+          <span class="rot-atalhos">Atalhos de período</span>
+          <div class="segmento" id="rfAtalhos" role="group" aria-label="Períodos rápidos">
+            <button type="button" data-dias="0">Hoje</button>
+            <button type="button" data-dias="7">7 dias</button>
+            <button type="button" data-dias="30">30 dias</button>
+            <button type="button" data-dias="mes">Este mês</button>
+            <button type="button" data-dias="ano">Este ano</button>
+            <button type="button" data-dias="tudo" aria-pressed="true">Tudo</button>
+          </div>
+          <button type="button" class="btn mini fantasma" id="btnRelLimpar">Limpar filtros</button>
+          <span class="rel-periodo-txt" id="relPeriodoTxt"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <div class="console">
+        <div class="celula destaque"><span class="rot">Movimentações no recorte</span><span class="val" id="rkMov">0</span><span class="sub" id="rkMovSub">—</span></div>
+        <div class="celula"><span class="rot">Entradas</span><span class="val" id="rkEnt">0</span><span class="sub" id="rkEntSub">—</span></div>
+        <div class="celula"><span class="rot">Saídas</span><span class="val" id="rkSai">0</span><span class="sub" id="rkSaiSub">—</span></div>
+        <div class="celula"><span class="rot">Ajustes</span><span class="val" id="rkAju">0</span><span class="sub" id="rkAjuSub">—</span></div>
+        <div class="celula" id="celulaSaldo"><span class="rot">Saldo líquido</span><span class="val" id="rkSaldo">0</span><span class="sub" id="rkSaldoSub">entradas − saídas</span></div>
+        <div class="celula"><span class="rot">Valor movimentado</span><span class="val val-compacto" id="rkValor">R$ 0,00</span><span class="sub" id="rkValorSub">preço atual × quantidade</span></div>
+      </div>
+    </div>
+
+    <div class="rel-dash">
+      <div class="cartao">
+        <header><span class="ic">📈</span><h3>Movimentações por período</h3>
+          <div class="lado">
+            <select id="relAgrupar" aria-label="Agrupar o gráfico por">
+              <option value="dia">Agrupar por dia</option>
+              <option value="semana">Agrupar por semana</option>
+              <option value="mes">Agrupar por mês</option>
+            </select>
+          </div>
+        </header>
+        <div class="corpo">
+          <div class="graf" id="relGrafPeriodo"></div>
+        </div>
+      </div>
+
+      <div class="cartao">
+        <header><span class="ic">🕒</span><h3>Movimentações por hora do dia</h3>
+          <div class="lado"><span class="tag" id="relTagHora">—</span></div>
+        </header>
+        <div class="corpo">
+          <div class="graf" id="relGrafHora"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">📐</span><h3>Curva do produto (ABC)</h3>
+        <div class="lado">
+          <select id="relCriterio" aria-label="Critério da curva ABC">
+            <option value="valor">Critério: valor movimentado (R$)</option>
+            <option value="qtd">Critério: quantidade movimentada</option>
+            <option value="freq">Critério: nº de movimentações</option>
+          </select>
+          <span class="tag">A ≤ 80% · B ≤ 95% · C 100%</span>
+        </div>
+      </header>
+      <div class="corpo">
+        <div class="curva-resumo" id="relCurvaResumo"></div>
+        <div class="graf" id="relGrafCurva"></div>
+      </div>
+      <div class="tabela-wrap tabela-interna rel-scroll">
+        <table class="tabela tabela-min-860">
+          <thead><tr><th>#</th><th>Classe</th><th>Produto</th><th>FT / Código</th><th class="num">Moviment.</th><th class="num">Qtd. movimentada</th><th class="num">Entradas</th><th class="num">Saídas</th><th class="num">Valor movimentado</th><th class="num">% do total</th><th class="num">% acumulado</th></tr></thead>
+          <tbody id="relTbodyCurva"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">📅</span><h3>Totais por período</h3>
+        <div class="lado"><span class="tag" id="tagRelPeriodos">0 período(s)</span></div>
+      </header>
+      <div class="tabela-wrap tabela-interna rel-scroll">
+        <table class="tabela tabela-min-700">
+          <thead><tr><th>Período</th><th class="num">Movimentações</th><th class="num">Entradas</th><th class="num">Saídas</th><th class="num">Ajustes</th><th class="num">Saldo</th><th class="num">Valor movimentado</th></tr></thead>
+          <tbody id="relTbodyPeriodo"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🕘</span><h3>Todas as movimentações de estoque</h3>
+        <div class="lado">
+          <span class="tag" id="tagRelMov">0 registros</span>
+          <button type="button" class="btn mini" id="btnRelXlsx2"><span class="ic">📊</span>Excel</button>
+        </div>
+      </header>
+      <div class="tabela-wrap">
+        <table class="tabela tabela-min-900">
+          <thead><tr><th>Data</th><th>Hora</th><th>Produto</th><th>Tipo</th><th>Origem</th><th class="num">Qtd.</th><th class="num">Antes</th><th class="num">Depois</th><th class="num">Valor</th><th>Observação</th><th>Usuário</th></tr></thead>
+          <tbody id="relTbodyMov"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ ABA — USUÁRIOS (somente administrador) ============ -->
   <section class="painel" id="tab-usuarios" aria-labelledby="navUsuarios" aria-hidden="true">
     <div class="titulo-painel">
@@ -1064,6 +1415,11 @@ body:not(.autenticado) .toasts{display:block!important}
 <div id="modalRoot"></div>
 <div id="printArea"></div>
 
+<!-- Bibliotecas de leitura de código, vendorizadas no repositório (funcionam offline).
+     html5-qrcode: Apache-2.0 · qrcode-generator: MIT — licenças em assets/ -->
+<script src="assets/html5-qrcode.min.js"></script>
+<script src="assets/qrcode-generator.js"></script>
+
 <script>
 "use strict";
 /* ==================================================================
@@ -1165,9 +1521,9 @@ function carregar(){
 
 /* produtos semente */
 const SEMENTES = [
-  {ft:'2025/0771-CX', nome:'Cx. Biscoito Trigo Popular 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
-  {ft:'2025/0866-CX', nome:'Cx. Biscoito Folhado Maná 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
-  {ft:'2025/0776-CX', nome:'Cx. Biscoito Folhado de Trigo Maná 24x250g', unidade:'cx', minimo:0, estoque:0, preco:3.322, ean:'', medidas:'500 x 335 x 210', estrutura:'CEKR50', pedidoMinimo:6000, qtdInicial:0}
+  {ft:'2025/0771-CX', nome:'Cx. Biscoito Trigo Popular 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'7891234500014', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
+  {ft:'2025/0866-CX', nome:'Cx. Biscoito Folhado Maná 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'7891234500021', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
+  {ft:'2025/0776-CX', nome:'Cx. Biscoito Folhado de Trigo Maná 24x250g', unidade:'cx', minimo:0, estoque:0, preco:3.322, ean:'7891234500038', medidas:'500 x 335 x 210', estrutura:'CEKR50', pedidoMinimo:6000, qtdInicial:0}
 ];
 function semear(){
   let mudou = false;
@@ -1193,11 +1549,19 @@ function produtoUsadoEmCarga(id){ return state.carregamentos.some(c => (c.itens 
 function abaixoMinimo(p){ return (Number(p.estoque) || 0) <= (Number(p.minimo) || 0); }
 
 /* ---------------- movimentação de estoque ---------------- */
+/* Quem está operando o sistema agora (para o relatório de movimentação). */
+function operadorAtual(){
+  try{ if(typeof Auth !== 'undefined' && Auth.perfil && Auth.perfil.nome) return String(Auth.perfil.nome); }catch(e){}
+  return '';
+}
 function registrarMov(m){
-  state.movimentacoes.unshift(Object.assign({id: uid(), data: agora()}, m));
+  const reg = Object.assign({id: uid(), data: agora()}, m);
+  if(!reg.origem) reg.origem = reg.tipo === 'Ajuste' ? 'Ajuste' : 'Manual';
+  if(reg.operador == null || reg.operador === '') reg.operador = operadorAtual();
+  state.movimentacoes.unshift(reg);
   if(state.movimentacoes.length > 3000) state.movimentacoes.length = 3000;
 }
-function movimentar(produtoId, tipo, qtd, obs){
+function movimentar(produtoId, tipo, qtd, obs, origem){
   const p = produto(produtoId);
   if(!p) return {ok:false, msg:'Produto não encontrado.'};
   qtd = Number(qtd) || 0;
@@ -1209,10 +1573,10 @@ function movimentar(produtoId, tipo, qtd, obs){
   else return {ok:false, msg:'Tipo de movimentação inválido.'};
   if(depois < 0) return {ok:false, msg:'O estoque não pode ficar negativo.'};
   p.estoque = depois; p.atualizadoEm = agora();
-  registrarMov({produtoId, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo, quantidade:qtd, antes, depois, obs: obs || ''});
+  registrarMov({produtoId, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo, quantidade:qtd, antes, depois, obs: obs || '', origem: origem || 'Manual'});
   return {ok:true, antes, depois};
 }
-function ajustarEstoque(produtoId, novoTotal, obs){
+function ajustarEstoque(produtoId, novoTotal, obs, origem){
   const p = produto(produtoId);
   if(!p) return {ok:false, msg:'Produto não encontrado.'};
   novoTotal = Number(novoTotal);
@@ -1220,7 +1584,7 @@ function ajustarEstoque(produtoId, novoTotal, obs){
   const antes = Number(p.estoque) || 0;
   const diff = novoTotal - antes;
   p.estoque = novoTotal; p.atualizadoEm = agora();
-  registrarMov({produtoId, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo:'Ajuste', quantidade:Math.abs(diff), antes, depois:novoTotal, obs: obs || ''});
+  registrarMov({produtoId, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo:'Ajuste', quantidade:Math.abs(diff), antes, depois:novoTotal, obs: obs || '', origem: origem || 'Ajuste'});
   return {ok:true, diff};
 }
 
@@ -1370,6 +1734,7 @@ function irPara(tab, opts){
     p.classList.toggle('ativo', ativo);
     p.setAttribute('aria-hidden', String(!ativo));
   });
+  if(tab !== 'codigos' && typeof COD !== 'undefined' && COD.rodando) codPararCamera(true);
   renderTudo();
   if(tab === 'usuarios') carregarUsuarios();
   if($('#navOperacao').classList.contains('aberto')) fecharMenuOperacao(true);
@@ -1434,6 +1799,8 @@ function renderTudo(){
   renderRecebimento();
   renderConferencia();
   renderUsuarios();
+  if(abaAtual === 'codigos') codRender();
+  if(abaAtual === 'relatorios') renderRelatorios();
 }
 
 function prepararTabelasAcessiveis(){
@@ -1523,6 +1890,8 @@ function renderContadores(){
   $('#cntCargas').textContent = state.carregamentos.filter(c => c.status === 'Pendente').length;
   $('#cntReceb').textContent = state.recebimentos.length;
   $('#cntConf').textContent = state.carregamentos.filter(c => c.status === 'Pendente').length;
+  if($('#cntEan')) $('#cntEan').textContent = state.produtos.filter(p => codDigitos(p.ean).length >= 8).length;
+  if($('#cntRel')) $('#cntRel').textContent = state.movimentacoes.length;
   if($('#cntUsr')) $('#cntUsr').textContent = (typeof usuarios !== 'undefined') ? usuarios.length : 0;
 }
 
@@ -1634,7 +2003,7 @@ $('#formProduto').addEventListener('submit', function(e){
     const p = novoProduto(Object.assign({estoque:0}, dados));
     state.produtos.push(p);
     if(qtdInicial > 0){
-      registrarMov({produtoId:p.id, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo:'Entrada', quantidade:qtdInicial, antes:0, depois:qtdInicial, obs:'Quantidade inicial do cadastro'});
+      registrarMov({produtoId:p.id, ft:p.ft, nome:p.nome, unidade:p.unidade, tipo:'Entrada', quantidade:qtdInicial, antes:0, depois:qtdInicial, obs:'Quantidade inicial do cadastro', origem:'Cadastro inicial'});
       p.estoque = qtdInicial;
     }
     salvar(); limparFormProduto(); renderTudo();
@@ -1704,8 +2073,8 @@ $('#formMov').addEventListener('submit', function(e){
   if(qtd <= 0){ toast('Informe uma quantidade maior que zero.', 'erro'); return; }
   const p = produto(pid);
   let r;
-  if(tipoMov === 'Ajuste') r = ajustarEstoque(pid, Math.floor(qtd), obs || 'Ajuste manual de inventário');
-  else r = movimentar(pid, tipoMov, Math.floor(qtd * 1000) / 1000, obs || (tipoMov + ' manual'));
+  if(tipoMov === 'Ajuste') r = ajustarEstoque(pid, Math.floor(qtd), obs || 'Ajuste manual de inventário', 'Ajuste');
+  else r = movimentar(pid, tipoMov, Math.floor(qtd * 1000) / 1000, obs || (tipoMov + ' manual'), 'Manual');
   if(!r.ok){
     if(r.falta) toast('FALTAM ' + fmtQ(r.falta) + ' ' + p.unidade + ' (necessário ' + fmtQ(qtd) + ', em estoque ' + fmtQ(p.estoque) + ').', 'erro', 'Estoque insuficiente');
     else toast(r.msg, 'erro');
@@ -1718,6 +2087,7 @@ $('#formMov').addEventListener('submit', function(e){
 });
 $('#filtroMov').addEventListener('change', renderEstoque);
 $('#btnIrReceber').addEventListener('click', () => irPara('receber'));
+$('#btnIrRelatorio').addEventListener('click', () => irPara('relatorios'));
 
 function renderSelectsProduto(){
   const opts = produtosOrdenados().map(p =>
@@ -1889,7 +2259,7 @@ async function confirmarSaida(id){
   if(!ok) return;
   let falhou = false;
   (c.itens || []).forEach(i => {
-    const r = movimentar(i.produtoId, 'Saída', Number(i.qtd) || 0, 'Saída — Carga nº ' + c.numero + ' · destino ' + c.destino);
+    const r = movimentar(i.produtoId, 'Saída', Number(i.qtd) || 0, 'Saída — Carga nº ' + c.numero + ' · destino ' + c.destino, 'Carregamento');
     if(!r.ok) falhou = true;
   });
   if(falhou){ toast('Não foi possível concluir a baixa de todos os itens.', 'erro'); salvar(); renderTudo(); return; }
@@ -2074,7 +2444,7 @@ async function finalizarRecebimento(){
   r.itens.forEach(i => {
     const q = Number(i.conferido) || 0;
     if(q <= 0) return;
-    const res = movimentar(i.produtoId, 'Entrada', q, 'Entrada — Recebimento NF ' + r.nf + ' (' + r.fornecedor + ')');
+    const res = movimentar(i.produtoId, 'Entrada', q, 'Entrada — Recebimento NF ' + r.nf + ' (' + r.fornecedor + ')', 'Recebimento');
     if(res.ok) somadas += q;
   });
   const divergencias = r.itens.filter(i => (Number(i.conferido) || 0) !== (Number(i.esperado) || 0)).map(i => {
@@ -2291,7 +2661,7 @@ async function finalizarConferencia(){
   r.itens.forEach(it => {
     const q = Number(it.conferido) || 0;
     if(q <= 0) return;
-    const res = movimentar(it.produtoId, 'Saída', q, 'Saída — Conferência da carga nº ' + c.numero + ' · destino ' + c.destino);
+    const res = movimentar(it.produtoId, 'Saída', q, 'Saída — Conferência da carga nº ' + c.numero + ' · destino ' + c.destino, 'Conferência');
     if(res.ok) baixadas += q;
   });
   c.itens = r.itens.map(it => ({produtoId:it.produtoId, qtd:Number(it.conferido) || 0, esperado:Number(it.esperado) || 0, conferido:Number(it.conferido) || 0}));
@@ -2528,6 +2898,1650 @@ function gerarXlsx(){
 }
 $('#btnXlsx').addEventListener('click', gerarXlsx);
 $('#btnXlsx2').addEventListener('click', gerarXlsx);
+
+/* ==================================================================
+   RELATÓRIO DE MOVIMENTAÇÃO — filtros, dashboard, curva ABC e Excel
+   ================================================================== */
+const REL_MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const REL_SERIES = [
+  {nome:'Entradas', cor:'#1c7a4c'},
+  {nome:'Saídas',   cor:'#b3261e'},
+  {nome:'Ajustes',  cor:'#0b6aa6'}
+];
+const REL_ORIGENS = ['Manual','Leitura','Requisição','Ajuste','Carregamento','Conferência','Recebimento','Cadastro inicial','Importação','Outros'];
+const REL_MAX_TABELA = 300;
+const REL_TIPOS = {Entrada:{rotulo:'Entrada', classe:'ok'}, Saída:{rotulo:'Saída', classe:'bad'}, Ajuste:{rotulo:'Ajuste', classe:'info'}};
+
+/* ---------- utilidades de data / número ---------- */
+function rel2(n){ return String(n).padStart(2, '0'); }
+function relHora(iso){ const d = new Date(iso); return isNaN(d.getTime()) ? '—' : rel2(d.getHours()) + ':' + rel2(d.getMinutes()) + ':' + rel2(d.getSeconds()); }
+function relDataCurta(iso){ const d = new Date(iso); return isNaN(d.getTime()) ? '—' : rel2(d.getDate()) + '/' + rel2(d.getMonth() + 1) + '/' + d.getFullYear(); }
+function relDataHoraSeg(iso){ const d = new Date(iso); return isNaN(d.getTime()) ? '—' : relDataCurta(iso) + ' ' + relHora(iso); }
+function relChaveDia(d){ return d.getFullYear() + '-' + rel2(d.getMonth() + 1) + '-' + rel2(d.getDate()); }
+function relDiaBR(chave){ const p = String(chave).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : String(chave); }
+function relNum(v){
+  const n = Number(v) || 0;
+  const casas = (Math.abs(n) >= 100 || Math.round(n) === n) ? 0 : 2;
+  return n.toLocaleString('pt-BR', {maximumFractionDigits:casas});
+}
+function relPct(v){ return (Number(v) || 0).toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%'; }
+function relSemanaDe(d){
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+function relBalde(d, agrupar){
+  if(agrupar === 'mes') return d.getFullYear() + '-' + rel2(d.getMonth() + 1);
+  if(agrupar === 'semana') return relChaveDia(relSemanaDe(d));
+  return relChaveDia(d);
+}
+function relRotuloBalde(chave, agrupar){
+  const p = String(chave).split('-');
+  if(agrupar === 'mes') return REL_MESES[Number(p[1]) - 1] + '/' + String(p[0]).slice(2);
+  if(agrupar === 'semana'){
+    const ini = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    const fim = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + 6);
+    return rel2(ini.getDate()) + '/' + rel2(ini.getMonth() + 1) + '–' + rel2(fim.getDate()) + '/' + rel2(fim.getMonth() + 1);
+  }
+  return p[2] + '/' + p[1];
+}
+/* Origem da movimentação: campo gravado ou deduzido da observação (registros antigos). */
+function relOrigem(m){
+  const o = String(m.origem || '');
+  if(o && REL_ORIGENS.indexOf(o) > -1) return o;
+  const obs = String(m.obs || '');
+  if(/^sa[íi]da\s*[—-]\s*carga/i.test(obs)) return 'Carregamento';
+  if(/confer[êe]ncia da carga/i.test(obs)) return 'Conferência';
+  if(/^entrada\s*[—-]\s*recebimento/i.test(obs)) return 'Recebimento';
+  if(/quantidade inicial do cadastro/i.test(obs)) return 'Cadastro inicial';
+  if(/importa/i.test(obs)) return 'Importação';
+  if(m.tipo === 'Ajuste') return 'Ajuste';
+  return 'Manual';
+}
+function relClasseTag(classe){ return classe === 'A' ? 'classe-a' : classe === 'B' ? 'classe-b' : 'classe-c'; }
+
+/* ---------- filtros ---------- */
+function relFiltroValor(id){ const el = $('#' + id); return el ? el.value : ''; }
+function relFiltros(){
+  return {
+    de: relFiltroValor('rfDe'), deHora: relFiltroValor('rfDeHora'),
+    ate: relFiltroValor('rfAte'), ateHora: relFiltroValor('rfAteHora'),
+    produto: relFiltroValor('rfProduto'), tipo: relFiltroValor('rfTipo'),
+    origem: relFiltroValor('rfOrigem'), operador: relFiltroValor('rfOperador'),
+    busca: relFiltroValor('rfBusca'),
+    agrupar: relFiltroValor('relAgrupar') || 'dia',
+    criterio: relFiltroValor('relCriterio') || 'valor'
+  };
+}
+function relPeriodoLimites(f){
+  const lim = {ini:null, fim:null};
+  if(f.de){
+    const d = new Date(f.de + 'T' + (f.deHora || '00:00') + ':00');
+    if(!isNaN(d.getTime())) lim.ini = d.getTime();
+  }
+  if(f.ate){
+    const d = new Date(f.ate + 'T' + (f.ateHora || '23:59') + ':59.999');
+    if(!isNaN(d.getTime())) lim.fim = d.getTime();
+  }
+  if(lim.ini != null && lim.fim != null && lim.fim < lim.ini) lim.fim = lim.ini + 86399999;
+  return lim;
+}
+function relMovFiltradas(){
+  const f = relFiltros(), lim = relPeriodoLimites(f), busca = norm(f.busca);
+  const lista = state.movimentacoes.filter(m => {
+    const t = new Date(m.data).getTime();
+    if(!isNaN(t)){
+      if(lim.ini != null && t < lim.ini) return false;
+      if(lim.fim != null && t > lim.fim) return false;
+    }
+    if(f.tipo && m.tipo !== f.tipo) return false;
+    if(f.produto && m.produtoId !== f.produto) return false;
+    if(f.origem && relOrigem(m) !== f.origem) return false;
+    if(f.operador && (m.operador || '—') !== f.operador) return false;
+    if(busca){
+      const alvo = norm([m.nome, m.ft, m.obs, m.unidade, m.tipo, relOrigem(m), m.operador].join(' · '));
+      if(alvo.indexOf(busca) === -1) return false;
+    }
+    return true;
+  });
+  /* mais recentes primeiro (data e hora), como no histórico de movimentações */
+  const quando = m => { const t = new Date(m.data).getTime(); return isNaN(t) ? -Infinity : t; };
+  return lista.sort((a, b) => quando(b) - quando(a));
+}
+
+/* ---------- agregações do recorte ---------- */
+function relCalcular(){
+  const f = relFiltros();
+  const lista = relMovFiltradas();
+  const precos = new Map();
+  state.produtos.forEach(p => precos.set(p.id, Number(p.preco) || 0));
+  const r = {
+    filtros:f, lista:lista, n:lista.length,
+    ent:{n:0, q:0, v:0}, sai:{n:0, q:0, v:0}, aju:{n:0, q:0, v:0},
+    q:0, valor:0, produtos:new Map(), operadores:new Map(), origens:new Map(),
+    dias:new Map(), baldes:new Map(), horas:Array.from({length:24}, () => ({n:0, e:0, s:0, a:0})),
+    primeira:null, ultima:null
+  };
+  lista.forEach(m => {
+    const q = Math.abs(Number(m.quantidade) || 0);
+    const preco = precos.has(m.produtoId) ? precos.get(m.produtoId) : 0;
+    const val = q * preco;
+    const tipo = m.tipo === 'Entrada' ? 'ent' : m.tipo === 'Saída' ? 'sai' : 'aju';
+    r[tipo].n++; r[tipo].q += q; r[tipo].v += val;
+    r.q += q; r.valor += val;
+    const d = new Date(m.data);
+    if(!isNaN(d.getTime())){
+      if(r.ultima == null || d.getTime() > r.ultima) r.ultima = d.getTime();
+      if(r.primeira == null || d.getTime() < r.primeira) r.primeira = d.getTime();
+      const chave = relChaveDia(d);
+      if(!r.dias.has(chave)) r.dias.set(chave, {chave:chave, n:0, e:0, s:0, a:0, v:0});
+      const dia = r.dias.get(chave);
+      dia.n++; dia.v += val;
+      if(tipo === 'ent') dia.e += q; else if(tipo === 'sai') dia.s += q; else dia.a += q;
+      const balde = relBalde(d, f.agrupar);
+      if(!r.baldes.has(balde)) r.baldes.set(balde, {chave:balde, rot:relRotuloBalde(balde, f.agrupar), n:0, e:0, s:0, a:0, v:0});
+      const b = r.baldes.get(balde);
+      b.n++; b.v += val;
+      if(tipo === 'ent') b.e += q; else if(tipo === 'sai') b.s += q; else b.a += q;
+      const h = r.horas[d.getHours()];
+      h.n++;
+      if(tipo === 'ent') h.e += q; else if(tipo === 'sai') h.s += q; else h.a += q;
+    }
+    const chaveProd = m.produtoId || ('sem-id:' + String(m.ft || '') + '|' + String(m.nome || ''));
+    if(!r.produtos.has(chaveProd)) r.produtos.set(chaveProd, {
+      id:chaveProd, ft:m.ft || '—', nome:m.nome || 'Produto removido', unidade:m.unidade || 'un',
+      preco:preco, existe:precos.has(m.produtoId), n:0, q:0, e:0, s:0, a:0, v:0
+    });
+    const pr = r.produtos.get(chaveProd);
+    pr.n++; pr.q += q; pr.v += val;
+    if(tipo === 'ent') pr.e += q; else if(tipo === 'sai') pr.s += q; else pr.a += q;
+    const op = m.operador || '—';
+    r.operadores.set(op, (r.operadores.get(op) || 0) + 1);
+    const or = relOrigem(m);
+    r.origens.set(or, (r.origens.get(or) || 0) + 1);
+  });
+  /* série cronológica */
+  r.serie = Array.from(r.baldes.values()).sort((a, b) => a.chave < b.chave ? -1 : a.chave > b.chave ? 1 : 0);
+  r.diasLista = Array.from(r.dias.values()).sort((a, b) => a.chave < b.chave ? -1 : a.chave > b.chave ? 1 : 0);
+  /* curva do produto (ABC) conforme o critério escolhido */
+  const crit = f.criterio;
+  const valorDe = it => crit === 'qtd' ? it.q : crit === 'freq' ? it.n : it.v;
+  r.curva = Array.from(r.produtos.values()).map(it => Object.assign({}, it, {crit:valorDe(it)}));
+  r.curva.sort((a, b) => b.crit - a.crit || String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
+  const totalCrit = r.curva.reduce((s, it) => s + it.crit, 0);
+  let acumulado = 0;
+  r.curva.forEach((it, i) => {
+    acumulado += it.crit;
+    it.ordem = i + 1;
+    it.pct = totalCrit ? it.crit / totalCrit * 100 : 0;
+    it.pctAcum = totalCrit ? acumulado / totalCrit * 100 : 0;
+    it.classe = it.pctAcum <= 80.0000001 ? 'A' : it.pctAcum <= 95.0000001 ? 'B' : 'C';
+  });
+  r.totalCrit = totalCrit;
+  r.entSaiQ = r.ent.q - r.sai.q;
+  r.diasComMov = r.dias.size;
+  r.horaPico = r.horas.reduce((melhor, h, i) => h.n > melhor.n ? {n:h.n, i:i} : melhor, {n:0, i:-1});
+  r.topProduto = r.curva[0] || null;
+  r.menorProduto = r.curva.length ? r.curva[r.curva.length - 1] : null;
+  r.diaMaisMov = r.diasLista.slice().sort((a, b) => b.n - a.n)[0] || null;
+  r.filtrosTxt = relFiltrosTexto(f);
+  r.periodoTxt = relPeriodoTexto(r);
+  return r;
+}
+function relPeriodoRotulo(f){
+  if(!f.de && !f.ate) return 'todo o histórico';
+  const de = f.de ? relDiaBR(f.de) + (f.deHora ? ' ' + f.deHora : '') : 'início do histórico';
+  const ate = f.ate ? relDiaBR(f.ate) + (f.ateHora ? ' ' + f.ateHora : '') : 'agora';
+  return de + ' até ' + ate;
+}
+function relFiltrosTexto(f){
+  const nomeProd = f.produto ? (function(){ const p = produto(f.produto); return p ? (p.ft + ' — ' + p.nome) : 'selecionado'; })() : 'todos';
+  const partes = ['Período: ' + relPeriodoRotulo(f), 'Tipo: ' + (f.tipo || 'todos'), 'Produto: ' + nomeProd,
+    'Origem: ' + (f.origem || 'todas'), 'Usuário: ' + (f.operador || 'todos')];
+  if(f.busca) partes.push('Busca: "' + f.busca + '"');
+  return partes.join(' · ');
+}
+function relPeriodoTexto(r){
+  if(r.primeira == null || r.ultima == null) return 'sem movimentações no recorte';
+  return relDataHoraSeg(new Date(r.primeira).toISOString()) + ' → ' + relDataHoraSeg(new Date(r.ultima).toISOString());
+}
+
+/* ---------- gráficos (SVG puro, sem bibliotecas) ---------- */
+function relPassoBonito(max){
+  if(!(max > 0)) return 1;
+  const exp = Math.floor(Math.log10(max)), base = Math.pow(10, exp), n = max / base;
+  const passo = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10;
+  return passo * base;
+}
+function relGraficoBarras(itens, series, altura, opcoes){
+  opcoes = opcoes || {};
+  if(!itens.length) return '<div class="g-vazio">' + esc(opcoes.vazio || 'Sem movimentações no período filtrado.') + '</div>';
+  const largura = 820, H = altura || 300;
+  const m = {t:18, r:16, b:(opcoes.rodape || 74), l:66};
+  const iw = largura - m.l - m.r, ih = H - m.t - m.b;
+  let max = 0;
+  itens.forEach(i => i.valores.forEach(v => { if(v > max) max = v; }));
+  if(!(max > 0)) max = 1;
+  let passo = relPassoBonito(max / 4);
+  while(max / passo > 6) passo *= 2;
+  const topo = Math.max(passo, Math.ceil(max / passo) * passo);
+  const n = itens.length, grupoW = iw / n;
+  const barraW = Math.max(1.5, Math.min(20, (grupoW * 0.8) / series.length));
+  const larguraGrupo = barraW * series.length;
+  const partes = [];
+  for(let v = 0; v <= topo + 1e-9; v += passo){
+    const y = m.t + ih - (v / topo) * ih;
+    partes.push('<line x1="' + m.l + '" x2="' + (m.l + iw) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="currentColor" stroke-opacity="' + (v === 0 ? '.38' : '.12') + '"/>');
+    partes.push('<text x="' + (m.l - 7) + '" y="' + (y + 3.4).toFixed(1) + '" text-anchor="end">' + xesc(relNum(v)) + '</text>');
+  }
+  const passoRot = Math.max(1, Math.ceil(n / 15));
+  itens.forEach((it, i) => {
+    const x0 = m.l + grupoW * i + (grupoW - larguraGrupo) / 2;
+    it.valores.forEach((v, k) => {
+      if(!(v > 0)) return;
+      const h = (v / topo) * ih, y = m.t + ih - h, x = x0 + k * barraW;
+      partes.push('<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + Math.max(1, barraW - 1.2).toFixed(1) + '" height="' + Math.max(0.9, h).toFixed(1) + '" rx="1.5" fill="' + series[k].cor + '" fill-opacity=".92"><title>' + xesc(it.dica + ' — ' + series[k].nome + ': ' + relNum(v)) + '</title></rect>');
+    });
+    if(i % passoRot === 0 || i === n - 1){
+      const cx = m.l + grupoW * i + grupoW / 2;
+      if(n > 12) partes.push('<text x="' + cx.toFixed(1) + '" y="' + (m.t + ih + 13) + '" text-anchor="end" transform="rotate(-45 ' + cx.toFixed(1) + ' ' + (m.t + ih + 13) + ')">' + xesc(it.rot) + '</text>');
+      else partes.push('<text x="' + cx.toFixed(1) + '" y="' + (m.t + ih + 17) + '" text-anchor="middle">' + xesc(it.rot) + '</text>');
+    }
+  });
+  const legenda = '<div class="g-leg">' + series.map(s => '<span><i style="background:' + s.cor + '"></i>' + esc(s.nome) + '</span>').join('') + '</div>';
+  return legenda + '<svg viewBox="0 0 ' + largura + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + esc(opcoes.rotulo || 'Gráfico de barras das movimentações') + '">' + partes.join('') + '</svg>';
+}
+function relGraficoCurva(curva, criterio){
+  if(!curva.length) return '<div class="g-vazio">Sem produtos movimentados no período filtrado.</div>';
+  const top = curva.slice(0, 12);
+  const largura = 820, H = 340, m = {t:18, r:58, b:96, l:70};
+  const iw = largura - m.l - m.r, ih = H - m.t - m.b;
+  const maxV = Math.max.apply(null, top.map(i => i.crit).concat([1]));
+  let passo = relPassoBonito(maxV / 4);
+  while(maxV / passo > 6) passo *= 2;
+  const topo = Math.max(passo, Math.ceil(maxV / passo) * passo);
+  const n = top.length, grupoW = iw / n;
+  const barraW = Math.max(4, Math.min(46, grupoW * 0.62));
+  const corClasse = {A:'#1c7a4c', B:'#8a6100', C:'#0b6aa6'};
+  const partes = [];
+  for(let v = 0; v <= topo + 1e-9; v += passo){
+    const y = m.t + ih - (v / topo) * ih;
+    partes.push('<line x1="' + m.l + '" x2="' + (m.l + iw) + '" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="currentColor" stroke-opacity="' + (v === 0 ? '.38' : '.12') + '"/>');
+    partes.push('<text x="' + (m.l - 7) + '" y="' + (y + 3.4).toFixed(1) + '" text-anchor="end">' + xesc(relNum(v)) + '</text>');
+    partes.push('<text x="' + (m.l + iw + 7) + '" y="' + (y + 3.4).toFixed(1) + '" text-anchor="start">' + xesc(relPct(v / topo * 100)) + '</text>');
+  }
+  const pontos = [];
+  top.forEach((it, i) => {
+    const x0 = m.l + grupoW * i + (grupoW - barraW) / 2;
+    const h = (it.crit / topo) * ih, y = m.t + ih - h;
+    partes.push('<rect x="' + x0.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + barraW.toFixed(1) + '" height="' + Math.max(0.9, h).toFixed(1) + '" rx="2" fill="' + corClasse[it.classe] + '" fill-opacity=".9"><title>' + xesc(it.nome + ' — ' + (criterio === 'valor' ? fmtBRL(it.crit) : relNum(it.crit)) + ' · classe ' + it.classe + ' · acumulado ' + relPct(it.pctAcum)) + '</title></rect>');
+    const cx = x0 + barraW / 2;
+    const rotulo = String(it.nome).slice(0, n > 8 ? 22 : 26);
+    partes.push('<text x="' + cx.toFixed(1) + '" y="' + (m.t + ih + 13) + '" text-anchor="end" transform="rotate(-45 ' + cx.toFixed(1) + ' ' + (m.t + ih + 13) + ')">' + xesc(rotulo) + '</text>');
+    pontos.push({x:cx, y:m.t + ih - (it.pctAcum / 100) * ih, it:it});
+  });
+  partes.push('<polyline fill="none" stroke="#0b57c9" stroke-width="2" points="' + pontos.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ') + '"/>');
+  pontos.forEach(p => partes.push('<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3.2" fill="#0b57c9"><title>' + xesc(p.it.nome + ' — acumulado ' + relPct(p.it.pctAcum)) + '</title></circle>'));
+  const legenda = '<div class="g-leg"><span><i style="background:#1c7a4c"></i>Classe A</span><span><i style="background:#8a6100"></i>Classe B</span>' +
+    '<span><i style="background:#0b6aa6"></i>Classe C</span><span><i style="background:#0b57c9;border-radius:50%"></i>% acumulado</span></div>';
+  return legenda + '<svg viewBox="0 0 ' + largura + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Curva ABC dos produtos por movimentação">' + partes.join('') + '</svg>';
+}
+
+/* ---------- render da aba ---------- */
+let relSelectsAssinatura = '';
+function relPreencherSelects(){
+  const assinatura = state.produtos.map(p => p.id).join('|') + '::' + state.movimentacoes.length + '::' +
+    Array.from(new Set(state.movimentacoes.map(m => (m.operador || '—') + '/' + relOrigem(m)))).sort().join('|');
+  if(assinatura === relSelectsAssinatura) return;
+  relSelectsAssinatura = assinatura;
+  const selP = $('#rfProduto'), atualP = selP.value;
+  selP.innerHTML = '<option value="">Todos os produtos</option>' + produtosOrdenados().map(p =>
+    '<option value="' + esc(p.id) + '">' + esc(p.nome) + ' — ' + esc(p.ft) + '</option>').join('');
+  if(atualP && state.produtos.some(p => p.id === atualP)) selP.value = atualP;
+  const contagemOrig = new Map(), contagemUsr = new Map();
+  state.movimentacoes.forEach(m => {
+    const o = relOrigem(m), u = m.operador || '—';
+    contagemOrig.set(o, (contagemOrig.get(o) || 0) + 1);
+    contagemUsr.set(u, (contagemUsr.get(u) || 0) + 1);
+  });
+  const origens = REL_ORIGENS.filter(o => contagemOrig.has(o));
+  const selO = $('#rfOrigem'), atualO = selO.value;
+  selO.innerHTML = '<option value="">Todas as origens</option>' + origens.map(o =>
+    '<option value="' + esc(o) + '">' + esc(o) + ' (' + contagemOrig.get(o) + ')</option>').join('');
+  if(atualO && origens.indexOf(atualO) > -1) selO.value = atualO;
+  const usuarios = Array.from(contagemUsr.keys()).sort((a, b) => contagemUsr.get(b) - contagemUsr.get(a) || a.localeCompare(b, 'pt-BR'));
+  const selU = $('#rfOperador'), atualU = selU.value;
+  selU.innerHTML = '<option value="">Todos os usuários</option>' + usuarios.map(u =>
+    '<option value="' + esc(u) + '">' + esc(u) + ' (' + contagemUsr.get(u) + ')</option>').join('');
+  if(atualU && usuarios.indexOf(atualU) > -1) selU.value = atualU;
+}
+function renderRelatorios(){
+  if(!$('#tab-relatorios')) return;
+  relPreencherSelects();
+  const b = relCalcular();
+  const crit = b.filtros.criterio;
+  /* indicadores */
+  $('#rkMov').textContent = fmtQ(b.n);
+  $('#rkMovSub').textContent = b.n
+    ? (b.diasComMov + (b.diasComMov === 1 ? ' dia com movimento · ' : ' dias com movimento · ') + relPeriodoTexto(b))
+    : 'nenhum registro no recorte atual';
+  $('#rkEnt').textContent = fmtQ(b.ent.q);
+  $('#rkEntSub').textContent = b.ent.n + ' lançamento(s) · ' + fmtBRL(b.ent.v);
+  $('#rkSai').textContent = fmtQ(b.sai.q);
+  $('#rkSaiSub').textContent = b.sai.n + ' lançamento(s) · ' + fmtBRL(b.sai.v);
+  $('#rkAju').textContent = fmtQ(b.aju.q);
+  $('#rkAjuSub').textContent = b.aju.n + ' ajuste(s) · ' + fmtBRL(b.aju.v);
+  $('#rkSaldo').textContent = (b.entSaiQ > 0 ? '+' : '') + fmtQ(b.entSaiQ);
+  $('#rkSaldoSub').textContent = fmtQ(b.ent.q) + ' entradas − ' + fmtQ(b.sai.q) + ' saídas';
+  $('#celulaSaldo').classList.toggle('alerta', b.entSaiQ < 0);
+  $('#rkValor').textContent = fmtBRL(b.valor);
+  $('#rkValorSub').textContent = b.q ? fmtQ(b.q) + ' unidades × preço atual do produto' : 'sem quantidade movimentada';
+  /* gráficos */
+  const opcoesGrafico = {rodape: 78, rotulo:'Movimentações de estoque'};
+  $('#relGrafPeriodo').innerHTML = relGraficoBarras(
+    b.serie.map(s => ({rot:s.rot, dica:'Período ' + s.rot + ' (' + s.n + ' movimentação(ões))', valores:[s.e, s.s, s.a]})),
+    REL_SERIES, 330, Object.assign({}, opcoesGrafico, {rotulo:'Movimentações agrupadas por ' + b.filtros.agrupar}));
+  $('#relGrafHora').innerHTML = relGraficoBarras(
+    b.horas.map((h, i) => ({rot:rel2(i) + 'h', dica:rel2(i) + ':00–' + rel2(i) + ':59 (' + h.n + ' movimentação(ões))', valores:[h.e, h.s, h.a]})),
+    REL_SERIES, 330, Object.assign({}, opcoesGrafico, {rotulo:'Movimentações por hora do dia'}));
+  $('#relGrafCurva').innerHTML = relGraficoCurva(b.curva, crit);
+  /* resumo da curva */
+  const classes = {A:{n:0, crit:0}, B:{n:0, crit:0}, C:{n:0, crit:0}};
+  b.curva.forEach(it => { classes[it.classe].n++; classes[it.classe].crit += it.crit; });
+  const rotuloCrit = crit === 'valor' ? 'R$ movimentado' : crit === 'qtd' ? 'unidades movimentadas' : 'movimentações';
+  const valorCurto = v => crit === 'valor' ? fmtBRL(v) : relNum(v);
+  $('#relCurvaResumo').innerHTML =
+    '<div class="cx"><span>Produtos no recorte</span><b>' + b.curva.length + '</b><small>' + esc(rotuloCrit) + ': ' + esc(valorCurto(b.totalCrit)) + '</small></div>' +
+    ['A','B','C'].map(c => '<div class="cx"><span>Classe ' + c + '</span><b>' + classes[c].n + ' produto(s)</b><small>' +
+      esc(relPct(b.totalCrit ? classes[c].crit / b.totalCrit * 100 : 0)) + ' do total · ' + esc(valorCurto(classes[c].crit)) + '</small></div>').join('') +
+    (b.topProduto ? '<div class="cx"><span>Líder da curva</span><b>' + esc(String(b.topProduto.nome).slice(0, 28)) + '</b><small>' + esc(b.topProduto.ft) + ' · ' + esc(valorCurto(b.topProduto.crit)) + '</small></div>' : '');
+  /* tabela da curva */
+  $('#relTbodyCurva').innerHTML = b.curva.length ? b.curva.map(it =>
+    '<tr><td class="num">' + it.ordem + '</td>' +
+    '<td><span class="tag ' + relClasseTag(it.classe) + '">' + it.classe + '</span></td>' +
+    '<td class="forte">' + esc(it.nome) + (it.existe ? '' : ' <span class="tag warn">fora do cadastro</span>') + '</td>' +
+    '<td class="ft">' + esc(it.ft) + '</td>' +
+    '<td class="num">' + relNum(it.n) + '</td>' +
+    '<td class="num forte">' + relNum(it.q) + ' ' + esc(it.unidade) + '</td>' +
+    '<td class="num">' + relNum(it.e) + '</td>' +
+    '<td class="num">' + relNum(it.s) + '</td>' +
+    '<td class="num">' + esc(fmtBRL(it.v)) + '</td>' +
+    '<td class="num">' + esc(relPct(it.pct)) + '</td>' +
+    '<td class="num">' + esc(relPct(it.pctAcum)) + '</td></tr>').join('')
+    : '<tr><td colspan="11"><div class="vazio"><span class="ic">📐</span><b>Sem produtos no recorte</b>Ajuste os filtros para ver a curva ABC.</div></td></tr>';
+  /* totais por período */
+  const baldes = b.serie.slice().reverse();
+  $('#relTbodyPeriodo').innerHTML = baldes.length ? baldes.map(s =>
+    '<tr><td class="forte">' + esc(s.rot) + '<br><span class="ft text-muted">' + s.n + ' movimentação(ões)</span></td>' +
+    '<td class="num">' + relNum(s.n) + '</td>' +
+    '<td class="num">' + relNum(s.e) + '</td>' +
+    '<td class="num">' + relNum(s.s) + '</td>' +
+    '<td class="num">' + relNum(s.a) + '</td>' +
+    '<td class="num ' + (s.e - s.s < 0 ? 'text-bad' : '') + '">' + relNum(s.e - s.s) + '</td>' +
+    '<td class="num">' + esc(fmtBRL(s.v)) + '</td></tr>').join('')
+    : '<tr><td colspan="7"><div class="vazio"><span class="ic">📅</span><b>Sem períodos</b>Nenhuma movimentação no recorte atual.</div></td></tr>';
+  $('#tagRelPeriodos').textContent = baldes.length + ' período(s) · agrupado por ' + b.filtros.agrupar;
+  /* todas as movimentações (com data e hora) */
+  const exibidas = b.lista.slice(0, REL_MAX_TABELA);
+  $('#relTbodyMov').innerHTML = exibidas.length ? exibidas.map(m => {
+    const t = REL_TIPOS[m.tipo] || {rotulo:m.tipo, classe:''};
+    const q = Math.abs(Number(m.quantidade) || 0);
+    const p = produto(m.produtoId);
+    return '<tr>' +
+      '<td class="ft cel-data">' + esc(relDataCurta(m.data)) + '</td>' +
+      '<td class="ft cel-data">' + esc(relHora(m.data)) + '</td>' +
+      '<td class="forte">' + esc(m.nome || '—') + '<br><span class="ft text-muted">' + esc(m.ft || '') + '</span></td>' +
+      '<td><span class="tag ' + t.classe + '">' + esc(t.rotulo) + '</span></td>' +
+      '<td><span class="tag">' + esc(relOrigem(m)) + '</span></td>' +
+      '<td class="num forte">' + esc(fmtQ(q)) + ' ' + esc(m.unidade || '') + '</td>' +
+      '<td class="num">' + esc(fmtQ(m.antes)) + '</td>' +
+      '<td class="num">' + esc(fmtQ(m.depois)) + '</td>' +
+      '<td class="num">' + esc(fmtBRL(q * (p ? (Number(p.preco) || 0) : 0))) + '</td>' +
+      '<td>' + esc(m.obs || '—') + '</td>' +
+      '<td>' + esc(m.operador || '—') + '</td></tr>';
+  }).join('') : '<tr><td colspan="11"><div class="vazio"><span class="ic">🕘</span><b>Nenhuma movimentação no recorte</b>Revise o período, o produto ou o tipo escolhido nos filtros.</div></td></tr>';
+  /* etiquetas */
+  $('#tagRelRecorte').textContent = b.n + ' de ' + state.movimentacoes.length + ' movimentação(ões) · curva por ' +
+    (crit === 'valor' ? 'valor' : crit === 'qtd' ? 'quantidade' : 'frequência');
+  $('#tagRelMov').textContent = b.lista.length + ' registro(s)' + (b.lista.length > REL_MAX_TABELA ? ' · exibindo os ' + REL_MAX_TABELA + ' mais recentes (o Excel traz todos)' : '');
+  $('#relPeriodoTxt').textContent = 'Recorte: ' + relPeriodoRotulo(b.filtros) + (b.n ? ' · ' + relPeriodoTexto(b) : '');
+  $('#relTagHora').textContent = b.horaPico.n ? 'Pico às ' + rel2(b.horaPico.i) + 'h — ' + b.horaPico.n + ' movimentação(ões)' : 'sem dados de hora';
+}
+
+/* ---------- atalhos de período, filtros e exportações ---------- */
+function relAplicarPeriodo(tipo){
+  const de = $('#rfDe'), ate = $('#rfAte'), dh = $('#rfDeHora'), ah = $('#rfAteHora');
+  dh.value = ''; ah.value = '';
+  if(tipo === 'tudo'){ de.value = ''; ate.value = ''; return; }
+  const hj = new Date();
+  if(tipo === 'mes') de.value = relChaveDia(new Date(hj.getFullYear(), hj.getMonth(), 1));
+  else if(tipo === 'ano') de.value = relChaveDia(new Date(hj.getFullYear(), 0, 1));
+  else de.value = relChaveDia(new Date(hj.getFullYear(), hj.getMonth(), hj.getDate() - Number(tipo || 0)));
+  ate.value = relChaveDia(hj);
+}
+$('#rfAtalhos').addEventListener('click', e => {
+  const b = e.target.closest('button[data-dias]');
+  if(!b) return;
+  $$('#rfAtalhos button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  relAplicarPeriodo(b.dataset.dias);
+  b.blur();
+  renderRelatorios();
+});
+['rfDe','rfDeHora','rfAte','rfAteHora','rfProduto','rfTipo','rfOrigem','rfOperador','relAgrupar','relCriterio'].forEach(id => {
+  const el = $('#' + id);
+  if(!el) return;
+  el.addEventListener('change', function(){
+    if(id === 'rfDe' || id === 'rfAte' || id === 'rfDeHora' || id === 'rfAteHora')
+      $$('#rfAtalhos button').forEach(x => x.setAttribute('aria-pressed','false'));
+    renderRelatorios();
+  });
+});
+let relBuscaTimer = null;
+$('#rfBusca').addEventListener('input', function(){
+  clearTimeout(relBuscaTimer);
+  relBuscaTimer = setTimeout(renderRelatorios, 180);
+});
+$('#btnRelLimpar').addEventListener('click', function(){
+  ['rfDe','rfDeHora','rfAte','rfAteHora','rfBusca','rfProduto','rfTipo','rfOrigem','rfOperador'].forEach(id => { const el = $('#' + id); if(el) el.value = ''; });
+  $('#relAgrupar').value = 'dia';
+  $('#relCriterio').value = 'valor';
+  $$('#rfAtalhos button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.dias === 'tudo')));
+  renderRelatorios();
+  toast('Filtros do relatório limpos — exibindo todo o histórico.', 'info');
+});
+$('#btnRelTopo').addEventListener('click', function(){ irPara('relatorios'); toast('Relatório de movimentação aberto — filtre e baixe em Excel.', 'info'); });
+
+/* ---------- CSV do relatório ---------- */
+function relCsv(){
+  const b = relCalcular();
+  if(!b.lista.length){ toast('Nenhuma movimentação no recorte atual — ajuste os filtros.', 'alerta', 'Nada para exportar'); return; }
+  const cab = ['Data','Hora','Data e hora','FT/Código','Produto','Unidade','Tipo','Origem','Quantidade','Estoque antes','Estoque depois','Variação','Valor movimentado (R$)','Observação','Usuário'];
+  const linhas = b.lista.map(m => {
+    const q = Math.abs(Number(m.quantidade) || 0);
+    const p = produto(m.produtoId);
+    return [relDataCurta(m.data), relHora(m.data), relDataHoraSeg(m.data), m.ft || '', m.nome || '', m.unidade || '', m.tipo || '', relOrigem(m),
+      String(q).replace('.', ','), String(m.antes == null ? '' : m.antes).replace('.', ','), String(m.depois == null ? '' : m.depois).replace('.', ','),
+      String((Number(m.depois) || 0) - (Number(m.antes) || 0)).replace('.', ','),
+      (q * (p ? (Number(p.preco) || 0) : 0)).toFixed(2).replace('.', ','), m.obs || '', m.operador || ''];
+  });
+  const csv = '\uFEFF' + [cab].concat(linhas).map(l => l.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  const nome = 'movimentacao-estoque-' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.csv';
+  if(baixarBlob(new Blob([csv], {type:'text/csv;charset=utf-8'}), nome))
+    toast(linhas.length + ' movimentação(ões) exportadas em CSV (separador “;”, com BOM UTF-8).', 'sucesso', 'CSV do relatório');
+}
+
+/* ---------- gerador .xlsx com várias abas (ZIP + XML, sem bibliotecas) ---------- */
+const XL = {padrao:0, cabecalho:1, texto:2, centro:3, inteiro:4, qtd:5, dataHora:6, moeda:7, titulo:8,
+            nota:9, secao:10, pct:11, data:12, hora:13, totalTxt:14, totalQtd:15, totalMoeda:16, destaque:17};
+function xlTxt(v, s){ return {v:v == null ? '' : v, s:(s == null ? XL.texto : s)}; }
+function xlNum(v, s){ return {v:Number(v) || 0, s:(s == null ? XL.qtd : s), t:'n'}; }
+function xlData(iso, s){
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return xlTxt('—', s);
+  return {v: Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()) / 86400000 + 25569) * 1e6) / 1e6, s:(s == null ? XL.dataHora : s), t:'n'};
+}
+function xlColuna(i){
+  let s = '', n = i + 1;
+  while(n > 0){ const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); }
+  return s;
+}
+function xlCelula(c, ref){
+  if(c === null || c === undefined) return '';
+  const obj = (typeof c === 'object') ? c : {v:c, s:XL.texto};
+  const v = obj.v, s = (obj.s == null ? XL.texto : obj.s);
+  if(v === null || v === undefined || v === '') return '';
+  if(obj.t === 'n'){ const n = Number(v); return isFinite(n) ? '<c r="' + ref + '" s="' + s + '"><v>' + n + '</v></c>' : ''; }
+  return '<c r="' + ref + '" s="' + s + '" t="inlineStr"><is><t xml:space="preserve">' + xesc(v) + '</t></is></c>';
+}
+function xlAbaXml(aba){
+  const cols = (aba.larguras || []).map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('');
+  let rows = '';
+  (aba.linhas || []).forEach((linha, r) => {
+    const cels = (linha || []).map((c, i) => xlCelula(c, xlColuna(i) + (r + 1))).join('');
+    if(!cels) return;
+    const alt = aba.alturas && aba.alturas[r];
+    rows += '<row r="' + (r + 1) + '"' + (alt ? ' ht="' + alt + '" customHeight="1"' : '') + '>' + cels + '</row>';
+  });
+  const congelar = Number(aba.congelar) || 0;
+  const pane = congelar ? '<pane ySplit="' + congelar + '" topLeftCell="A' + (congelar + 1) + '" activePane="bottomLeft" state="frozen"/>' : '';
+  const filtro = aba.filtro ? '<autoFilter ref="' + aba.filtro + '"/>' : '';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<sheetViews><sheetView' + (aba.ativa ? ' tabSelected="1"' : '') + ' workbookViewId="0" showGridLines="1">' + pane +
+      '<selection' + (congelar ? ' pane="bottomLeft"' : '') + ' activeCell="A' + (congelar + 1) + '" sqref="A' + (congelar + 1) + '"/></sheetView></sheetViews>' +
+    '<sheetFormatPr defaultRowHeight="15"/>' +
+    (cols ? '<cols>' + cols + '</cols>' : '') +
+    '<sheetData>' + rows + '</sheetData>' +
+    filtro +
+    '<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>' +
+    '<pageSetup orientation="landscape" fitToWidth="1"/></worksheet>';
+}
+function xlNomeAba(nome){
+  return String(nome || 'Planilha').replace(/[\\\/\?\*\[\]:]/g, '-').slice(0, 31);
+}
+function xlEstilos(corCabecalho){
+  const numFmts = '<numFmts count="7">' +
+    '<numFmt numFmtId="164" formatCode="#,##0"/>' +
+    '<numFmt numFmtId="165" formatCode="#,##0.###"/>' +
+    '<numFmt numFmtId="166" formatCode="dd/mm/yyyy hh:mm:ss"/>' +
+    '<numFmt numFmtId="167" formatCode="&quot;R$&quot; #,##0.00"/>' +
+    '<numFmt numFmtId="168" formatCode="0.0%"/>' +
+    '<numFmt numFmtId="169" formatCode="dd/mm/yyyy"/>' +
+    '<numFmt numFmtId="170" formatCode="hh:mm:ss"/></numFmts>';
+  const fonts = '<fonts count="5">' +
+    '<font><sz val="11"/><color theme="1"/><name val="Calibri"/><family val="2"/></font>' +
+    '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/><family val="2"/></font>' +
+    '<font><b/><sz val="11"/><color theme="1"/><name val="Calibri"/><family val="2"/></font>' +
+    '<font><i/><sz val="9"/><color rgb="FF595959"/><name val="Calibri"/><family val="2"/></font>' +
+    '<font><b/><sz val="14"/><color rgb="FF0B1B33"/><name val="Calibri"/><family val="2"/></font></fonts>';
+  const fills = '<fills count="5">' +
+    '<fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>' +
+    '<fill><patternFill patternType="solid"><fgColor rgb="FF' + corCabecalho + '"/><bgColor indexed="64"/></patternFill></fill>' +
+    '<fill><patternFill patternType="solid"><fgColor rgb="FFE2EEFF"/><bgColor indexed="64"/></patternFill></fill>' +
+    '<fill><patternFill patternType="solid"><fgColor rgb="FFF2F6FC"/><bgColor indexed="64"/></patternFill></fill></fills>';
+  const borders = '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>' +
+    '<border><left style="thin"><color rgb="FFB9C9DF"/></left><right style="thin"><color rgb="FFB9C9DF"/></right>' +
+    '<top style="thin"><color rgb="FFB9C9DF"/></top><bottom style="thin"><color rgb="FFB9C9DF"/></bottom><diagonal/></border></borders>';
+  const xf = [];
+  xf.push('<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>');                                            /* 0 padrão */
+  xf.push('<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'); /* 1 cabeçalho */
+  xf.push('<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>');   /* 2 texto */
+  xf.push('<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'); /* 3 centro */
+  xf.push('<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'); /* 4 inteiro */
+  xf.push('<xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'); /* 5 quantidade */
+  xf.push('<xf numFmtId="166" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'); /* 6 data e hora */
+  xf.push('<xf numFmtId="167" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'); /* 7 moeda */
+  xf.push('<xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>');     /* 8 título */
+  xf.push('<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf>'); /* 9 nota */
+  xf.push('<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>'); /* 10 seção */
+  xf.push('<xf numFmtId="168" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'); /* 11 percentual */
+  xf.push('<xf numFmtId="169" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'); /* 12 data */
+  xf.push('<xf numFmtId="170" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>'); /* 13 hora */
+  xf.push('<xf numFmtId="0" fontId="2" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center"/></xf>'); /* 14 total texto */
+  xf.push('<xf numFmtId="165" fontId="2" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'); /* 15 total quantidade */
+  xf.push('<xf numFmtId="167" fontId="2" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'); /* 16 total moeda */
+  xf.push('<xf numFmtId="165" fontId="2" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>'); /* 17 destaque numérico */
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + numFmts + fonts + fills + borders +
+    '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+    '<cellXfs count="' + xf.length + '">' + xf.join('') + '</cellXfs>' +
+    '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>' +
+    '<dxfs count="0"/><tableStyles count="0" defaultTableStyle="TableStyleMedium2" defaultPivotStyle="PivotStyleLight16"/></styleSheet>';
+}
+function xlPasta(abas, corCabecalho){
+  const nomes = abas.map((a, i) => xlNomeAba(a.nome));
+  const sheetsXml = abas.map((a, i) => ({name:'xl/worksheets/sheet' + (i + 1) + '.xml', data: xlAbaXml(Object.assign({ativa:i === 0}, a))}));
+  const sheets = nomes.map((n, i) => '<sheet name="' + xesc(n) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join('');
+  const rels = nomes.map((n, i) => '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join('') +
+    '<Relationship Id="rId' + (nomes.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
+  const overrides = nomes.map((n, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('');
+  const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+    '<workbookPr/><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="24000" windowHeight="14000"/></bookViews>' +
+    '<sheets>' + sheets + '</sheets><calcPr calcId="124519" fullCalcOnLoad="1"/></workbook>';
+  const wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + rels + '</Relationships>';
+  const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+    '<Default Extension="xml" ContentType="application/xml"/>' +
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+    overrides +
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+  return zipStore([
+    {name:'[Content_Types].xml', data:contentTypes},
+    {name:'_rels/.rels', data:rootRels},
+    {name:'xl/workbook.xml', data:workbook},
+    {name:'xl/_rels/workbook.xml.rels', data:wbRels},
+    {name:'xl/styles.xml', data:xlEstilos(corCabecalho)}
+  ].concat(sheetsXml));
+}
+function xlCorCabecalho(){
+  const cor = getComputedStyle(document.documentElement).getPropertyValue('--brand-green').trim().replace('#', '').toUpperCase();
+  return cor.length === 6 ? cor : '548235';
+}
+
+/* ---------- planilha do relatório de movimentação ---------- */
+function relXlsx(){
+  const b = relCalcular();
+  const crit = b.filtros.criterio;
+  const rotuloCrit = crit === 'valor' ? 'valor movimentado (R$)' : crit === 'qtd' ? 'quantidade movimentada' : 'nº de movimentações';
+  const abas = [];
+
+  /* --- aba Resumo --- */
+  const resumo = [];
+  resumo.push([xlTxt('Relatório de movimentação de estoque — Stoki SDY', XL.titulo)]);
+  resumo.push([xlTxt('Emitido em ' + relDataHoraSeg(agora()) + ' · ' + b.filtrosTxt, XL.nota)]);
+  resumo.push([]);
+  resumo.push([xlTxt('Indicadores do recorte', XL.secao), xlTxt('', XL.secao), xlTxt('', XL.secao), xlTxt('', XL.secao)]);
+  resumo.push([xlTxt('Indicador', XL.cabecalho), xlTxt('Quantidade movimentada', XL.cabecalho), xlTxt('Lançamentos', XL.cabecalho), xlTxt('Valor movimentado (R$)', XL.cabecalho)]);
+  [['Entradas', b.ent], ['Saídas', b.sai], ['Ajustes', b.aju]].forEach(par => {
+    resumo.push([xlTxt(par[0]), xlNum(par[1].q, XL.qtd), xlNum(par[1].n, XL.inteiro), xlNum(par[1].v, XL.moeda)]);
+  });
+  resumo.push([xlTxt('Saldo líquido (entradas − saídas)', XL.totalTxt), xlNum(b.entSaiQ, XL.totalQtd), xlTxt('—', XL.totalTxt), xlNum(b.ent.v - b.sai.v, XL.totalMoeda)]);
+  resumo.push([xlTxt('Total no recorte', XL.totalTxt), xlNum(b.q, XL.totalQtd), xlNum(b.n, XL.inteiro), xlNum(b.valor, XL.totalMoeda)]);
+  resumo.push([]);
+  resumo.push([xlTxt('Destaques', XL.secao), xlTxt('', XL.secao), xlTxt('', XL.secao), xlTxt('', XL.secao)]);
+  resumo.push([xlTxt('Movimentações no recorte', XL.texto), xlNum(b.n, XL.inteiro), xlTxt('Dias com movimento', XL.texto), xlNum(b.diasComMov, XL.inteiro)]);
+  resumo.push([xlTxt('Primeira movimentação', XL.texto), b.primeira == null ? xlTxt('—') : xlData(new Date(b.primeira).toISOString(), XL.dataHora), xlTxt('Última movimentação', XL.texto), b.ultima == null ? xlTxt('—') : xlData(new Date(b.ultima).toISOString(), XL.dataHora)]);
+  resumo.push([xlTxt('Produto líder da curva (' + rotuloCrit + ')', XL.texto), xlTxt(b.topProduto ? b.topProduto.nome + ' — ' + b.topProduto.ft : '—'), xlTxt('Hora de pico', XL.texto), xlTxt(b.horaPico.n ? rel2(b.horaPico.i) + 'h (' + b.horaPico.n + ' movimentações)' : '—')]);
+  resumo.push([xlTxt('Dia com mais movimentações', XL.texto), xlTxt(b.diaMaisMov ? relDiaBR(b.diaMaisMov.chave) + ' (' + b.diaMaisMov.n + ' movimentações)' : '—'), xlTxt('Curva ABC por', XL.texto), xlTxt(rotuloCrit)]);
+  resumo.push([]);
+  resumo.push([xlTxt('Filtros aplicados (ajuste na aba Relatórios e gere a planilha novamente)', XL.secao), xlTxt('', XL.secao)]);
+  [['Período', relPeriodoRotulo(b.filtros)], ['Tipo', b.filtros.tipo || 'todos'], ['Produto', b.filtros.produto ? (function(){ const p = produto(b.filtros.produto); return p ? p.ft + ' — ' + p.nome : b.filtros.produto; })() : 'todos'],
+   ['Origem', b.filtros.origem || 'todas'], ['Usuário', b.filtros.operador || 'todos'], ['Busca livre', b.filtros.busca || '—'], ['Agrupamento do dashboard', b.filtros.agrupar]].forEach(par => {
+    resumo.push([xlTxt(par[0], XL.texto), xlTxt(par[1], XL.texto)]);
+  });
+  resumo.push([]);
+  resumo.push([xlTxt('Fonte: movimentações de estoque registradas no Stoki SDY (data e hora do servidor). Quantidades na unidade de cada produto; valor = quantidade × preço atual do produto.', XL.nota)]);
+  abas.push({nome:'Resumo', ativa:true, larguras:[46, 34, 22, 26], linhas:resumo, alturas:{0:20}});
+
+  /* --- aba Movimentações --- */
+  const cabMov = ['Data','Hora','Data e hora','FT / Código','Produto','Unidade','Tipo','Origem','Quantidade','Estoque antes','Estoque depois','Variação','Valor movimentado (R$)','Observação','Usuário'];
+  const mov = [cabMov.map(h => xlTxt(h, XL.cabecalho))];
+  b.lista.forEach(m => {
+    const q = Math.abs(Number(m.quantidade) || 0);
+    const p = produto(m.produtoId);
+    mov.push([
+      xlData(m.data, XL.data), xlData(m.data, XL.hora), xlData(m.data, XL.dataHora),
+      xlTxt(m.ft || ''), xlTxt(m.nome || ''), xlTxt(m.unidade || ''), xlTxt(m.tipo || ''), xlTxt(relOrigem(m)),
+      xlNum(q, XL.qtd), xlNum(m.antes, XL.qtd), xlNum(m.depois, XL.qtd), xlNum((Number(m.depois) || 0) - (Number(m.antes) || 0), XL.qtd),
+      xlNum(q * (p ? (Number(p.preco) || 0) : 0), XL.moeda), xlTxt(m.obs || ''), xlTxt(m.operador || '')
+    ]);
+  });
+  mov.push([]);
+  mov.push([xlTxt('Total', XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt(b.n + ' movimentação(ões) · ' + b.filtrosTxt, XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt),
+    xlNum(b.q, XL.totalQtd), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt), xlNum(b.valor, XL.totalMoeda), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt)]);
+  abas.push({nome:'Movimentações', congelar:1, filtro:'A1:' + xlColuna(cabMov.length - 1) + '1',
+    larguras:[11, 10, 20, 16, 46, 9, 11, 17, 14, 14, 15, 13, 21, 52, 18], linhas:mov});
+
+  /* --- aba Curva ABC --- */
+  const cabAbc = ['#','Classe','Produto','FT / Código','Unidade','Movimentações','Qtd. movimentada','Entradas','Saídas','Ajustes','Valor movimentado (R$)','% do total','% acumulado'];
+  const abc = [cabAbc.map(h => xlTxt(h, XL.cabecalho))];
+  b.curva.forEach(it => {
+    abc.push([xlNum(it.ordem, XL.inteiro), xlTxt(it.classe, XL.centro), xlTxt(it.nome), xlTxt(it.ft), xlTxt(it.unidade),
+      xlNum(it.n, XL.inteiro), xlNum(it.q, XL.qtd), xlNum(it.e, XL.qtd), xlNum(it.s, XL.qtd), xlNum(it.a, XL.qtd),
+      xlNum(it.v, XL.moeda), xlNum(it.pct / 100, XL.pct), xlNum(it.pctAcum / 100, XL.pct)]);
+  });
+  abc.push([]);
+  abc.push([xlTxt('Total', XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt(b.curva.length + ' produto(s) · curva por ' + rotuloCrit, XL.totalTxt), xlTxt('', XL.totalTxt), xlTxt('', XL.totalTxt),
+    xlNum(b.n, XL.totalQtd), xlNum(b.q, XL.totalQtd), xlNum(b.ent.q, XL.totalQtd), xlNum(b.sai.q, XL.totalQtd), xlNum(b.aju.q, XL.totalQtd),
+    xlNum(b.valor, XL.totalMoeda), xlNum(1, XL.pct), xlNum(1, XL.pct)]);
+  abc.push([]);
+  abc.push([xlTxt('Curva ABC: classe A = itens que somam até 80% do critério, B = até 95% e C = os demais. Critério deste relatório: ' + rotuloCrit + '.', XL.nota)]);
+  abas.push({nome:'Curva ABC', congelar:1, filtro:'A1:' + xlColuna(cabAbc.length - 1) + '1',
+    larguras:[5, 8, 48, 16, 10, 14, 18, 12, 12, 12, 22, 11, 13], linhas:abc});
+
+  /* --- aba Por dia --- */
+  const cabDia = ['Data','Movimentações','Entradas','Saídas','Ajustes','Saldo do dia','Valor movimentado (R$)'];
+  const dias = [cabDia.map(h => xlTxt(h, XL.cabecalho))];
+  b.diasLista.slice().reverse().forEach(d => {
+    dias.push([xlData(d.chave + 'T00:00:00', XL.data), xlNum(d.n, XL.inteiro), xlNum(d.e, XL.qtd), xlNum(d.s, XL.qtd), xlNum(d.a, XL.qtd), xlNum(d.e - d.s, XL.qtd), xlNum(d.v, XL.moeda)]);
+  });
+  abas.push({nome:'Por dia', congelar:1, filtro:'A1:G1', larguras:[14, 16, 14, 14, 14, 13, 22], linhas:dias});
+
+  /* --- aba Por hora --- */
+  const cabHora = ['Hora','Movimentações','Entradas','Saídas','Ajustes'];
+  const horas = [cabHora.map(h => xlTxt(h, XL.cabecalho))];
+  b.horas.forEach((h, i) => { horas.push([xlTxt(rel2(i) + ':00–' + rel2(i) + ':59', XL.centro), xlNum(h.n, XL.inteiro), xlNum(h.e, XL.qtd), xlNum(h.s, XL.qtd), xlNum(h.a, XL.qtd)]); });
+  abas.push({nome:'Por hora', congelar:1, filtro:'A1:E1', larguras:[15, 16, 14, 14, 14], linhas:horas});
+
+  const blob = xlPasta(abas, xlCorCabecalho());
+  const nome = 'relatorio-movimentacao-' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.xlsx';
+  if(baixarBlob(blob, nome))
+    toast(b.n + ' movimentação(ões) em 5 abas (Resumo, Movimentações, Curva ABC, Por dia, Por hora) com data e hora.', 'sucesso', 'Excel do relatório');
+}
+function relAvisoSemDados(){
+  if(state.movimentacoes.length) return false;
+  toast('Nenhuma movimentação registrada ainda. Registre entradas, saídas ou ajustes para gerar o relatório.', 'alerta', 'Sem movimentações');
+  return true;
+}
+$('#btnRelCsv').addEventListener('click', function(){ if(!relAvisoSemDados()) relCsv(); });
+$('#btnRelXlsx').addEventListener('click', function(){ if(!relAvisoSemDados()) relXlsx(); });
+$('#btnRelXlsx2').addEventListener('click', function(){ if(!relAvisoSemDados()) relXlsx(); });
+
+/* ---------- impressão / PDF do relatório ---------- */
+function relImprimir(){
+  const b = relCalcular();
+  if(!b.lista.length){ toast('Nenhuma movimentação no recorte atual — ajuste os filtros antes de imprimir.', 'alerta'); return; }
+  const tipos = [['Entradas', b.ent], ['Saídas', b.sai], ['Ajustes', b.aju]];
+  const linhaTipo = tipos.map(t => '<tr><td>' + t[0] + '</td><td class="text-right">' + esc(fmtQ(t[1].q)) + '</td>' +
+    '<td class="text-right">' + t[1].n + '</td><td class="text-right">' + esc(fmtBRL(t[1].v)) + '</td></tr>').join('');
+  const linhasPeriodo = b.serie.slice().reverse().slice(0, 90).map(s =>
+    '<tr><td>' + esc(s.rot) + '</td><td class="text-right">' + s.n + '</td><td class="text-right">' + esc(fmtQ(s.e)) + '</td>' +
+    '<td class="text-right">' + esc(fmtQ(s.s)) + '</td><td class="text-right">' + esc(fmtQ(s.a)) + '</td>' +
+    '<td class="text-right">' + esc(fmtQ(s.e - s.s)) + '</td><td class="text-right">' + esc(fmtBRL(s.v)) + '</td></tr>').join('');
+  const linhasCurva = b.curva.map(it =>
+    '<tr><td>' + it.ordem + '</td><td>' + it.classe + '</td><td>' + esc(it.ft) + '</td><td>' + esc(it.nome) + '</td>' +
+    '<td class="text-right">' + it.n + '</td><td class="text-right">' + esc(fmtQ(it.q)) + ' ' + esc(it.unidade) + '</td>' +
+    '<td class="text-right">' + esc(fmtBRL(it.v)) + '</td><td class="text-right">' + esc(relPct(it.pct)) + '</td>' +
+    '<td class="text-right">' + esc(relPct(it.pctAcum)) + '</td></tr>').join('');
+  const mostradas = b.lista.slice(0, 500);
+  const linhasMov = mostradas.map(m => {
+    const q = Math.abs(Number(m.quantidade) || 0), p = produto(m.produtoId);
+    return '<tr><td>' + esc(relDataCurta(m.data)) + '</td><td>' + esc(relHora(m.data)) + '</td>' +
+      '<td>' + esc(m.ft || '') + '</td><td>' + esc(m.nome || '') + '</td><td>' + esc(m.tipo || '') + '</td>' +
+      '<td>' + esc(relOrigem(m)) + '</td><td class="text-right">' + esc(fmtQ(q)) + ' ' + esc(m.unidade || '') + '</td>' +
+      '<td class="text-right">' + esc(fmtQ(m.antes)) + '</td><td class="text-right">' + esc(fmtQ(m.depois)) + '</td>' +
+      '<td class="text-right">' + esc(fmtBRL(q * (p ? (Number(p.preco) || 0) : 0))) + '</td>' +
+      '<td>' + esc(m.obs || '') + '</td><td>' + esc(m.operador || '') + '</td></tr>';
+  }).join('');
+  $('#printArea').innerHTML = '<div class="doc">' +
+    '<h1>Relatório de movimentação de estoque</h1>' +
+    '<div class="sub">Stoki SDY · Sistema de Carregamento e Estoque · emitido em ' + esc(relDataHoraSeg(agora())) + '</div>' +
+    '<div class="bloco">' +
+      '<div><span>Período</span><b>' + esc(relPeriodoRotulo(b.filtros)) + '</b></div>' +
+      '<div><span>Tipo</span><b>' + esc(b.filtros.tipo || 'todos') + '</b></div>' +
+      '<div><span>Produto</span><b>' + esc(b.filtros.produto ? (function(){ const p = produto(b.filtros.produto); return p ? p.ft : 'selecionado'; })() : 'todos') + '</b></div>' +
+      '<div><span>Origem</span><b>' + esc(b.filtros.origem || 'todas') + '</b></div>' +
+      '<div><span>Usuário</span><b>' + esc(b.filtros.operador || 'todos') + '</b></div>' +
+      '<div><span>Movimentações</span><b>' + esc(fmtQ(b.n)) + '</b></div>' +
+      '<div><span>Saldo do recorte</span><b>' + esc(fmtQ(b.entSaiQ)) + '</b></div>' +
+      '<div><span>Valor movimentado</span><b>' + esc(fmtBRL(b.valor)) + '</b></div>' +
+    '</div>' +
+    (b.filtros.busca ? '<p class="observacao"><b>Busca livre:</b> ' + esc(b.filtros.busca) + '</p>' : '') +
+    '<h3>Totais por tipo</h3><table><thead><tr><th>Tipo</th><th class="text-right">Quantidade</th><th class="text-right">Lançamentos</th><th class="text-right">Valor (R$)</th></tr></thead><tbody>' + linhaTipo + '</tbody></table>' +
+    '<h3>Totais por período (' + esc(b.filtros.agrupar) + ')</h3><table><thead><tr><th>Período</th><th class="text-right">Mov.</th><th class="text-right">Entradas</th><th class="text-right">Saídas</th><th class="text-right">Ajustes</th><th class="text-right">Saldo</th><th class="text-right">Valor (R$)</th></tr></thead><tbody>' + linhasPeriodo + '</tbody></table>' +
+    '<h3>Curva do produto (ABC)</h3><table><thead><tr><th>#</th><th>Classe</th><th>FT</th><th>Produto</th><th class="text-right">Mov.</th><th class="text-right">Qtd.</th><th class="text-right">Valor (R$)</th><th class="text-right">% total</th><th class="text-right">% acum.</th></tr></thead><tbody>' + linhasCurva + '</tbody></table>' +
+    '<h3>Movimentações (data e hora)</h3><table><thead><tr><th>Data</th><th>Hora</th><th>FT</th><th>Produto</th><th>Tipo</th><th>Origem</th><th class="text-right">Qtd.</th><th class="text-right">Antes</th><th class="text-right">Depois</th><th class="text-right">Valor</th><th>Observação</th><th>Usuário</th></tr></thead><tbody>' + linhasMov + '</tbody></table>' +
+    (b.lista.length > mostradas.length ? '<p class="observacao">Exibindo as ' + mostradas.length + ' movimentações mais recentes de ' + b.lista.length + '. A planilha .xlsx traz todas.</p>' : '') +
+    '<div class="assinaturas"><div>Conferente</div><div>Responsável pelo estoque</div><div>Gerência</div></div>' +
+    '</div>';
+  setTimeout(() => window.print(), 60);
+}
+$('#btnRelImprimir').addEventListener('click', relImprimir);
+
+/* ==================================================================
+   CONFERÊNCIA POR QR CODE / EAN
+   Leitura pela câmera (html5-qrcode), por foto ou digitada, sessão de
+   contagem, integração com romaneio/NF e etiquetas com QR + código de barras.
+   ================================================================== */
+const COD = {
+  scanner:null, rodando:false, ultimoTexto:'', ultimoEm:0, ecos:0,
+  ultimoProduto:null, ultimoCodigo:'', ultimoCampo:'', naoEncontrado:'',
+  cameras:[], cameraId:'', luz:false, luzSuportada:false,
+  sessao:{inicio:null, leituras:[], contagem:new Map()},
+  qtdRapida:1, requisicao:null
+};
+const COD_MAX_LEITURAS = 500;      /* histórico da sessão na tela */
+const COD_MAX_ETIQUETAS_TELA = 24; /* etiquetas geradas na tela */
+const COD_MAX_ETIQUETAS_IMPRESSAO = 240;
+const COD_ECO_MS = 2500;           /* mesma leitura repetida = eco da câmera */
+
+/* ---------- códigos de barras EAN-13 / EAN-8 (gerador próprio, sem bibliotecas) ---------- */
+const COD_EAN_L = ['0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'];
+const COD_EAN_G = ['0100111','0110011','0011011','0100001','0011101','0111001','0000101','0010001','0001001','0010111'];
+const COD_EAN_R = ['1110010','1100110','1101100','1000010','1011100','1001110','1010000','1000100','1001000','1110100'];
+const COD_EAN_PARIDADE = ['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'];
+function codDigitos(v){ return String(v == null ? '' : v).replace(/\D/g, ''); }
+function codEanDigitoVerificador(corpo){
+  /* o dígito imediatamente à esquerda do verificador pesa 3 e alterna para a esquerda */
+  let soma = 0, peso = 3;
+  for(let i = corpo.length - 1; i >= 0; i--){ soma += Number(corpo[i]) * peso; peso = peso === 3 ? 1 : 3; }
+  return (10 - soma % 10) % 10;
+}
+function codEanValido(codigo){
+  const d = codDigitos(codigo);
+  if(d.length === 13) return codEanDigitoVerificador(d.slice(0, 12)) === Number(d[12]);
+  if(d.length === 8) return codEanDigitoVerificador(d.slice(0, 7)) === Number(d[7]);
+  if(d.length === 12) return codEanDigitoVerificador(d.slice(0, 11)) === Number(d[11]);
+  return false;
+}
+/* Desenha o código de barras em SVG (EAN-13, UPC-A e EAN-8). Retorna '' se não der. */
+function codBarrasSvg(codigo, altura){
+  let d = codDigitos(codigo);
+  if(d.length === 12) d = '0' + d;             /* UPC-A = EAN-13 com zero à frente */
+  if(!codEanValido(codigo)) return '';
+  let bits = '';
+  if(d.length === 13){
+    bits = '101';
+    const paridade = COD_EAN_PARIDADE[Number(d[0])];
+    for(let i = 1; i <= 6; i++){
+      const dig = Number(d[i]);
+      bits += paridade[i - 1] === 'L' ? COD_EAN_L[dig] : COD_EAN_G[dig];
+    }
+    bits += '01010';
+    for(let i = 7; i <= 12; i++) bits += COD_EAN_R[Number(d[i])];
+    bits += '101';
+  } else {
+    bits = '101';
+    for(let i = 0; i <= 3; i++) bits += COD_EAN_L[Number(d[i])];
+    bits += '01010';
+    for(let i = 4; i <= 7; i++) bits += COD_EAN_R[Number(d[i])];
+    bits += '101';
+  }
+  const H = altura || 40;
+  const barras = [];
+  let i = 0;
+  while(i < bits.length){
+    if(bits[i] === '1'){
+      let fim = i;
+      while(fim < bits.length && bits[fim] === '1') fim++;
+      barras.push('<rect x="' + i + '" y="0" width="' + (fim - i) + '" height="' + H + '" fill="#000"/>');
+      i = fim;
+    } else i++;
+  }
+  const total = bits.length;
+  const alturaTexto = H + 9;
+  return '<svg class="et-barra" viewBox="0 0 ' + total + ' ' + (H + 12) + '" preserveAspectRatio="none" role="img" aria-label="Código de barras ' + esc(d) + '">' +
+    '<rect x="0" y="0" width="' + total + '" height="' + (H + 12) + '" fill="#fff"/>' + barras.join('') +
+    '<text x="' + (total / 2) + '" y="' + alturaTexto + '" text-anchor="middle" font-family="monospace" font-size="7" fill="#0b1b33">' + esc(d) + '</text></svg>';
+}
+
+/* ---------- QR Code (qrcode-generator) ---------- */
+function codQrSvg(texto, cellSize){
+  if(typeof qrcode === 'undefined') return '';
+  try{
+    const qr = qrcode(0, 'M');
+    qr.addData(String(texto == null ? '' : texto));
+    qr.make();
+    return qr.createSvgTag({cellSize: cellSize || 4, margin: 2, scalable: true, alt: 'QR Code', title: String(texto || '')});
+  }catch(e){
+    console.warn('Falha ao gerar o QR Code', e);
+    return '';
+  }
+}
+/* Conteúdo gravado nas etiquetas: aceita EAN vazio (produto sem código de barras cadastrado). */
+function codPayload(p){ return 'STOKI;' + (codDigitos(p.ean) || '-') + ';' + String(p.ft || ''); }
+
+/* ---------- requisições vindas do app Android (etiqueta/QR STOKIREQ) ---------- */
+const COD_REQ_PREFIXO = /^STOKIREQ\s*[;:]/i;
+function codReqParse(bruto){
+  const texto = String(bruto == null ? '' : bruto).trim();
+  if(!COD_REQ_PREFIXO.test(texto)) return null;
+  const campos = texto.replace(COD_REQ_PREFIXO, '').split(';').map(c => String(c || '').trim());
+  const numero = campos[0] || ('REQ-' + relChaveDia(new Date()));
+  const tipo = (campos[1] || 'MATERIAL').toUpperCase();
+  const usuario = campos[2] || '—';
+  const itensBrutos = (campos[3] || '').split(/[|\n]+/).map(i => i.trim()).filter(Boolean);
+  const obs = campos.slice(4).join('; ').trim();
+  const itens = itensBrutos.map(brutoItem => {
+    const m = brutoItem.match(/^(.*?)\s*[:=]\s*([\d.,]+)$/);
+    const chave = (m ? m[1] : brutoItem).trim();
+    const qtd = parseNum(m ? m[2] : 1) || 1;
+    const r = codBuscarProduto(chave);
+    return {ft:chave, qtd:qtd, produto:r.ok ? r.produto : null, nome:r.ok ? r.produto.nome : chave, unidade:r.ok ? r.produto.unidade : 'un'};
+  });
+  return {tipo:tipo, numero:numero, usuario:usuario, obs:obs, itens:itens, bruto:texto};
+}
+function codReqRotulo(tipo){
+  const t = String(tipo || '').toUpperCase();
+  if(t.charAt(0) === 'E' || t === 'ENTRADA') return {mov:'Entrada', rotulo:'Entrada de material', classe:'ok'};
+  if(t.charAt(0) === 'S' || t === 'SAIDA' || t === 'SAÍDA') return {mov:'Saída', rotulo:'Saída de material', classe:'bad'};
+  return {mov:'', rotulo:'Pedido de material (separação)', classe:'info'};
+}
+
+/* ---------- busca do produto a partir do que foi lido ---------- */
+const COD_PREFIXO = /^(stoki(-sdy)?|sdy|produto|etiqueta)\s*[;:|\-]\s*/i;
+function codTokens(bruto){
+  const tokens = [];
+  const add = v => {
+    let t = String(v == null ? '' : v).trim();
+    if(!t) return;
+    if(COD_PREFIXO.test(t)) t = t.replace(COD_PREFIXO, '').trim();
+    if(t && tokens.indexOf(t) === -1) tokens.push(t);
+  };
+  const texto = String(bruto == null ? '' : bruto).trim();
+  if(!texto) return tokens;
+  add(texto);
+  /* URL com parâmetros (etiqueta gerada pelo sistema ou catálogo) */
+  (texto.match(/[?&#](?:ean|ft|codigo|cod|code|gtin|produto|sku)=[^&\s]+/gi) || []).forEach(par => {
+    const m = par.match(/=([^&]+)$/);
+    if(!m) return;
+    try{ add(decodeURIComponent(m[1])); }catch(e){ add(m[1]); }
+  });
+  /* etiqueta composta: STOKI;EAN;FT (também aceita | , espaço e quebra de linha) */
+  texto.replace(COD_PREFIXO, '').split(/[;|,\n\r\t]+/).forEach(add);
+  texto.replace(COD_PREFIXO, '').split(/\s+/).forEach(add);
+  return tokens.filter(t => t.length >= 2);
+}
+function codBuscarProduto(bruto){
+  const tokens = codTokens(bruto);
+  if(!tokens.length) return {ok:false, msg:'Código vazio.', codigo:''};
+  const exato = (campo, valor) => {
+    const alvo = norm(valor);
+    if(!alvo) return null;
+    return state.produtos.find(p => norm(p[campo]) === alvo) || null;
+  };
+  for(const tk of tokens){
+    let p = exato('ean', tk); if(p) return {ok:true, produto:p, campo:'EAN', codigo:tk};
+    p = exato('ft', tk);       if(p) return {ok:true, produto:p, campo:'FT/Código', codigo:tk};
+    p = state.produtos.find(x => x.id === tk); if(p) return {ok:true, produto:p, campo:'ID interno', codigo:tk};
+  }
+  /* comparação só por dígitos (tolera espaços, traços, UPC-A ↔ EAN-13) */
+  for(const tk of tokens){
+    const d = codDigitos(tk);
+    if(d.length < 6) continue;
+    const tentativas = [d];
+    if(d.length === 12) tentativas.push('0' + d);
+    if(d.length === 13 && d.charAt(0) === '0') tentativas.push(d.slice(1));
+    for(const alvo of tentativas){
+      const p = state.produtos.find(x => codDigitos(x.ean) === alvo);
+      if(p) return {ok:true, produto:p, campo:'EAN', codigo:tk};
+    }
+  }
+  return {ok:false, msg:'Nenhum produto cadastrado com este código.', codigo:tokens[0], tokens:tokens};
+}
+
+/* ---------- câmera ---------- */
+function codLibOk(){ return typeof Html5Qrcode !== 'undefined'; }
+function codAvisoLeitor(txt){
+  const el = $('#codLeitorAviso');
+  if(!el) return;
+  if(txt){ el.textContent = txt; el.style.display = ''; } else el.style.display = 'none';
+}
+function codStatus(txt, classe){
+  const el = $('#codTagStatus');
+  if(el){ el.textContent = txt; el.className = 'tag' + (classe ? ' ' + classe : ''); }
+}
+function codFormatos(){
+  try{
+    const F = window.Html5QrcodeSupportedFormats || {};
+    const nomes = ['QR_CODE','EAN_13','EAN_8','UPC_A','UPC_E','CODE_128','CODE_39','CODE_93','ITF','CODABAR','DATA_MATRIX'];
+    const lista = nomes.map(n => F[n]).filter(v => v !== undefined);
+    return lista.length ? lista : null;
+  }catch(e){ return null; }
+}
+async function codListarCameras(){
+  if(!codLibOk()) return [];
+  try{
+    COD.cameras = (await Html5Qrcode.getCameras()) || [];
+  }catch(e){
+    COD.cameras = [];
+  }
+  const sel = $('#codCamera');
+  if(sel){
+    const atual = COD.cameraId;
+    sel.innerHTML = '<option value="">Câmera traseira (automática)</option>' + COD.cameras.map((c, i) =>
+      '<option value="' + esc(c.id) + '">' + esc(c.label || ('Câmera ' + (i + 1))) + '</option>').join('');
+    if(atual && COD.cameras.some(c => c.id === atual)) sel.value = atual;
+  }
+  return COD.cameras;
+}
+function codTorchDetectar(){
+  COD.luzSuportada = false; COD.luz = false;
+  try{
+    const cap = COD.scanner && COD.scanner.getRunningTrackCameraCapabilities ? COD.scanner.getRunningTrackCameraCapabilities() : null;
+    const f = cap && cap.torchFeature ? cap.torchFeature() : null;
+    COD.luzSuportada = !!(f && (!f.isSupported || f.isSupported()));
+  }catch(e){ COD.luzSuportada = false; }
+  const btn = $('#btnCodLuz');
+  if(btn){
+    btn.style.display = COD.luzSuportada ? '' : 'none';
+    btn.setAttribute('aria-pressed', 'false');
+  }
+}
+async function codIniciarCamera(){
+  if(COD.rodando) return;
+  if(!codLibOk()){
+    codAvisoLeitor('Biblioteca de leitura não carregada (assets/html5-qrcode.min.js). Use “Ler de uma foto” ou digite o código.');
+    return;
+  }
+  const caixa = $('#codLeitorCaixa');
+  codStatus('abrindo câmera…', 'info');
+  codAvisoLeitor('');
+  $('#codLeitorVazio').style.display = 'none';
+  caixa.classList.add('ativo');
+  try{
+    if(!COD.scanner){
+      const formatos = codFormatos();
+      const opt = { verbose:false, useBarCodeDetectorIfSupported:true };
+      if(formatos) opt.formatsToSupport = formatos;
+      COD.scanner = new Html5Qrcode('codLeitorVideo', opt);
+    }
+    if(!COD.cameras.length) await codListarCameras();
+    let cameraId = COD.cameraId;
+    if(!cameraId){
+      const traseira = COD.cameras.find(c => /back|traseira|rear|environment|trás/i.test(c.label || ''));
+      cameraId = (traseira || COD.cameras[COD.cameras.length - 1] || {}).id || '';
+    }
+    const config = {
+      fps: 10,
+      aspectRatio: 1.7777778,
+      qrbox: function(w, h){ const m = Math.min(w, h); return {width: Math.round(m * 0.92), height: Math.round(m * 0.62)}; },
+      experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+    };
+    await COD.scanner.start(cameraId ? {deviceId:{exact:cameraId}} : {facingMode:'environment'}, config, codAoLer, () => {});
+    COD.rodando = true;
+    $('#btnCamLigar').style.display = 'none';
+    $('#btnCamDesligar').style.display = '';
+    codStatus('câmera ligada', 'ok');
+    codTorchDetectar();
+    if(navigator.vibrate) navigator.vibrate(40);
+  }catch(e){
+    caixa.classList.remove('ativo');
+    $('#codLeitorVazio').style.display = '';
+    $('#btnCamLigar').style.display = '';
+    $('#btnCamDesligar').style.display = 'none';
+    COD.rodando = false;
+    codStatus('câmera indisponível', 'bad');
+    const nome = (e && (e.name || e.code)) || '';
+    const msg = /NotAllowed|Permission/i.test(nome + ' ' + (e && e.message))
+      ? 'Permissão de câmera negada. Autorize a câmera (Configurações › Apps › Stoki SDY › Permissões) ou use “Ler de uma foto” / o campo de digitação.'
+      : /NotFound|no camera|devices/i.test(nome + ' ' + (e && e.message))
+        ? 'Nenhuma câmera encontrada neste aparelho. Use “Ler de uma foto” ou digite o código.'
+        : 'Não foi possível abrir a câmera (' + ((e && (e.message || e.name || e.code)) || 'erro desconhecido') + '). Use “Ler de uma foto” ou digite o código.';
+    codAvisoLeitor(msg);
+    toast(msg, 'alerta', 'Câmera');
+    console.warn('Falha ao iniciar a câmera', e);
+  }
+}
+async function codPararCamera(silencioso){
+  const caixa = $('#codLeitorCaixa');
+  const estavaLigada = COD.rodando;
+  COD.rodando = false;   /* a interface reflete na hora; a câmera fecha em seguida */
+  try{
+    if(COD.scanner && estavaLigada){
+      await COD.scanner.stop();
+      COD.scanner.clear();
+    }
+  }catch(e){ console.warn('Falha ao parar a câmera', e); }
+  COD.luz = false;
+  if(caixa) caixa.classList.remove('ativo');
+  if($('#codLeitorVazio')) $('#codLeitorVazio').style.display = '';
+  if($('#btnCamLigar')) $('#btnCamLigar').style.display = '';
+  if($('#btnCamDesligar')) $('#btnCamDesligar').style.display = 'none';
+  if($('#btnCodLuz')) $('#btnCodLuz').style.display = 'none';
+  codStatus('câmera desligada');
+  codAvisoLeitor('');
+  if(!silencioso) toast('Câmera desligada.', 'info');
+}
+async function codLuz(){
+  if(!COD.luzSuportada || !COD.scanner) return;
+  try{
+    const cap = COD.scanner.getRunningTrackCameraCapabilities();
+    const f = cap.torchFeature();
+    COD.luz = !COD.luz;
+    f.apply(COD.luz);
+    $('#btnCodLuz').setAttribute('aria-pressed', String(COD.luz));
+    toast(COD.luz ? 'Lanterna ligada.' : 'Lanterna desligada.', 'info');
+  }catch(e){ toast('Este aparelho não permite controlar a lanterna.', 'alerta'); }
+}
+/* Leitura a partir de uma imagem (foto da etiqueta) */
+async function codLerArquivo(arq){
+  if(!arq) return;
+  if(!codLibOk()){ toast('Biblioteca de leitura não carregada.', 'erro'); return; }
+  toast('Lendo a imagem…', 'info', 'QR / código de barras');
+  const temp = new Html5Qrcode('codLeitorVideoLeitura', {verbose:false, useBarCodeDetectorIfSupported:true});
+  try{
+    const texto = await temp.scanFile(arq, true);
+    temp.clear();
+    codRegistrarLeitura(texto, 'foto');
+  }catch(e){
+    try{ temp.clear(); }catch(err){}
+    bipe('grave');
+    toast('Não foi possível ler o código nesta imagem. Aproxime mais a etiqueta, melhore a luz e tente de novo.', 'erro', 'Código não lido');
+  }
+}
+
+/* ---------- sessão de conferência ---------- */
+function codModoAtual(){
+  const el = $('#codModo');
+  return el ? el.value : 'checklist';
+}
+function codQtdLeitura(){ return Math.max(1, Math.floor(parseNum($('#codQtdLeitura') ? $('#codQtdLeitura').value : 1)) || 1); }
+function codSessaoAtiva(){ return COD.sessao.leituras.length > 0; }
+function codContagemDe(produtoId){ return COD.sessao.contagem.get(produtoId) || 0; }
+function codSomarContagem(produtoId, qtd){
+  COD.sessao.contagem.set(produtoId, codContagemDe(produtoId) + qtd);
+}
+/* Radar principal: chegou um código lido (câmera, foto ou digitação) */
+function codAoLer(texto){
+  codRegistrarLeitura(texto, 'câmera');
+}
+function codEco(txt){ return txt && txt === COD.ultimoTexto && (Date.now() - COD.ultimoEm) < COD_ECO_MS; }
+function codRegistrarLeitura(texto, via){
+  const bruto = String(texto == null ? '' : texto).trim();
+  if(!bruto) return;
+  /* a câmera repete o mesmo código várias vezes por segundo: a 2ª leitura seguida é eco */
+  const ts = Date.now();
+  if(via !== 'digitado' && bruto === COD.ultimoTexto && (ts - COD.ultimoEm) < COD_ECO_MS){
+    COD.ecos++;
+    codRenderEco();
+    return;
+  }
+  COD.ultimoTexto = bruto;
+  COD.ultimoEm = ts;
+  const req = codReqParse(bruto);
+  if(req){ codReceberRequisicao(req, via); return; }
+  const r = codBuscarProduto(bruto);
+  const modo = codModoAtual();
+  const qtd = codQtdLeitura();
+  if(!r.ok){
+    COD.naoEncontrado = r.codigo || bruto;
+    COD.ultimoProduto = null; COD.ultimoCodigo = bruto; COD.ultimoCampo = '';
+    bipe('grave');
+    if(navigator.vibrate) navigator.vibrate([80, 60, 80]);
+    toast('Código ' + bruto + ' — nenhum produto cadastrado. Cadastre o produto ou confira o EAN/FT.', 'erro', 'Não encontrado');
+    codRender();
+    return;
+  }
+  const p = r.produto;
+  COD.naoEncontrado = '';
+  COD.ultimoProduto = p.id;
+  COD.ultimoCodigo = r.codigo;
+  COD.ultimoCampo = r.campo;
+  if(!COD.sessao.inicio) COD.sessao.inicio = agora();
+  const leitura = {
+    id: uid(), data: agora(), produtoId: p.id, ft: p.ft, nome: p.nome, unidade: p.unidade,
+    codigo: r.codigo, campo: r.campo, quantidade: qtd, modo: modo, via: via || 'câmera',
+    estoqueAntes: Number(p.estoque) || 0
+  };
+  const extra = {romaneio:'', aviso:''};
+  if(modo === 'contagem'){
+    codSomarContagem(p.id, qtd);
+  } else if(modo === 'carga' || modo === 'recebimento'){
+    const res = codAplicarNoRomaneio(p, qtd, modo);
+    extra.romaneio = res.ok ? (modo === 'carga' ? 'Carga nº ' + res.carga : 'NF ' + res.nf) : '';
+    extra.aviso = res.ok ? '' : res.msg;
+    if(!res.ok){
+      leitura.modo = modo + ' (não aplicado)';
+      toast(res.msg, 'alerta', modo === 'carga' ? 'Conferência de carga' : 'Recebimento');
+    } else {
+      leitura.romaneio = extra.romaneio;
+    }
+  }
+  leitura.aviso = extra.aviso;
+  COD.sessao.leituras.unshift(leitura);
+  if(COD.sessao.leituras.length > COD_MAX_LEITURAS) COD.sessao.leituras.length = COD_MAX_LEITURAS;
+  bipe('agudo');
+  if(navigator.vibrate) navigator.vibrate(50);
+  const total = modo === 'contagem' ? codContagemDe(p.id) : null;
+  toast(p.ft + ' · ' + p.nome + (total != null ? ' — contado: ' + fmtQ(total) + ' ' + p.unidade : ' — leitura registrada') +
+    (extra.romaneio ? ' (' + extra.romaneio + ')' : ''), 'sucesso', '📷 ' + esc(r.campo || 'leitura'));
+  codRender();
+}
+/* Chegou uma requisição do app (QR/label STOKIREQ) */
+function codReceberRequisicao(req, via){
+  COD.requisicao = req;
+  const conhecidos = req.itens.filter(i => i.produto).length;
+  const naoAchados = req.itens.length - conhecidos;
+  bipe('agudo');
+  if(navigator.vibrate) navigator.vibrate([40, 40, 40]);
+  toast('Requisição ' + req.numero + ' de ' + req.usuario + ' — ' + req.itens.length + ' item(ns)' +
+    (naoAchados ? ' (' + naoAchados + ' sem cadastro)' : '') + (via === 'câmera' ? '' : ' · via ' + via) + '.',
+    conhecidos ? 'sucesso' : 'alerta', '📱 Requisição do app');
+  codRender();
+}
+function codReqAplicar(tipo){
+  const req = COD.requisicao;
+  if(!req) return;
+  const prontos = req.itens.filter(i => i.produto);
+  if(!prontos.length){ toast('Nenhum item desta requisição está cadastrado no sistema.', 'erro'); return; }
+  const rot = codReqRotulo(tipo);
+  let aplicados = 0, falhas = [];
+  prontos.forEach(i => {
+    const q = Number(i.qtd) || 0;
+    if(q <= 0) return;
+    const r = movimentar(i.produto.id, rot.mov, q, rot.rotulo + ' — requisição ' + req.numero + ' (app · ' + req.usuario + ')' + (req.obs ? ' · ' + req.obs : ''), 'Requisição');
+    if(r.ok) aplicados++; else falhas.push(i.ft + (r.falta ? ' (faltam ' + fmtQ(r.falta) + ')' : ' (' + r.msg + ')'));
+  });
+  salvar(); renderTudo();
+  if(aplicados) toast(aplicados + ' item(ns) baixados como ' + rot.mov.toLowerCase() + ' — requisição ' + req.numero + '.', 'sucesso', 'Requisição aplicada');
+  if(falhas.length) toast('Não foi possível aplicar: ' + falhas.join(' · '), 'erro', 'Itens com problema');
+}
+function codReqImprimir(){
+  const req = COD.requisicao;
+  if(!req) return;
+  const linhas = req.itens.map((i, idx) => {
+    const estoque = i.produto ? (Number(i.produto.estoque) || 0) : null;
+    return '<tr><td>' + (idx + 1) + '</td><td>' + esc(i.ft) + '</td><td>' + esc(i.nome) + '</td><td>' + esc(i.unidade) + '</td>' +
+      '<td class="text-right">' + esc(fmtQ(i.qtd)) + '</td><td class="text-right">' + (estoque == null ? '<b>sem cadastro</b>' : esc(fmtQ(estoque))) + '</td></tr>';
+  }).join('');
+  const total = req.itens.reduce((a, i) => a + (Number(i.qtd) || 0), 0);
+  $('#printArea').innerHTML = '<div class="doc"><h1>Lista de separação — requisição ' + esc(req.numero) + '</h1>' +
+    '<div class="sub">Stoki SDY · recebida do app em ' + esc(relDataHoraSeg(agora())) + '</div>' +
+    '<div class="bloco"><div><span>Solicitante</span><b>' + esc(req.usuario) + '</b></div>' +
+      '<div><span>Tipo</span><b>' + esc(codReqRotulo(req.tipo).rotulo) + '</b></div>' +
+      '<div><span>Itens</span><b>' + req.itens.length + '</b></div>' +
+      '<div><span>Quantidade total</span><b>' + esc(fmtQ(total)) + '</b></div></div>' +
+    (req.obs ? '<p class="observacao"><b>Observação:</b> ' + esc(req.obs) + '</p>' : '') +
+    '<table><thead><tr><th>#</th><th>FT / Código</th><th>Produto</th><th>Un</th><th class="text-right">Qtd.</th><th class="text-right">Estoque</th></tr></thead><tbody>' + linhas + '</tbody></table>' +
+    '<div class="assinaturas"><div>Separação</div><div>Conferência</div><div>Recebedor</div></div></div>';
+  setTimeout(() => window.print(), 60);
+}
+function codRenderRequisicao(){
+  const cartao = $('#codReqCartao');
+  const box = $('#codReqBox');
+  if(!cartao || !box) return;
+  const req = COD.requisicao;
+  if(!req){ cartao.style.display = 'none'; return; }
+  cartao.style.display = '';
+  const rot = codReqRotulo(req.tipo);
+  if($('#codReqTag')) $('#codReqTag').textContent = req.numero + ' · ' + req.usuario;
+  const total = req.itens.reduce((a, i) => a + (Number(i.qtd) || 0), 0);
+  const linhas = req.itens.map(i => {
+    const est = i.produto ? (Number(i.produto.estoque) || 0) : null;
+    const falta = i.produto && est < (Number(i.qtd) || 0);
+    return '<tr class="' + (i.produto ? (falta ? 'baixo' : '') : 'baixo') + '"><td class="ft">' + esc(i.ft) + '</td>' +
+      '<td class="forte">' + esc(i.nome) + (i.produto ? '' : ' <span class="tag bad">não cadastrado</span>') + '</td>' +
+      '<td class="num forte">' + esc(fmtQ(i.qtd)) + ' ' + esc(i.unidade) + '</td>' +
+      '<td class="num">' + (est == null ? '—' : esc(fmtQ(est))) + '</td>' +
+      '<td>' + (i.produto ? (falta ? '<span class="tag warn">estoque insuficiente</span>' : '<span class="tag ok">ok</span>') : '<span class="tag bad">cadastrar</span>') + '</td></tr>';
+  }).join('');
+  box.innerHTML = '<div class="cod-kpis">' +
+      '<div class="cx"><span>Requisição</span><b>' + esc(req.numero) + '</b><small>' + esc(rot.rotulo) + '</small></div>' +
+      '<div class="cx"><span>Solicitante</span><b>' + esc(req.usuario) + '</b><small>enviada pelo app</small></div>' +
+      '<div class="cx"><span>Itens</span><b>' + req.itens.length + '</b><small>' + esc(fmtQ(total)) + ' unidades no total</small></div>' +
+      '<div class="cx"><span>Sem cadastro</span><b>' + req.itens.filter(i => !i.produto).length + '</b><small>itens a cadastrar</small></div>' +
+    '</div>' +
+    (req.obs ? '<p class="dica">Observação do solicitante: <b>' + esc(req.obs) + '</b></p>' : '') +
+    '<div class="tabela-wrap tabela-interna"><table class="tabela tabela-min-700"><thead><tr><th>FT / Código</th><th>Produto</th><th class="num">Pedido</th><th class="num">Estoque</th><th>Conferência</th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+    '<div class="acoes-form">' +
+      (rot.mov ? '<button type="button" class="btn ' + (rot.mov === 'Entrada' ? 'ok' : 'perigo') + '" id="btnCodReqAplicar"><span class="ic">' + (rot.mov === 'Entrada' ? '▲' : '▼') + '</span>Aplicar como ' + esc(rot.mov) + ' no estoque</button>' : '') +
+      '<button type="button" class="btn" id="btnCodReqImprimir"><span class="ic">🖨️</span>Lista de separação</button>' +
+      '<button type="button" class="btn fantasma" id="btnCodReqCopiar"><span class="ic">📋</span>Copiar itens</button>' +
+    '</div>';
+  const ligar = (id, fn) => { const el = $('#' + id); if(el) el.addEventListener('click', fn); };
+  ligar('btnCodReqAplicar', () => codReqAplicar(rot.mov));
+  ligar('btnCodReqImprimir', codReqImprimir);
+  ligar('btnCodReqCopiar', () => {
+    const texto = req.itens.map(i => i.ft + ' — ' + i.nome + ' · ' + fmtQ(i.qtd) + ' ' + i.unidade).join('\n');
+    const pronto = 'Requisição ' + req.numero + ' · ' + req.usuario + '\n' + texto;
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(pronto).then(() => toast('Itens copiados.', 'sucesso'), () => toast(pronto, 'info'));
+    else toast(pronto, 'info');
+  });
+}
+
+/* Aplica a leitura no romaneio da carga ou na NF em andamento */
+function codAplicarNoRomaneio(p, qtd, modo){
+  if(modo === 'carga'){
+    let r = state.rascunhoConferencia;
+    if(!r){
+      const escolhida = $('#codCarga') ? $('#codCarga').value : '';
+      if(escolhida){
+        iniciarConferencia(escolhida);
+        r = state.rascunhoConferencia;
+      }
+    }
+    if(!r) return {ok:false, msg:'Nenhuma conferência de carga em andamento. Escolha a carga no seletor ou inicie na aba “Conferir carga”.'};
+    const carga = state.carregamentos.find(c => c.id === r.carregamentoId);
+    const it = r.itens.find(i => i.produtoId === p.id);
+    if(!it) return {ok:false, msg:'Este produto não faz parte do romaneio da carga nº ' + (carga ? carga.numero : '?') + '.'};
+    it.conferido = (Number(it.conferido) || 0) + qtd;
+    if(!it.codigo) it.codigo = p.ean || '';
+    salvar(true);
+    renderTabelaConf();
+    return {ok:true, carga: carga ? carga.numero : '?', item:it};
+  }
+  const r = state.rascunhoRecebimento;
+  if(!r) return {ok:false, msg:'Nenhum recebimento em andamento. Inicie a NF na aba “Receber”.'};
+  /* O romaneio da NF é montado na hora: o primeiro bipe do produto cria a linha. */
+  let it = r.itens.find(i => i.produtoId === p.id);
+  if(!it){
+    it = {produtoId:p.id, codigo:p.ean || '', esperado:0, conferido:0, porLeitura:true};
+    r.itens.push(it);
+  }
+  it.conferido = (Number(it.conferido) || 0) + qtd;
+  if(!it.codigo) it.codigo = p.ean || '';
+  salvar(true);
+  if(typeof renderTabelaReceb === 'function') renderTabelaReceb();
+  return {ok:true, nf:r.nf, item:it};
+}
+function codIrCadastrar(codigo){
+  irPara('produtos');
+  const cod = codDigitos(codigo) || String(codigo || '').trim();
+  if($('#pEan')) $('#pEan').value = /^\d{6,}$/.test(cod) ? cod : '';
+  if($('#pFt') && !/^\d{6,}$/.test(cod)) $('#pFt').value = cod;
+  if($('#pNome')) $('#pNome').focus();
+  toast('Preencha o cadastro do produto com o código lido: ' + cod, 'info', 'Novo produto');
+}
+
+/* ---------- ações rápidas no produto lido ---------- */
+function codQtdRapida(){ return COD.qtdRapida || codQtdLeitura(); }
+function codMovimentoRapido(tipo){
+  const p = COD.ultimoProduto ? produto(COD.ultimoProduto) : null;
+  if(!p){ toast('Bipe um produto primeiro.', 'alerta'); return; }
+  const qtd = codQtdRapida();
+  const r = movimentar(p.id, tipo, qtd, (tipo === 'Entrada' ? 'Entrada' : 'Saída') + ' rápida por leitura de código (' + COD.ultimoCodigo + ')', 'Leitura');
+  if(!r.ok){ toast(r.msg, 'erro', 'Movimentação não realizada'); return; }
+  toast(p.ft + ' · ' + tipo + ' de ' + fmtQ(qtd) + ' ' + p.unidade + '. Estoque: ' + fmtQ(r.depois) + '.', 'sucesso');
+  salvar(); renderTudo();
+}
+/* Aplica a contagem da sessão no estoque */
+async function codAplicarContagem(){
+  const itens = Array.from(COD.sessao.contagem.entries());
+  if(!itens.length){ toast('Nenhuma contagem na sessão. Bipe os produtos no modo “Contagem”.', 'alerta', 'Nada para aplicar'); return; }
+  const linhas = itens.map(([pid, qtd]) => {
+    const p = produto(pid) || {ft:'—', nome:'Produto removido', unidade:'un', estoque:0};
+    const est = Number(p.estoque) || 0, dif = qtd - est;
+    return '<tr><td>' + esc(p.ft) + ' — ' + esc(p.nome) + '</td><td class="num">' + esc(fmtQ(qtd)) + '</td>' +
+      '<td class="num">' + esc(fmtQ(est)) + '</td><td class="num ' + (dif === 0 ? '' : 'text-bad') + '">' + (dif > 0 ? '+' : '') + esc(fmtQ(dif)) + '</td></tr>';
+  }).join('');
+  const promessa = abrirModal({
+    titulo:'Aplicar contagem por leitura de código', icone:'📷', largo:true, okTexto:'Aplicar e registrar movimentação',
+    html:'<p>Foram contados <b>' + itens.length + '</b> produto(s) nesta sessão. Escolha como aplicar:</p>' +
+      '<div class="campo mt-12"><label for="codAplicarModo">Forma de aplicação</label>' +
+      '<select id="codAplicarModo">' +
+        '<option value="ajuste">Ajustar o estoque para a contagem (inventário)</option>' +
+        '<option value="diferenca">Registrar só a diferença (entrada/saída)</option>' +
+      '</select></div>' +
+      '<div class="tabela-wrap tabela-interna"><table class="tabela tabela-min-520"><thead><tr><th>Produto</th><th class="num">Contado</th><th class="num">Estoque</th><th class="num">Diferença</th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+      '<p class="dica mt-10">Toda aplicação gera movimentação com origem “Leitura” e usuário logado — visível no relatório de movimentação.</p>'
+  });
+  const sel = document.getElementById('codAplicarModo');
+  const escolha = {v: sel ? sel.value : 'ajuste'};
+  if(sel) sel.addEventListener('change', () => { escolha.v = sel.value; });
+  const ok = await promessa;
+  if(!ok) return;
+  let aplicados = 0, divergentes = 0;
+  itens.forEach(([pid, qtd]) => {
+    const p = produto(pid); if(!p) return;
+    const est = Number(p.estoque) || 0;
+    const dif = qtd - est;
+    if(!dif){ aplicados++; return; }
+    let res;
+    if(escolha.v === 'ajuste') res = ajustarEstoque(pid, qtd, 'Contagem por leitura de código (' + (COD.sessao.leituras.length) + ' leituras)', 'Leitura');
+    else res = movimentar(pid, dif > 0 ? 'Entrada' : 'Saída', Math.abs(dif), 'Ajuste de contagem por leitura de código', 'Leitura');
+    if(res.ok){ aplicados++; divergentes++; }
+  });
+  salvar(); renderTudo();
+  toast(aplicados + ' produto(s) aplicados' + (divergentes ? ' · ' + divergentes + ' com divergência corrigida' : '') + '.', 'sucesso', 'Contagem aplicada');
+}
+/* Planilha da sessão */
+function codSessaoXlsx(){
+  if(!codSessaoAtiva()){ toast('Nenhuma leitura na sessão.', 'alerta', 'Nada para exportar'); return; }
+  const leituras = COD.sessao.leituras;
+  const cab = ['Data','Hora','Produto','FT / Código','Código lido','Campo','Modo','Via','Qtd. lida','Estoque no momento','Romaneio','Observação'];
+  const linhas = [cab.map(h => xlTxt(h, XL.cabecalho))];
+  leituras.slice().reverse().forEach(l => {
+    linhas.push([
+      xlData(l.data, XL.data), xlData(l.data, XL.hora), xlTxt(l.nome), xlTxt(l.ft), xlTxt(l.codigo), xlTxt(l.campo),
+      xlTxt(l.modo), xlTxt(l.via), xlNum(l.quantidade, XL.qtd), xlNum(l.estoqueAntes, XL.qtd),
+      xlTxt(l.romaneio || ''), xlTxt(l.aviso || '')
+    ]);
+  });
+  const contagem = [['Produto','FT / Código','Unidade','Qtd. contada','Estoque atual','Diferença','Valor em estoque (R$)'].map(h => xlTxt(h, XL.cabecalho))];
+  Array.from(COD.sessao.contagem.entries()).forEach(([pid, qtd]) => {
+    const p = produto(pid) || {ft:'—', nome:'Produto removido', unidade:'un', estoque:0, preco:0};
+    const est = Number(p.estoque) || 0;
+    contagem.push([xlTxt(p.nome), xlTxt(p.ft), xlTxt(p.unidade), xlNum(qtd, XL.qtd), xlNum(est, XL.qtd),
+      xlNum(qtd - est, XL.qtd), xlNum(qtd * (Number(p.preco) || 0), XL.moeda)]);
+  });
+  const resumo = [
+    [xlTxt('Conferência por QR Code / EAN — Stoki SDY', XL.titulo)],
+    [xlTxt('Emitido em ' + relDataHoraSeg(agora()) + ' · usuário ' + (operadorAtual() || '—'), XL.nota)],
+    [],
+    [xlTxt('Início da sessão', XL.texto), COD.sessao.inicio ? xlData(COD.sessao.inicio, XL.dataHora) : xlTxt('—')],
+    [xlTxt('Leituras registradas', XL.texto), xlNum(leituras.length, XL.inteiro)],
+    [xlTxt('Produtos distintos lidos', XL.texto), xlNum(new Set(leituras.map(l => l.produtoId)).size, XL.inteiro)],
+    [xlTxt('Produtos contados', XL.texto), xlNum(COD.sessao.contagem.size, XL.inteiro)],
+    [xlTxt('Quantidade total contada', XL.texto), xlNum(Array.from(COD.sessao.contagem.values()).reduce((a, b) => a + b, 0), XL.qtd)]
+  ];
+  const blob = xlPasta([
+    {nome:'Resumo', ativa:true, larguras:[34, 30, 16, 16], linhas:resumo},
+    {nome:'Leituras', congelar:1, filtro:'A1:L1', larguras:[11, 10, 44, 16, 20, 12, 16, 10, 12, 18, 18, 40], linhas:linhas},
+    {nome:'Contagem', congelar:1, filtro:'A1:G1', larguras:[44, 16, 10, 14, 14, 12, 22], linhas:contagem}
+  ], xlCorCabecalho());
+  const nome = 'conferencia-codigos-' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.xlsx';
+  if(baixarBlob(blob, nome)) toast(leituras.length + ' leitura(s) em 3 abas (Resumo, Leituras, Contagem).', 'sucesso', 'Excel da conferência');
+}
+function codLimparSessao(){
+  COD.sessao = {inicio:null, leituras:[], contagem:new Map()};
+  COD.ecos = 0;
+  codRender();
+  toast('Sessão de conferência zerada.', 'info');
+}
+
+/* ---------- etiquetas ---------- */
+function codEtiquetaHtml(p){
+  const ean = codDigitos(p.ean);
+  const barras = ean ? codBarrasSvg(ean, 40) : '';
+  const qr = codQrSvg(codPayload(p), 4);
+  return '<div class="etiqueta">' +
+    '<span class="et-un">' + esc(p.unidade || 'un') + '</span>' +
+    '<span class="et-nome">' + esc(p.nome || 'Produto') + '</span>' +
+    '<span class="et-ft">' + esc(p.ft || '—') + '</span>' +
+    (qr ? '<div class="et-qr">' + qr + '</div>' : '<span class="dica">QR indisponível</span>') +
+    (barras ? barras : (ean ? '<span class="dica">EAN ' + esc(ean) + ' (dígito verificador inválido)</span>' : '<span class="dica">sem EAN cadastrado</span>')) +
+    '</div>';
+}
+function codRenderEtiquetas(){
+  const grade = $('#codEtiquetasGrade');
+  if(!grade) return;
+  const sel = $('#codEtiquetaProduto');
+  const escolhido = sel ? sel.value : '';
+  const lista = escolhido ? [produto(escolhido)].filter(Boolean) : produtosOrdenados();
+  if(!lista.length){
+    grade.innerHTML = '<div class="etiqueta vazia">Nenhum produto cadastrado para gerar etiquetas.</div>';
+    return;
+  }
+  const mostradas = lista.slice(0, COD_MAX_ETIQUETAS_TELA);
+  grade.innerHTML = mostradas.map(codEtiquetaHtml).join('') +
+    (lista.length > mostradas.length ? '<div class="etiqueta vazia">Exibindo ' + mostradas.length + ' de ' + lista.length + ' produtos.<br>Use <b>Imprimir etiquetas</b> para gerar todas.</div>' : '');
+}
+function codImprimirEtiquetas(){
+  const sel = $('#codEtiquetaProduto');
+  const escolhido = sel ? sel.value : '';
+  const lista = (escolhido ? [produto(escolhido)].filter(Boolean) : produtosOrdenados()).slice(0, COD_MAX_ETIQUETAS_IMPRESSAO);
+  if(!lista.length){ toast('Nenhum produto cadastrado para gerar etiquetas.', 'alerta'); return; }
+  $('#printArea').innerHTML = '<div class="doc"><h1>Etiquetas de produto — QR Code e código de barras</h1>' +
+    '<div class="sub">Stoki SDY · ' + esc(relDataHoraSeg(agora())) + ' · ' + lista.length + ' etiqueta(s)' +
+    (escolhido ? '' : ' · todos os produtos') + '. Bipe o QR Code ou o código de barras na aba “Bipar código”.</div>' +
+    '<div class="etiquetas">' + lista.map(codEtiquetaHtml).join('') + '</div></div>';
+  setTimeout(() => window.print(), 60);
+}
+/* Prévia grande do QR/código do produto selecionado */
+function codGerarQrSelecionado(){
+  const sel = $('#codEtiquetaProduto');
+  const p = sel && sel.value ? produto(sel.value) : COD.ultimoProduto ? produto(COD.ultimoProduto) : null;
+  if(!p){ toast('Escolha um produto na lista para gerar o QR.', 'alerta'); return; }
+  const qr = codQrSvg(codPayload(p), 6);
+  modalInfo('QR Code · ' + p.ft, '<div class="cod-produto"><div class="cod-topo"><h4>' + esc(p.nome) + '</h4></div>' +
+    '<div class="cod-kpis"><div class="cx"><span>FT / Código</span><b>' + esc(p.ft) + '</b></div>' +
+    '<div class="cx"><span>EAN</span><b>' + esc(codDigitos(p.ean) || '—') + '</b></div>' +
+    '<div class="cx"><span>Estoque</span><b>' + esc(fmtQ(p.estoque)) + ' ' + esc(p.unidade) + '</b></div></div>' +
+    '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><div class="cod-qr" style="padding:10px">' + (qr || 'QR indisponível') + '</div>' +
+    (codDigitos(p.ean) ? '<div style="flex:1;min-width:200px">' + codBarrasSvg(codDigitos(p.ean), 60) + '</div>' : '') + '</div>' +
+    '<p class="dica mt-10">Conteúdo do QR: <span class="mono">' + esc(codPayload(p)) + '</span></p></div>', '🔳');
+}
+
+/* ---------- render da aba ---------- */
+function codRenderEco(){
+  const el = $('#codTagEco');
+  if(el) el.innerHTML = COD.ecos ? '<span class="tag eco">' + COD.ecos + ' leitura(s) repetida(s) ignorada(s)</span>' : '—';
+}
+function codRenderCargaSelect(){
+  const sel = $('#codCarga');
+  const wrap = $('#wrapCodCarga');
+  if(!sel || !wrap) return;
+  const modo = codModoAtual();
+  const mostra = modo === 'carga' || modo === 'recebimento';
+  wrap.style.display = mostra ? '' : 'none';
+  if(!mostra){ sel.innerHTML = ''; return; }
+  if(modo === 'carga'){
+    const pendentes = state.carregamentos.filter(c => c.status === 'Pendente');
+    const atual = sel.value;
+    sel.innerHTML = pendentes.length
+      ? pendentes.map(c => '<option value="' + esc(c.id) + '">Carga nº ' + esc(c.numero) + ' → ' + esc(c.destino) + '</option>').join('')
+      : '<option value="">— nenhum carregamento pendente —</option>';
+    const r = state.rascunhoConferencia;
+    if(r && pendentes.some(c => c.id === r.carregamentoId)) sel.value = r.carregamentoId;
+    else if(atual && pendentes.some(c => c.id === atual)) sel.value = atual;
+  } else {
+    const r = state.rascunhoRecebimento;
+    sel.innerHTML = r
+      ? '<option value="' + esc(r.id) + '">NF ' + esc(r.nf) + ' — ' + esc(r.fornecedor) + '</option>'
+      : '<option value="">— nenhum recebimento em andamento —</option>';
+  }
+}
+function codRenderProduto(){
+  const box = $('#codProdutoBox');
+  if(!box) return;
+  const p = COD.ultimoProduto ? produto(COD.ultimoProduto) : null;
+  if(!p){
+    if(COD.naoEncontrado){
+      box.innerHTML = '<div class="falta-linha">Código <b>' + esc(COD.naoEncontrado) + '</b> não corresponde a nenhum produto cadastrado.</div>' +
+        '<div class="acoes-form"><button type="button" class="btn primario" id="btnCodCadastrar"><span class="ic">✨</span>Cadastrar produto com este código</button>' +
+        '<button type="button" class="btn fantasma" id="btnCodBuscarProd"><span class="ic">🗂️</span>Ver produtos cadastrados</button></div>';
+      const b1 = $('#btnCodCadastrar'); if(b1) b1.addEventListener('click', () => codIrCadastrar(COD.naoEncontrado));
+      const b2 = $('#btnCodBuscarProd'); if(b2) b2.addEventListener('click', () => { irPara('produtos'); if($('#buscaProduto')){ $('#buscaProduto').value = COD.naoEncontrado; renderProdutos(); } });
+      return;
+    }
+    box.innerHTML = '<div class="vazio"><span class="ic">📷</span><b>Nenhum produto lido ainda</b>Bipe o QR Code ou o código de barras do produto — ou digite o código no campo acima.</div>';
+    return;
+  }
+  const est = Number(p.estoque) || 0;
+  const minimo = Number(p.minimo) || 0;
+  const critico = est <= minimo;
+  const contado = codContagemDe(p.id);
+  const qr = codQrSvg(codPayload(p), 4);
+  box.innerHTML = '<div class="cod-produto">' +
+    '<div class="cod-topo"><h4>' + esc(p.nome) + '</h4>' +
+      '<span class="tag accent" id="codTagCampo">' + esc(COD.ultimoCampo || 'código') + '</span>' +
+      '<span class="tag ean">' + esc(COD.ultimoCodigo || '') + '</span>' +
+      (critico ? '<span class="tag bad">abaixo do mínimo</span>' : '<span class="tag ok">estoque em dia</span>') +
+      '<span class="push-right"></span>' +
+      '<div class="cod-qr">' + (qr || '') + '</div>' +
+    '</div>' +
+    '<div class="cod-kpis">' +
+      '<div class="cx"><span>Estoque atual</span><b>' + esc(fmtQ(est)) + ' ' + esc(p.unidade) + '</b><small>mínimo ' + esc(fmtQ(minimo)) + '</small></div>' +
+      '<div class="cx"><span>Contado na sessão</span><b>' + esc(fmtQ(contado)) + ' ' + esc(p.unidade) + '</b><small>' + (contado ? (contado === est ? 'igual ao estoque' : 'diferença ' + (contado > est ? '+' : '') + fmtQ(contado - est)) : 'modo ' + codModoAtual()) + '</small></div>' +
+      '<div class="cx"><span>FT / Código</span><b>' + esc(p.ft) + '</b><small>' + esc(p.estrutura || '—') + '</small></div>' +
+      '<div class="cx"><span>EAN</span><b>' + esc(codDigitos(p.ean) || '—') + '</b><small>' + (codDigitos(p.ean) ? 'código de barras' : 'sem EAN') + '</small></div>' +
+      '<div class="cx' + (critico ? ' alerta' : '') + '"><span>Valor em estoque</span><b>' + esc(fmtBRL(est * (Number(p.preco) || 0))) + '</b><small>preço ' + esc(fmtBRL(p.preco)) + '</small></div>' +
+    '</div>' +
+    '<div class="cod-acoes">' +
+      '<label class="dica" for="codQtdRapida">Quantidade</label>' +
+      '<input type="number" id="codQtdRapida" class="mono qtd" min="1" step="1" value="' + esc(codQtdRapida()) + '">' +
+      '<button type="button" class="btn ok" id="btnCodEntrada"><span class="ic">▲</span>Entrada rápida</button>' +
+      '<button type="button" class="btn perigo" id="btnCodSaida"><span class="ic">▼</span>Saída rápida</button>' +
+      '<button type="button" class="btn fantasma" id="btnCodVerProduto"><span class="ic">🗂️</span>Ver no cadastro</button>' +
+      '<button type="button" class="btn fantasma" id="btnCodQrProduto"><span class="ic">🔳</span>QR / código de barras</button>' +
+    '</div></div>';
+  const ligar = (id, fn) => { const el = $('#' + id); if(el) el.addEventListener('click', fn); };
+  const qtdRap = $('#codQtdRapida');
+  if(qtdRap) qtdRap.addEventListener('input', () => { COD.qtdRapida = Math.max(1, Math.floor(parseNum(qtdRap.value)) || 1); });
+  ligar('btnCodEntrada', () => codMovimentoRapido('Entrada'));
+  ligar('btnCodSaida', () => codMovimentoRapido('Saída'));
+  ligar('btnCodVerProduto', () => {
+    irPara('produtos');
+    if($('#buscaProduto')){ $('#buscaProduto').value = p.ft; renderProdutos(); }
+  });
+  ligar('btnCodQrProduto', () => {
+    const sel = $('#codEtiquetaProduto');
+    if(sel) sel.value = p.id;
+    codRenderEtiquetas();
+    codGerarQrSelecionado();
+  });
+}
+function codRenderSessao(){
+  const box = $('#codSessaoBox');
+  const tb = $('#codSessaoTbody');
+  const leituras = COD.sessao.leituras;
+  const modo = codModoAtual();
+  if($('#codTagSessao')) $('#codTagSessao').textContent = leituras.length
+    ? leituras.length + ' leitura(s) · desde ' + relHora(COD.sessao.inicio) + ' · modo ' + modo
+    : 'nenhuma leitura';
+  const btnAplicar = $('#btnCodAplicar');
+  if(btnAplicar){
+    btnAplicar.style.display = modo === 'contagem' ? '' : 'none';
+    btnAplicar.disabled = !COD.sessao.contagem.size;
+  }
+  if(box){
+    if(!leituras.length){
+      box.innerHTML = '<div class="vazio"><span class="ic">🧾</span><b>Sessão vazia</b>As leituras aparecem aqui, com data e hora — úteis para conferir depois.</div>';
+    } else {
+      const produtosLidos = new Set(leituras.map(l => l.produtoId));
+      const totalContado = Array.from(COD.sessao.contagem.values()).reduce((a, b) => a + b, 0);
+      const contados = Array.from(COD.sessao.contagem.entries());
+      const iguais = contados.filter(([pid, q]) => (Number((produto(pid) || {}).estoque) || 0) === q).length;
+      const comDif = contados.filter(([pid, q]) => (Number((produto(pid) || {}).estoque) || 0) !== q);
+      box.innerHTML = '<div class="cod-kpis">' +
+        '<div class="cx"><span>Leituras</span><b>' + leituras.length + '</b><small>' + COD.ecos + ' repetida(s) ignorada(s)</small></div>' +
+        '<div class="cx"><span>Produtos distintos</span><b>' + produtosLidos.size + '</b><small>de ' + state.produtos.length + ' cadastrados</small></div>' +
+        '<div class="cx"><span>Qtd. contada</span><b>' + esc(fmtQ(totalContado)) + '</b><small>' + COD.sessao.contagem.size + ' produto(s) contado(s)</small></div>' +
+        '<div class="cx' + (comDif.length ? ' alerta' : '') + '"><span>Divergências</span><b>' + comDif.length + '</b><small>' + iguais + ' produto(s) batendo</small></div>' +
+      '</div>' +
+      (comDif.length ? '<div class="falta-linha aviso-warn">Produtos com contagem diferente do estoque: ' +
+        comDif.slice(0, 6).map(([pid, q]) => { const pp = produto(pid) || {ft:'—', unidade:''}; const d = q - (Number(pp.estoque) || 0); return esc(pp.ft) + ' (' + (d > 0 ? '+' : '') + fmtQ(d) + ')'; }).join(' · ') +
+        (comDif.length > 6 ? '…' : '') + '</div>' : '') +
+      (modo === 'contagem' ? '<p class="dica">Confira a contagem e toque em <b>Aplicar contagem</b> para ajustar o estoque ou registrar as diferenças.</p>'
+        : modo === 'carga' ? '<p class="dica">As leituras estão sendo aplicadas no romaneio. Abra a aba <b>Conferir carga</b> para revisar e finalizar a baixa.</p>'
+        : modo === 'recebimento' ? '<p class="dica">As leituras estão sendo somadas às quantidades conferidas da NF em andamento.</p>'
+        : '<p class="dica">Modo checklist: as leituras ficam registradas na sessão, sem alterar o estoque.</p>');
+    }
+  }
+  if(tb){
+    tb.innerHTML = leituras.length ? leituras.map(l => {
+      const p = produto(l.produtoId);
+      return '<tr><td class="ft">' + esc(relHora(l.data)) + '</td>' +
+        '<td class="forte">' + esc(l.nome) + (p ? '' : ' <span class="tag warn">fora do cadastro</span>') + '</td>' +
+        '<td class="ft">' + esc(l.ft) + '</td>' +
+        '<td class="ft">' + esc(l.codigo) + ' <span class="tag">' + esc(l.campo) + '</span></td>' +
+        '<td class="num forte">' + esc(fmtQ(l.quantidade)) + ' ' + esc(l.unidade) + '</td>' +
+        '<td class="num">' + esc(fmtQ(p ? p.estoque : l.estoqueAntes)) + '</td>' +
+        '<td>' + esc(l.modo) + ' · ' + esc(l.via) + (l.romaneio ? ' <span class="tag info">' + esc(l.romaneio) + '</span>' : '') + '</td></tr>';
+    }).join('') : '<tr><td colspan="7"><div class="vazio"><span class="ic">🕘</span><b>Nenhuma leitura</b>Bipe um código para começar.</div></td></tr>';
+  }
+}
+function codRender(){
+  if(!$('#tab-codigos')) return;
+  codRenderCargaSelect();
+  codRenderRequisicao();
+  codRenderProduto();
+  codRenderSessao();
+  codRenderEtiquetas();
+  codRenderEco();
+  const sel = $('#codEtiquetaProduto');
+  if(sel){
+    const atual = sel.value;
+    sel.innerHTML = '<option value="">Todos os produtos</option>' + produtosOrdenados().map(p =>
+      '<option value="' + esc(p.id) + '">' + esc(p.nome) + ' — ' + esc(p.ft) + '</option>').join('');
+    if(atual && state.produtos.some(p => p.id === atual)) sel.value = atual;
+  }
+}
+
+/* ---------- eventos da aba ---------- */
+$('#btnCamLigar').addEventListener('click', codIniciarCamera);
+$('#btnCamDesligar').addEventListener('click', () => codPararCamera(false));
+if($('#btnCodLuz')) $('#btnCodLuz').addEventListener('click', codLuz);
+$('#codModo').addEventListener('change', function(){
+  COD.sessao.leituras.forEach(l => { if(!l.modo) l.modo = codModoAtual(); });
+  codRender();
+});
+$('#codCamera').addEventListener('change', async function(){
+  COD.cameraId = this.value;
+  if(COD.rodando){ await codPararCamera(true); codIniciarCamera(); }
+});
+$('#btnCodManual').addEventListener('click', function(){
+  const el = $('#codManual');
+  const valor = el.value.trim();
+  if(!valor){ toast('Digite ou cole um código (EAN, FT ou etiqueta).', 'alerta'); return; }
+  codRegistrarLeitura(valor, 'digitado');
+  el.value = '';
+});
+$('#codManual').addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  e.preventDefault();
+  $('#btnCodManual').click();
+});
+$('#btnCodFoto').addEventListener('click', () => $('#codArquivo').click());
+$('#codArquivo').addEventListener('change', async function(e){
+  const arq = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if(arq) await codLerArquivo(arq);
+});
+$('#btnCodEtiquetas').addEventListener('click', function(){
+  codRenderEtiquetas();
+  const cartao = $('#codEtiquetasGrade');
+  if(cartao) cartao.scrollIntoView({behavior:'smooth', block:'center'});
+});
+$('#btnCodEtiquetaQr').addEventListener('click', codGerarQrSelecionado);
+$('#btnCodReqFechar').addEventListener('click', () => { COD.requisicao = null; codRender(); });
+$('#btnCodEtiquetaImprimir').addEventListener('click', codImprimirEtiquetas);
+$('#btnCodAplicar').addEventListener('click', codAplicarContagem);
+$('#btnCodXlsx').addEventListener('click', codSessaoXlsx);
+$('#btnCodLimparSessao').addEventListener('click', async function(){
+  if(!codSessaoAtiva()){ codLimparSessao(); return; }
+  const ok = await abrirModal({titulo:'Zerar a sessão de conferência', icone:'🧹', perigo:true, okTexto:'Zerar sessão',
+    html:'<p>As <b>' + COD.sessao.leituras.length + '</b> leitura(s) e as contagens desta sessão serão descartadas. Nenhuma baixa de estoque é desfeita.</p>'});
+  if(ok) codLimparSessao();
+});
+
 
 /* ---------------- tema (botão) ---------------- */
 $('#btnTema').addEventListener('click', function(){
@@ -2875,6 +4889,51 @@ $('#nuvemStatus').addEventListener('click', () => { if(Nuvem.ativo){ Nuvem.sujo 
 const Auth = { sessao:null, perfil:null, lembrar:false, demo:false };
 
 /* ---------- acesso Demo (isolado do Supabase) ---------- */
+/* Histórico de exemplo: movimentações espalhadas pelos últimos 30 dias, fechando na
+   posição atual de cada produto — deixa o relatório e o dashboard visivelmente úteis. */
+function semearMovimentosDemo(){
+  const movs = [];
+  const operadores = ['Usuário Demo', 'Maria Souza', 'João Lima'];
+  const hoje = new Date();
+  state.produtos.forEach((p, idx) => {
+    const passos = 14 + idx * 4;
+    let saldo = 0;
+    for(let k = 0; k < passos; k++){
+      const diasAtras = Math.max(0, Math.round(30 * (1 - (k + 1) / passos)));
+      const quando = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - diasAtras,
+        7 + ((k * 5 + idx * 3) % 12), (k * 17 + idx * 11) % 60, (k * 23 + idx * 7) % 60);
+      const tentarSaida = (k % 3 === 1) && saldo > 0;
+      const qtdBase = 20 + ((k * 37 + idx * 53) % 180);
+      const tipo = tentarSaida ? 'Saída' : 'Entrada';
+      const quantidade = tipo === 'Saída' ? Math.max(1, Math.min(saldo, qtdBase)) : qtdBase;
+      const antes = saldo;
+      saldo = tipo === 'Saída' ? saldo - quantidade : saldo + quantidade;
+      const origem = tipo === 'Entrada' ? (k % 4 === 0 ? 'Recebimento' : 'Manual') : (k % 2 === 0 ? 'Carregamento' : 'Manual');
+      movs.push({
+        id:'demo-mov-' + idx + '-' + k,
+        data: quando.toISOString(),
+        produtoId: p.id, ft: p.ft, nome: p.nome, unidade: p.unidade,
+        tipo: tipo, quantidade: quantidade, antes: antes, depois: saldo,
+        obs: origem === 'Recebimento' ? 'Entrada — Recebimento NF ' + (1000 + k) + ' (Indústria SDY)'
+           : origem === 'Carregamento' ? 'Saída — Carga nº ' + String(k + 1).padStart(4, '0') + ' · destino CD ' + (k % 3 ? 'Recife' : 'Salvador')
+           : tipo + ' manual (demonstração)',
+        origem: origem,
+        operador: operadores[(k + idx) % operadores.length]
+      });
+    }
+    if(saldo !== p.estoque){
+      const quando = new Date(Date.now() - 45 * 60000);
+      movs.push({
+        id:'demo-ajuste-' + idx, data: quando.toISOString(),
+        produtoId: p.id, ft: p.ft, nome: p.nome, unidade: p.unidade,
+        tipo:'Ajuste', quantidade: Math.abs(p.estoque - saldo), antes: saldo, depois: p.estoque,
+        obs:'Ajuste de inventário (demonstração)', origem:'Ajuste', operador: operadores[idx % operadores.length]
+      });
+    }
+  });
+  movs.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+  return movs;
+}
 function ativarDemo(){
   Auth.demo = true;
   Auth.lembrar = false;
@@ -2898,21 +4957,17 @@ function ativarDemo(){
     p.estoque = [1250, 680, 320][i] || 100;
     p.atualizadoEm = agoraDemo;
   });
-  if(state.produtos.length){
-    state.movimentacoes = state.produtos.slice(0, 3).map((p, i) => ({
-      id:'demo-mov-' + i,
-      data:agoraDemo,
-      produtoId:p.id,
-      ft:p.ft,
-      nome:p.nome,
-      unidade:p.unidade,
-      tipo:'Entrada',
-      quantidade:p.estoque,
-      antes:0,
-      depois:p.estoque,
-      obs:'Movimentação de demonstração'
-    }));
-  }
+  state.movimentacoes = semearMovimentosDemo();
+  /* cargas/recebimentos coerentes com o histórico, para a faixa de status não ficar vazia */
+  state.carregamentos = state.produtos.slice(0, 2).map((p, i) => ({
+    id:'demo-carga-' + i, numero:String(i + 1).padStart(4, '0'),
+    data:new Date(Date.now() - (i + 1) * 86400000).toISOString().slice(0, 10),
+    destino:i ? 'CD Salvador' : 'CD Recife', veiculo:'Caminhão · SDY' + (i + 1) + 'A23', motorista:i ? 'Antônio Reis' : 'Carlos Mendes',
+    obs:'Carregamento de demonstração', status:i ? 'Pendente' : 'Carregado',
+    itens:[{produtoId:p.id, qtd:Math.max(10, Math.round(p.estoque * 0.25)), esperado:Math.max(10, Math.round(p.estoque * 0.25)), conferido:Math.max(10, Math.round(p.estoque * 0.25))}],
+    conferencia:null, criadoEm:agoraDemo, confirmadoEm:i ? null : agoraDemo
+  }));
+  state.seq = {carga:3, receb:2};
 
   setStatusNuvem('demo', 'Ambiente de demonstração — alterações não são gravadas no banco.');
   toast('Você entrou no ambiente de demonstração. As alterações ficam somente nesta sessão.', 'info', 'Acesso Demo');

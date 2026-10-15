@@ -1,0 +1,27 @@
+{
+  "name": "Stoki SDY — Estoque e conferência por QR Code",
+  "short_name": "Stoki SDY",
+  "id": "stoki-sdy-app",
+  "description": "Conferência de estoque por QR Code e código de barras (EAN), requisição de material e conferência de cargas — funciona sem internet.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0b57c9",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icone-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icone-64.png", "sizes": "64x64", "type": "image/png", "purpose": "any" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Ler código do produto", "short_name": "Ler código", "url": "./index.html#conferir", "icons": [{ "src": "icone-192.png", "sizes": "192x192" }] },
+    { "name": "Nova requisição", "short_name": "Requisição", "url": "./index.html#requisicao", "icons": [{ "src": "icone-192.png", "sizes": "192x192" }] }
+  ]
+}
