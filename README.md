@@ -65,14 +65,22 @@ O app é uma **PWA**: abra no celular
 `https://lojamkv-ui.github.io/sysEstoque/mobile/www/index.html`
 (ou `mobile/www/index.html` em qualquer servidor **https**) e use **Instalar app** / *Adicionar à tela inicial*. O service worker (`sw.js`) deixa o app abrir sem internet depois da 1ª visita. Os ícones e o manifest (`manifest.webmanifest`) já estão no repositório.
 
+### Gerar o APK pelo GitHub (sem instalar nada)
+O repositório já traz o fluxo pronto em **`mobile/ci/android.yml`**. Para ligá-lo (uma vez):
+no site do GitHub, **Add file › Create new file**, digite `.github/workflows/android.yml`, cole o conteúdo de `mobile/ci/android.yml` e faça o commit.
+Depois:
+1. Aba **Actions** › **Build do APK (Android)** › **Run workflow** (leva ~5 min).
+2. Baixe o APK em **Artifacts** → `stoki-sdy-apk`.
+3. Quer um **link direto** para instalar no celular? Crie uma tag (`git tag v1.0.0 && git push origin v1.0.0`): o APK é anexado à Release e fica em
+   `https://github.com/lojamkv-ui/sysEstoque/releases/latest/download/app-debug.apk`.
+
 ### Gerar o APK (Android Studio ou linha de comando)
 Não é preciso loja: o APK pode ser enviado direto para o celular (WhatsApp, Drive…) e instalado (o Android pede para permitir “instalar de fontes desconhecidas”).
 ```bash
-cd mobile
-npm install                 # baixa o @capacitor (só na 1ª vez)
-npx cap sync android        # copia www/ para dentro do projeto Android
-cd android
-./gradlew assembleDebug     # ou: ./gradlew assembleRelease (assinado)
+cd mobile/android
+./gradlew assembleDebug     # o www/ já está copiado em app/src/main/assets/public
+# (depois de mexer no app, sincronize de novo:)
+#   cd mobile && npm install && npx cap sync android
 ```
 - APK gerado em `mobile/android/app/build/outputs/apk/debug/app-debug.apk`.
 - Também dá para abrir `mobile/android` no **Android Studio** e rodar ▶ / *Generate Signed Bundle/APK*.

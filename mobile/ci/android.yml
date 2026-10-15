@@ -1,0 +1,74 @@
+name: Build do APK (Android)
+
+# Compila o APK do app Stoki SDY na nuvem do GitHub — não precisa de Java/Android
+# Studio na sua máquina.
+#
+# IMPORTANTE: para o GitHub executar este arquivo, ele precisa estar em
+#   .github/workflows/android.yml
+# Copie este conteúdo para lá (no site do GitHub: Add file › Create new file ›
+# digite ".github/workflows/android.yml" e cole o conteúdo), faça o commit e a
+# aba Actions passa a mostrar o fluxo "Build do APK (Android)".
+#
+# Como usar:
+#   1. Aba "Actions" › "Build do APK (Android)" › botão "Run workflow".
+#   2. Ao terminar (uns 5 min), baixe o APK em Artifacts ("stoki-sdy-apk").
+#   3. Quer um link direto para instalar no celular? Crie uma tag (ex.: v1.0.0) e
+#      publique a release — o APK vai anexado em
+#      https://github.com/<usuario>/<repo>/releases/latest/download/app-debug.apk
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    name: Compilar app-debug.apk
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile/android
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar o Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Preparar o Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Compilar o APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Guardar o APK (Artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: stoki-sdy-apk
+          path: mobile/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Anexar o APK na Release (quando vier de uma tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: mobile/android/app/build/outputs/apk/debug/*.apk
+          name: Stoki SDY ${{ github.ref_name }}
+          body: |
+            APK do app Stoki SDY — conferência de estoque por QR Code / EAN, com requisição de material.
+
+            **Como instalar no celular**
+            1. Baixe o arquivo `app-debug.apk` abaixo.
+            2. Toque nele e permita "instalar de fontes desconhecidas" quando o Android pedir.
+            3. Abra o app **Stoki SDY**, permita o uso da câmera e pronto.
+
+            Link direto desta versão: `https://github.com/${{ github.repository }}/releases/latest/download/app-debug.apk`
