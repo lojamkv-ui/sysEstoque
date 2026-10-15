@@ -354,6 +354,55 @@ tr.baixo td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
 .ok-linha{background:var(--ok-bg);border:1px solid var(--ok-line);border-left:4px solid var(--ok);border-radius:8px;
   padding:9px 12px;margin-bottom:7px;font-size:13.5px;color:var(--ok);font-weight:600}
 
+/* ============ CONFERÊNCIA POR QR CODE / EAN ============ */
+.grid.grid-cod-modo{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.linha-botao{display:flex;gap:8px;align-items:stretch}
+.linha-botao input{flex:1;min-width:0}
+.leitor{position:relative;margin-top:14px;border:1px solid var(--line-2);border-radius:var(--radius);overflow:hidden;
+  background:#050a14;min-height:250px;display:grid;place-items:center}
+.leitor video{width:100%!important;height:auto!important;max-height:60vh;display:block;object-fit:cover}
+.leitor canvas,.leitor img{max-width:100%}
+.leitor .leitor-vazio{padding:34px 20px;text-align:center;color:#9fb4d0;font-size:13.5px}
+.leitor .leitor-vazio .ic{font-size:38px;display:block;margin-bottom:8px;opacity:.7}
+.leitor .leitor-vazio b{display:block;color:#e8f0fb;font-size:15px;margin-bottom:4px}
+.leitor .mira{position:absolute;inset:10% 6%;border:3px solid rgba(134,199,255,.85);border-radius:14px;pointer-events:none;
+  box-shadow:0 0 0 9999px rgba(4,10,20,.42);display:none}
+.leitor.ativo .mira{display:block}
+.leitor .mira::after{content:'';position:absolute;left:0;right:0;top:50%;height:2px;
+  background:linear-gradient(90deg,transparent,#86c7ff,transparent);animation:varre 2.2s ease-in-out infinite}
+@keyframes varre{0%,100%{transform:translateY(-45%)}50%{transform:translateY(45%)}}
+.leitor .aviso{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;background:rgba(4,10,20,.82);color:#e8f0fb;
+  font-size:12.5px;text-align:center}
+@media (prefers-reduced-motion:reduce){ .leitor .mira::after{animation:none} }
+.cod-produto .cod-topo{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.cod-produto .cod-topo h4{font-family:var(--font-display);font-size:clamp(18px,2.4vw,25px);margin:0;letter-spacing:.4px;color:var(--ink)}
+.cod-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-bottom:12px}
+.cod-kpis .cx{border:1px solid var(--line);border-radius:var(--radius);padding:9px 12px;background:var(--surface-2)}
+.cod-kpis .cx span{display:block;font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);font-weight:800}
+.cod-kpis .cx b{font-family:var(--font-display);font-size:19px;letter-spacing:.4px;color:var(--ink)}
+.cod-kpis .cx small{display:block;font-size:11.5px;color:var(--ink-3)}
+.cod-kpis .cx.alerta b{color:var(--bad)}
+.cod-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:12px;border-top:1px dashed var(--line-2)}
+.cod-acoes .qtd{width:96px}
+.cod-qr{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px;line-height:0}
+.cod-qr svg{width:118px;height:118px;display:block}
+.etiquetas{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:12px}
+.etiqueta{border:1px dashed var(--line-2);border-radius:10px;padding:10px;background:#fff;color:#0b1b33;text-align:center;
+  display:flex;flex-direction:column;gap:6px;align-items:center;break-inside:avoid}
+.etiqueta .et-nome{font-size:12.5px;font-weight:700;line-height:1.25;min-height:32px;display:flex;align-items:center}
+.etiqueta .et-ft{font-family:var(--font-mono);font-size:11.5px;color:#33486a}
+.etiqueta .et-ean{font-family:var(--font-mono);font-size:11px;letter-spacing:.5px}
+.etiqueta svg.et-qr,.etiqueta .et-qr svg{width:112px;height:112px}
+.etiqueta svg.et-barra{width:100%;max-width:170px;height:46px;display:block}
+.etiqueta .et-un{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:#52647f}
+.etiqueta.vazia{justify-content:center;color:var(--ink-3);background:var(--surface-2)}
+@media print{
+  .doc .etiquetas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .doc .etiqueta{border:1px solid #bbb;page-break-inside:avoid}
+}
+.tag.ean{font-family:var(--font-mono);letter-spacing:.6px}
+.tag.eco{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+
 /* ============ RELATÓRIO / DASHBOARD DE MOVIMENTAÇÃO ============ */
 input[type=time]{font-family:var(--font-body);font-size:14px;color:var(--ink);background:var(--surface-2);
   border:1px solid var(--line-2);border-radius:8px;padding:9px 11px;width:100%;transition:border-color .16s,box-shadow .16s,background .16s}
@@ -644,6 +693,7 @@ body:not(.autenticado) .toasts{display:block!important}
       <button type="button" class="nav-item" id="navCargas" data-tab="cargas" aria-controls="tab-cargas"><span class="ic" aria-hidden="true">🚚</span>Carregamentos<small id="cntCargas">0</small></button>
       <button type="button" class="nav-item" id="navReceber" data-tab="receber" aria-controls="tab-receber"><span class="ic" aria-hidden="true">📥</span>Receber<small id="cntReceb">0</small></button>
       <button type="button" class="nav-item" id="navConferir" data-tab="conferir" aria-controls="tab-conferir"><span class="ic" aria-hidden="true">🔍</span>Conferir carga<small id="cntConf">0</small></button>
+      <button type="button" class="nav-item" id="navCodigos" data-tab="codigos" aria-controls="tab-codigos"><span class="ic" aria-hidden="true">📷</span>Bipar código<small id="cntEan">0</small></button>
     </div>
     <div class="nav-grupo" role="group" aria-label="Análise">
       <div class="rotulo">Análise</div>
@@ -1010,7 +1060,118 @@ body:not(.autenticado) .toasts{display:block!important}
       </div>
     </div>
   </section>
-  <!-- ============ ABA 6 — RELATÓRIOS / MOVIMENTAÇÃO ============ -->
+  <!-- ============ ABA 6 — BIPAR CÓDIGO (QR CODE / EAN) ============ -->
+  <section class="painel" id="tab-codigos" aria-labelledby="navCodigos" aria-hidden="true">
+    <div class="titulo-painel">
+      <div>
+        <h2>Conferência por <i>QR Code / EAN</i></h2>
+        <p>Bipe a etiqueta do produto com a câmera — ou digite o código / leia de uma foto — e confira o estoque na hora.</p>
+      </div>
+      <div class="lado">
+        <button type="button" class="btn primario" id="btnCamLigar"><span class="ic" aria-hidden="true">📷</span>Iniciar câmera</button>
+        <button type="button" class="btn" id="btnCamDesligar" style="display:none"><span class="ic" aria-hidden="true">⏹</span>Parar câmera</button>
+        <button type="button" class="btn fantasma" id="btnCodFoto"><span class="ic" aria-hidden="true">🖼️</span>Ler de uma foto</button>
+        <button type="button" class="btn fantasma" id="btnCodEtiquetas"><span class="ic" aria-hidden="true">🏷️</span>Etiquetas dos produtos</button>
+        <input type="file" id="codArquivo" accept="image/*" class="sr">
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">📷</span><h3>Leitor de código</h3>
+        <div class="lado">
+          <select id="codCamera" aria-label="Câmera"><option value="">Câmera traseira (automática)</option></select>
+          <span class="tag" id="codTagStatus">câmera desligada</span>
+        </div>
+      </header>
+      <div class="corpo">
+        <div class="grid grid-cod-modo">
+          <div class="campo">
+            <label for="codModo">Modo da sessão</label>
+            <select id="codModo">
+              <option value="checklist">Checklist — só registra a leitura</option>
+              <option value="contagem">Contagem — soma as quantidades lidas</option>
+              <option value="carga">Conferência de carga — atualiza o romaneio</option>
+              <option value="recebimento">Recebimento — atualiza a NF em andamento</option>
+            </select>
+          </div>
+          <div class="campo" id="wrapCodCarga">
+            <label for="codCarga">Carregamento / NF em andamento</label>
+            <select id="codCarga"></select>
+          </div>
+          <div class="campo">
+            <label for="codQtdLeitura">Quantidade por leitura</label>
+            <input type="number" id="codQtdLeitura" min="1" step="1" value="1">
+            <span class="dica">Cada bipe soma esta quantidade (modo Contagem).</span>
+          </div>
+          <div class="campo">
+            <label for="codManual">Digitar / colar o código</label>
+            <div class="linha-botao">
+              <input type="text" id="codManual" class="mono" placeholder="EAN, FT/Código ou etiqueta STOKI;EAN;FT" autocomplete="off" spellcheck="false">
+              <button type="button" class="btn" id="btnCodManual">Procurar</button>
+            </div>
+          </div>
+        </div>
+        <div class="leitor" id="codLeitorCaixa">
+          <div id="codLeitorVideo"></div>
+          <button type="button" class="btn mini" id="btnCodLuz" aria-pressed="false" style="position:absolute;top:10px;right:10px;z-index:3;display:none"><span class="ic" aria-hidden="true">🔦</span>Lanterna</button>
+          <div id="codLeitorVideoLeitura" class="sr" aria-hidden="true"></div>
+          <div class="mira" aria-hidden="true"></div>
+          <div class="leitor-vazio" id="codLeitorVazio"><span class="ic" aria-hidden="true">📷</span><b>A câmera está desligada</b>Toque em “Iniciar câmera” para bipar o QR Code ou o código de barras.</div>
+          <div class="aviso" id="codLeitorAviso" style="display:none"></div>
+        </div>
+        <p class="dica mt-10">Formatos aceitos: <b>QR Code</b>, <b>EAN-13/EAN-8</b> (código de barras do produto), UPC, CODE-128, CODE-39, ITF e CODABAR. Use “Ler de uma foto” quando a câmera não estiver disponível.</p>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🔎</span><h3>Produto lido</h3>
+        <div class="lado"><span class="tag" id="codTagEco">—</span></div>
+      </header>
+      <div class="corpo" id="codProdutoBox"></div>
+    </div>
+
+    <div class="cartao" id="codReqCartao" style="display:none">
+      <header><span class="ic">📱</span><h3>Requisição recebida do app</h3>
+        <div class="lado"><span class="tag accent" id="codReqTag">—</span>
+          <button type="button" class="btn mini fantasma" id="btnCodReqFechar">Fechar</button></div>
+      </header>
+      <div class="corpo" id="codReqBox"></div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🧾</span><h3>Sessão de conferência</h3>
+        <div class="lado">
+          <span class="tag" id="codTagSessao">nenhuma leitura</span>
+          <button type="button" class="btn mini" id="btnCodAplicar"><span class="ic" aria-hidden="true">✔</span>Aplicar contagem</button>
+          <button type="button" class="btn mini" id="btnCodXlsx"><span class="ic" aria-hidden="true">📊</span>Excel</button>
+          <button type="button" class="btn mini fantasma" id="btnCodLimparSessao">Zerar sessão</button>
+        </div>
+      </header>
+      <div class="corpo" id="codSessaoBox"></div>
+      <div class="tabela-wrap tabela-interna rel-scroll">
+        <table class="tabela tabela-min-820">
+          <thead><tr><th>Hora</th><th>Produto</th><th>FT / Código</th><th>Código lido</th><th class="num">Qtd. lida</th><th class="num">Estoque agora</th><th>Modo</th></tr></thead>
+          <tbody id="codSessaoTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="cartao">
+      <header><span class="ic">🏷️</span><h3>Etiquetas com QR Code e código de barras</h3>
+        <div class="lado">
+          <select id="codEtiquetaProduto" aria-label="Produto da etiqueta"><option value="">Todos os produtos</option></select>
+          <button type="button" class="btn mini" id="btnCodEtiquetaQr"><span class="ic" aria-hidden="true">🔳</span>Gerar QR do selecionado</button>
+          <button type="button" class="btn mini primario" id="btnCodEtiquetaImprimir"><span class="ic" aria-hidden="true">🖨️</span>Imprimir etiquetas</button>
+        </div>
+      </header>
+      <div class="corpo">
+        <p class="dica">Imprima, cole no produto e bipe com o app: o QR traz o EAN e o FT/Código, então a leitura funciona mesmo se o código de barras estiver danificado.</p>
+        <div class="etiquetas" id="codEtiquetasGrade"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABA 7 — RELATÓRIOS / MOVIMENTAÇÃO ============ -->
   <section class="painel" id="tab-relatorios" aria-labelledby="navRelatorios" aria-hidden="true">
     <div class="titulo-painel">
       <div>
@@ -1254,6 +1415,11 @@ body:not(.autenticado) .toasts{display:block!important}
 <div id="modalRoot"></div>
 <div id="printArea"></div>
 
+<!-- Bibliotecas de leitura de código, vendorizadas no repositório (funcionam offline).
+     html5-qrcode: Apache-2.0 · qrcode-generator: MIT — licenças em assets/ -->
+<script src="assets/html5-qrcode.min.js"></script>
+<script src="assets/qrcode-generator.js"></script>
+
 <script>
 "use strict";
 /* ==================================================================
@@ -1355,9 +1521,9 @@ function carregar(){
 
 /* produtos semente */
 const SEMENTES = [
-  {ft:'2025/0771-CX', nome:'Cx. Biscoito Trigo Popular 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
-  {ft:'2025/0866-CX', nome:'Cx. Biscoito Folhado Maná 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
-  {ft:'2025/0776-CX', nome:'Cx. Biscoito Folhado de Trigo Maná 24x250g', unidade:'cx', minimo:0, estoque:0, preco:3.322, ean:'', medidas:'500 x 335 x 210', estrutura:'CEKR50', pedidoMinimo:6000, qtdInicial:0}
+  {ft:'2025/0771-CX', nome:'Cx. Biscoito Trigo Popular 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'7891234500014', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
+  {ft:'2025/0866-CX', nome:'Cx. Biscoito Folhado Maná 12x250g', unidade:'cx', minimo:0, estoque:0, preco:1.947, ean:'7891234500021', medidas:'385 x 225 x 205', estrutura:'CEKR50', pedidoMinimo:9000, qtdInicial:0},
+  {ft:'2025/0776-CX', nome:'Cx. Biscoito Folhado de Trigo Maná 24x250g', unidade:'cx', minimo:0, estoque:0, preco:3.322, ean:'7891234500038', medidas:'500 x 335 x 210', estrutura:'CEKR50', pedidoMinimo:6000, qtdInicial:0}
 ];
 function semear(){
   let mudou = false;
@@ -1568,6 +1734,7 @@ function irPara(tab, opts){
     p.classList.toggle('ativo', ativo);
     p.setAttribute('aria-hidden', String(!ativo));
   });
+  if(tab !== 'codigos' && typeof COD !== 'undefined' && COD.rodando) codPararCamera(true);
   renderTudo();
   if(tab === 'usuarios') carregarUsuarios();
   if($('#navOperacao').classList.contains('aberto')) fecharMenuOperacao(true);
@@ -1632,6 +1799,7 @@ function renderTudo(){
   renderRecebimento();
   renderConferencia();
   renderUsuarios();
+  if(abaAtual === 'codigos') codRender();
   if(abaAtual === 'relatorios') renderRelatorios();
 }
 
@@ -1722,6 +1890,7 @@ function renderContadores(){
   $('#cntCargas').textContent = state.carregamentos.filter(c => c.status === 'Pendente').length;
   $('#cntReceb').textContent = state.recebimentos.length;
   $('#cntConf').textContent = state.carregamentos.filter(c => c.status === 'Pendente').length;
+  if($('#cntEan')) $('#cntEan').textContent = state.produtos.filter(p => codDigitos(p.ean).length >= 8).length;
   if($('#cntRel')) $('#cntRel').textContent = state.movimentacoes.length;
   if($('#cntUsr')) $('#cntUsr').textContent = (typeof usuarios !== 'undefined') ? usuarios.length : 0;
 }
@@ -2739,7 +2908,7 @@ const REL_SERIES = [
   {nome:'Saídas',   cor:'#b3261e'},
   {nome:'Ajustes',  cor:'#0b6aa6'}
 ];
-const REL_ORIGENS = ['Manual','Ajuste','Carregamento','Conferência','Recebimento','Cadastro inicial','Importação','Outros'];
+const REL_ORIGENS = ['Manual','Leitura','Requisição','Ajuste','Carregamento','Conferência','Recebimento','Cadastro inicial','Importação','Outros'];
 const REL_MAX_TABELA = 300;
 const REL_TIPOS = {Entrada:{rotulo:'Entrada', classe:'ok'}, Saída:{rotulo:'Saída', classe:'bad'}, Ajuste:{rotulo:'Ajuste', classe:'info'}};
 
@@ -3484,6 +3653,895 @@ function relImprimir(){
   setTimeout(() => window.print(), 60);
 }
 $('#btnRelImprimir').addEventListener('click', relImprimir);
+
+/* ==================================================================
+   CONFERÊNCIA POR QR CODE / EAN
+   Leitura pela câmera (html5-qrcode), por foto ou digitada, sessão de
+   contagem, integração com romaneio/NF e etiquetas com QR + código de barras.
+   ================================================================== */
+const COD = {
+  scanner:null, rodando:false, ultimoTexto:'', ultimoEm:0, ecos:0,
+  ultimoProduto:null, ultimoCodigo:'', ultimoCampo:'', naoEncontrado:'',
+  cameras:[], cameraId:'', luz:false, luzSuportada:false,
+  sessao:{inicio:null, leituras:[], contagem:new Map()},
+  qtdRapida:1, requisicao:null
+};
+const COD_MAX_LEITURAS = 500;      /* histórico da sessão na tela */
+const COD_MAX_ETIQUETAS_TELA = 24; /* etiquetas geradas na tela */
+const COD_MAX_ETIQUETAS_IMPRESSAO = 240;
+const COD_ECO_MS = 2500;           /* mesma leitura repetida = eco da câmera */
+
+/* ---------- códigos de barras EAN-13 / EAN-8 (gerador próprio, sem bibliotecas) ---------- */
+const COD_EAN_L = ['0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'];
+const COD_EAN_G = ['0100111','0110011','0011011','0100001','0011101','0111001','0000101','0010001','0001001','0010111'];
+const COD_EAN_R = ['1110010','1100110','1101100','1000010','1011100','1001110','1010000','1000100','1001000','1110100'];
+const COD_EAN_PARIDADE = ['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'];
+function codDigitos(v){ return String(v == null ? '' : v).replace(/\D/g, ''); }
+function codEanDigitoVerificador(corpo){
+  /* o dígito imediatamente à esquerda do verificador pesa 3 e alterna para a esquerda */
+  let soma = 0, peso = 3;
+  for(let i = corpo.length - 1; i >= 0; i--){ soma += Number(corpo[i]) * peso; peso = peso === 3 ? 1 : 3; }
+  return (10 - soma % 10) % 10;
+}
+function codEanValido(codigo){
+  const d = codDigitos(codigo);
+  if(d.length === 13) return codEanDigitoVerificador(d.slice(0, 12)) === Number(d[12]);
+  if(d.length === 8) return codEanDigitoVerificador(d.slice(0, 7)) === Number(d[7]);
+  if(d.length === 12) return codEanDigitoVerificador(d.slice(0, 11)) === Number(d[11]);
+  return false;
+}
+/* Desenha o código de barras em SVG (EAN-13, UPC-A e EAN-8). Retorna '' se não der. */
+function codBarrasSvg(codigo, altura){
+  let d = codDigitos(codigo);
+  if(d.length === 12) d = '0' + d;             /* UPC-A = EAN-13 com zero à frente */
+  if(!codEanValido(codigo)) return '';
+  let bits = '';
+  if(d.length === 13){
+    bits = '101';
+    const paridade = COD_EAN_PARIDADE[Number(d[0])];
+    for(let i = 1; i <= 6; i++){
+      const dig = Number(d[i]);
+      bits += paridade[i - 1] === 'L' ? COD_EAN_L[dig] : COD_EAN_G[dig];
+    }
+    bits += '01010';
+    for(let i = 7; i <= 12; i++) bits += COD_EAN_R[Number(d[i])];
+    bits += '101';
+  } else {
+    bits = '101';
+    for(let i = 0; i <= 3; i++) bits += COD_EAN_L[Number(d[i])];
+    bits += '01010';
+    for(let i = 4; i <= 7; i++) bits += COD_EAN_R[Number(d[i])];
+    bits += '101';
+  }
+  const H = altura || 40;
+  const barras = [];
+  let i = 0;
+  while(i < bits.length){
+    if(bits[i] === '1'){
+      let fim = i;
+      while(fim < bits.length && bits[fim] === '1') fim++;
+      barras.push('<rect x="' + i + '" y="0" width="' + (fim - i) + '" height="' + H + '" fill="#000"/>');
+      i = fim;
+    } else i++;
+  }
+  const total = bits.length;
+  const alturaTexto = H + 9;
+  return '<svg class="et-barra" viewBox="0 0 ' + total + ' ' + (H + 12) + '" preserveAspectRatio="none" role="img" aria-label="Código de barras ' + esc(d) + '">' +
+    '<rect x="0" y="0" width="' + total + '" height="' + (H + 12) + '" fill="#fff"/>' + barras.join('') +
+    '<text x="' + (total / 2) + '" y="' + alturaTexto + '" text-anchor="middle" font-family="monospace" font-size="7" fill="#0b1b33">' + esc(d) + '</text></svg>';
+}
+
+/* ---------- QR Code (qrcode-generator) ---------- */
+function codQrSvg(texto, cellSize){
+  if(typeof qrcode === 'undefined') return '';
+  try{
+    const qr = qrcode(0, 'M');
+    qr.addData(String(texto == null ? '' : texto));
+    qr.make();
+    return qr.createSvgTag({cellSize: cellSize || 4, margin: 2, scalable: true, alt: 'QR Code', title: String(texto || '')});
+  }catch(e){
+    console.warn('Falha ao gerar o QR Code', e);
+    return '';
+  }
+}
+/* Conteúdo gravado nas etiquetas: aceita EAN vazio (produto sem código de barras cadastrado). */
+function codPayload(p){ return 'STOKI;' + (codDigitos(p.ean) || '-') + ';' + String(p.ft || ''); }
+
+/* ---------- requisições vindas do app Android (etiqueta/QR STOKIREQ) ---------- */
+const COD_REQ_PREFIXO = /^STOKIREQ\s*[;:]/i;
+function codReqParse(bruto){
+  const texto = String(bruto == null ? '' : bruto).trim();
+  if(!COD_REQ_PREFIXO.test(texto)) return null;
+  const campos = texto.replace(COD_REQ_PREFIXO, '').split(';').map(c => String(c || '').trim());
+  const numero = campos[0] || ('REQ-' + relChaveDia(new Date()));
+  const tipo = (campos[1] || 'MATERIAL').toUpperCase();
+  const usuario = campos[2] || '—';
+  const itensBrutos = (campos[3] || '').split(/[|\n]+/).map(i => i.trim()).filter(Boolean);
+  const obs = campos.slice(4).join('; ').trim();
+  const itens = itensBrutos.map(brutoItem => {
+    const m = brutoItem.match(/^(.*?)\s*[:=]\s*([\d.,]+)$/);
+    const chave = (m ? m[1] : brutoItem).trim();
+    const qtd = parseNum(m ? m[2] : 1) || 1;
+    const r = codBuscarProduto(chave);
+    return {ft:chave, qtd:qtd, produto:r.ok ? r.produto : null, nome:r.ok ? r.produto.nome : chave, unidade:r.ok ? r.produto.unidade : 'un'};
+  });
+  return {tipo:tipo, numero:numero, usuario:usuario, obs:obs, itens:itens, bruto:texto};
+}
+function codReqRotulo(tipo){
+  const t = String(tipo || '').toUpperCase();
+  if(t.charAt(0) === 'E' || t === 'ENTRADA') return {mov:'Entrada', rotulo:'Entrada de material', classe:'ok'};
+  if(t.charAt(0) === 'S' || t === 'SAIDA' || t === 'SAÍDA') return {mov:'Saída', rotulo:'Saída de material', classe:'bad'};
+  return {mov:'', rotulo:'Pedido de material (separação)', classe:'info'};
+}
+
+/* ---------- busca do produto a partir do que foi lido ---------- */
+const COD_PREFIXO = /^(stoki(-sdy)?|sdy|produto|etiqueta)\s*[;:|\-]\s*/i;
+function codTokens(bruto){
+  const tokens = [];
+  const add = v => {
+    let t = String(v == null ? '' : v).trim();
+    if(!t) return;
+    if(COD_PREFIXO.test(t)) t = t.replace(COD_PREFIXO, '').trim();
+    if(t && tokens.indexOf(t) === -1) tokens.push(t);
+  };
+  const texto = String(bruto == null ? '' : bruto).trim();
+  if(!texto) return tokens;
+  add(texto);
+  /* URL com parâmetros (etiqueta gerada pelo sistema ou catálogo) */
+  (texto.match(/[?&#](?:ean|ft|codigo|cod|code|gtin|produto|sku)=[^&\s]+/gi) || []).forEach(par => {
+    const m = par.match(/=([^&]+)$/);
+    if(!m) return;
+    try{ add(decodeURIComponent(m[1])); }catch(e){ add(m[1]); }
+  });
+  /* etiqueta composta: STOKI;EAN;FT (também aceita | , espaço e quebra de linha) */
+  texto.replace(COD_PREFIXO, '').split(/[;|,\n\r\t]+/).forEach(add);
+  texto.replace(COD_PREFIXO, '').split(/\s+/).forEach(add);
+  return tokens.filter(t => t.length >= 2);
+}
+function codBuscarProduto(bruto){
+  const tokens = codTokens(bruto);
+  if(!tokens.length) return {ok:false, msg:'Código vazio.', codigo:''};
+  const exato = (campo, valor) => {
+    const alvo = norm(valor);
+    if(!alvo) return null;
+    return state.produtos.find(p => norm(p[campo]) === alvo) || null;
+  };
+  for(const tk of tokens){
+    let p = exato('ean', tk); if(p) return {ok:true, produto:p, campo:'EAN', codigo:tk};
+    p = exato('ft', tk);       if(p) return {ok:true, produto:p, campo:'FT/Código', codigo:tk};
+    p = state.produtos.find(x => x.id === tk); if(p) return {ok:true, produto:p, campo:'ID interno', codigo:tk};
+  }
+  /* comparação só por dígitos (tolera espaços, traços, UPC-A ↔ EAN-13) */
+  for(const tk of tokens){
+    const d = codDigitos(tk);
+    if(d.length < 6) continue;
+    const tentativas = [d];
+    if(d.length === 12) tentativas.push('0' + d);
+    if(d.length === 13 && d.charAt(0) === '0') tentativas.push(d.slice(1));
+    for(const alvo of tentativas){
+      const p = state.produtos.find(x => codDigitos(x.ean) === alvo);
+      if(p) return {ok:true, produto:p, campo:'EAN', codigo:tk};
+    }
+  }
+  return {ok:false, msg:'Nenhum produto cadastrado com este código.', codigo:tokens[0], tokens:tokens};
+}
+
+/* ---------- câmera ---------- */
+function codLibOk(){ return typeof Html5Qrcode !== 'undefined'; }
+function codAvisoLeitor(txt){
+  const el = $('#codLeitorAviso');
+  if(!el) return;
+  if(txt){ el.textContent = txt; el.style.display = ''; } else el.style.display = 'none';
+}
+function codStatus(txt, classe){
+  const el = $('#codTagStatus');
+  if(el){ el.textContent = txt; el.className = 'tag' + (classe ? ' ' + classe : ''); }
+}
+function codFormatos(){
+  try{
+    const F = window.Html5QrcodeSupportedFormats || {};
+    const nomes = ['QR_CODE','EAN_13','EAN_8','UPC_A','UPC_E','CODE_128','CODE_39','CODE_93','ITF','CODABAR','DATA_MATRIX'];
+    const lista = nomes.map(n => F[n]).filter(v => v !== undefined);
+    return lista.length ? lista : null;
+  }catch(e){ return null; }
+}
+async function codListarCameras(){
+  if(!codLibOk()) return [];
+  try{
+    COD.cameras = (await Html5Qrcode.getCameras()) || [];
+  }catch(e){
+    COD.cameras = [];
+  }
+  const sel = $('#codCamera');
+  if(sel){
+    const atual = COD.cameraId;
+    sel.innerHTML = '<option value="">Câmera traseira (automática)</option>' + COD.cameras.map((c, i) =>
+      '<option value="' + esc(c.id) + '">' + esc(c.label || ('Câmera ' + (i + 1))) + '</option>').join('');
+    if(atual && COD.cameras.some(c => c.id === atual)) sel.value = atual;
+  }
+  return COD.cameras;
+}
+function codTorchDetectar(){
+  COD.luzSuportada = false; COD.luz = false;
+  try{
+    const cap = COD.scanner && COD.scanner.getRunningTrackCameraCapabilities ? COD.scanner.getRunningTrackCameraCapabilities() : null;
+    const f = cap && cap.torchFeature ? cap.torchFeature() : null;
+    COD.luzSuportada = !!(f && (!f.isSupported || f.isSupported()));
+  }catch(e){ COD.luzSuportada = false; }
+  const btn = $('#btnCodLuz');
+  if(btn){
+    btn.style.display = COD.luzSuportada ? '' : 'none';
+    btn.setAttribute('aria-pressed', 'false');
+  }
+}
+async function codIniciarCamera(){
+  if(COD.rodando) return;
+  if(!codLibOk()){
+    codAvisoLeitor('Biblioteca de leitura não carregada (assets/html5-qrcode.min.js). Use “Ler de uma foto” ou digite o código.');
+    return;
+  }
+  const caixa = $('#codLeitorCaixa');
+  codStatus('abrindo câmera…', 'info');
+  codAvisoLeitor('');
+  $('#codLeitorVazio').style.display = 'none';
+  caixa.classList.add('ativo');
+  try{
+    if(!COD.scanner){
+      const formatos = codFormatos();
+      const opt = { verbose:false, useBarCodeDetectorIfSupported:true };
+      if(formatos) opt.formatsToSupport = formatos;
+      COD.scanner = new Html5Qrcode('codLeitorVideo', opt);
+    }
+    if(!COD.cameras.length) await codListarCameras();
+    let cameraId = COD.cameraId;
+    if(!cameraId){
+      const traseira = COD.cameras.find(c => /back|traseira|rear|environment|trás/i.test(c.label || ''));
+      cameraId = (traseira || COD.cameras[COD.cameras.length - 1] || {}).id || '';
+    }
+    const config = {
+      fps: 10,
+      aspectRatio: 1.7777778,
+      qrbox: function(w, h){ const m = Math.min(w, h); return {width: Math.round(m * 0.92), height: Math.round(m * 0.62)}; },
+      experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+    };
+    await COD.scanner.start(cameraId ? {deviceId:{exact:cameraId}} : {facingMode:'environment'}, config, codAoLer, () => {});
+    COD.rodando = true;
+    $('#btnCamLigar').style.display = 'none';
+    $('#btnCamDesligar').style.display = '';
+    codStatus('câmera ligada', 'ok');
+    codTorchDetectar();
+    if(navigator.vibrate) navigator.vibrate(40);
+  }catch(e){
+    caixa.classList.remove('ativo');
+    $('#codLeitorVazio').style.display = '';
+    $('#btnCamLigar').style.display = '';
+    $('#btnCamDesligar').style.display = 'none';
+    COD.rodando = false;
+    codStatus('câmera indisponível', 'bad');
+    const nome = (e && (e.name || e.code)) || '';
+    const msg = /NotAllowed|Permission/i.test(nome + ' ' + (e && e.message))
+      ? 'Permissão de câmera negada. Autorize a câmera (Configurações › Apps › Stoki SDY › Permissões) ou use “Ler de uma foto” / o campo de digitação.'
+      : /NotFound|no camera|devices/i.test(nome + ' ' + (e && e.message))
+        ? 'Nenhuma câmera encontrada neste aparelho. Use “Ler de uma foto” ou digite o código.'
+        : 'Não foi possível abrir a câmera (' + ((e && (e.message || e.name || e.code)) || 'erro desconhecido') + '). Use “Ler de uma foto” ou digite o código.';
+    codAvisoLeitor(msg);
+    toast(msg, 'alerta', 'Câmera');
+    console.warn('Falha ao iniciar a câmera', e);
+  }
+}
+async function codPararCamera(silencioso){
+  const caixa = $('#codLeitorCaixa');
+  const estavaLigada = COD.rodando;
+  COD.rodando = false;   /* a interface reflete na hora; a câmera fecha em seguida */
+  try{
+    if(COD.scanner && estavaLigada){
+      await COD.scanner.stop();
+      COD.scanner.clear();
+    }
+  }catch(e){ console.warn('Falha ao parar a câmera', e); }
+  COD.luz = false;
+  if(caixa) caixa.classList.remove('ativo');
+  if($('#codLeitorVazio')) $('#codLeitorVazio').style.display = '';
+  if($('#btnCamLigar')) $('#btnCamLigar').style.display = '';
+  if($('#btnCamDesligar')) $('#btnCamDesligar').style.display = 'none';
+  if($('#btnCodLuz')) $('#btnCodLuz').style.display = 'none';
+  codStatus('câmera desligada');
+  codAvisoLeitor('');
+  if(!silencioso) toast('Câmera desligada.', 'info');
+}
+async function codLuz(){
+  if(!COD.luzSuportada || !COD.scanner) return;
+  try{
+    const cap = COD.scanner.getRunningTrackCameraCapabilities();
+    const f = cap.torchFeature();
+    COD.luz = !COD.luz;
+    f.apply(COD.luz);
+    $('#btnCodLuz').setAttribute('aria-pressed', String(COD.luz));
+    toast(COD.luz ? 'Lanterna ligada.' : 'Lanterna desligada.', 'info');
+  }catch(e){ toast('Este aparelho não permite controlar a lanterna.', 'alerta'); }
+}
+/* Leitura a partir de uma imagem (foto da etiqueta) */
+async function codLerArquivo(arq){
+  if(!arq) return;
+  if(!codLibOk()){ toast('Biblioteca de leitura não carregada.', 'erro'); return; }
+  toast('Lendo a imagem…', 'info', 'QR / código de barras');
+  const temp = new Html5Qrcode('codLeitorVideoLeitura', {verbose:false, useBarCodeDetectorIfSupported:true});
+  try{
+    const texto = await temp.scanFile(arq, true);
+    temp.clear();
+    codRegistrarLeitura(texto, 'foto');
+  }catch(e){
+    try{ temp.clear(); }catch(err){}
+    bipe('grave');
+    toast('Não foi possível ler o código nesta imagem. Aproxime mais a etiqueta, melhore a luz e tente de novo.', 'erro', 'Código não lido');
+  }
+}
+
+/* ---------- sessão de conferência ---------- */
+function codModoAtual(){
+  const el = $('#codModo');
+  return el ? el.value : 'checklist';
+}
+function codQtdLeitura(){ return Math.max(1, Math.floor(parseNum($('#codQtdLeitura') ? $('#codQtdLeitura').value : 1)) || 1); }
+function codSessaoAtiva(){ return COD.sessao.leituras.length > 0; }
+function codContagemDe(produtoId){ return COD.sessao.contagem.get(produtoId) || 0; }
+function codSomarContagem(produtoId, qtd){
+  COD.sessao.contagem.set(produtoId, codContagemDe(produtoId) + qtd);
+}
+/* Radar principal: chegou um código lido (câmera, foto ou digitação) */
+function codAoLer(texto){
+  codRegistrarLeitura(texto, 'câmera');
+}
+function codEco(txt){ return txt && txt === COD.ultimoTexto && (Date.now() - COD.ultimoEm) < COD_ECO_MS; }
+function codRegistrarLeitura(texto, via){
+  const bruto = String(texto == null ? '' : texto).trim();
+  if(!bruto) return;
+  /* a câmera repete o mesmo código várias vezes por segundo: a 2ª leitura seguida é eco */
+  const ts = Date.now();
+  if(via !== 'digitado' && bruto === COD.ultimoTexto && (ts - COD.ultimoEm) < COD_ECO_MS){
+    COD.ecos++;
+    codRenderEco();
+    return;
+  }
+  COD.ultimoTexto = bruto;
+  COD.ultimoEm = ts;
+  const req = codReqParse(bruto);
+  if(req){ codReceberRequisicao(req, via); return; }
+  const r = codBuscarProduto(bruto);
+  const modo = codModoAtual();
+  const qtd = codQtdLeitura();
+  if(!r.ok){
+    COD.naoEncontrado = r.codigo || bruto;
+    COD.ultimoProduto = null; COD.ultimoCodigo = bruto; COD.ultimoCampo = '';
+    bipe('grave');
+    if(navigator.vibrate) navigator.vibrate([80, 60, 80]);
+    toast('Código ' + bruto + ' — nenhum produto cadastrado. Cadastre o produto ou confira o EAN/FT.', 'erro', 'Não encontrado');
+    codRender();
+    return;
+  }
+  const p = r.produto;
+  COD.naoEncontrado = '';
+  COD.ultimoProduto = p.id;
+  COD.ultimoCodigo = r.codigo;
+  COD.ultimoCampo = r.campo;
+  if(!COD.sessao.inicio) COD.sessao.inicio = agora();
+  const leitura = {
+    id: uid(), data: agora(), produtoId: p.id, ft: p.ft, nome: p.nome, unidade: p.unidade,
+    codigo: r.codigo, campo: r.campo, quantidade: qtd, modo: modo, via: via || 'câmera',
+    estoqueAntes: Number(p.estoque) || 0
+  };
+  const extra = {romaneio:'', aviso:''};
+  if(modo === 'contagem'){
+    codSomarContagem(p.id, qtd);
+  } else if(modo === 'carga' || modo === 'recebimento'){
+    const res = codAplicarNoRomaneio(p, qtd, modo);
+    extra.romaneio = res.ok ? (modo === 'carga' ? 'Carga nº ' + res.carga : 'NF ' + res.nf) : '';
+    extra.aviso = res.ok ? '' : res.msg;
+    if(!res.ok){
+      leitura.modo = modo + ' (não aplicado)';
+      toast(res.msg, 'alerta', modo === 'carga' ? 'Conferência de carga' : 'Recebimento');
+    } else {
+      leitura.romaneio = extra.romaneio;
+    }
+  }
+  leitura.aviso = extra.aviso;
+  COD.sessao.leituras.unshift(leitura);
+  if(COD.sessao.leituras.length > COD_MAX_LEITURAS) COD.sessao.leituras.length = COD_MAX_LEITURAS;
+  bipe('agudo');
+  if(navigator.vibrate) navigator.vibrate(50);
+  const total = modo === 'contagem' ? codContagemDe(p.id) : null;
+  toast(p.ft + ' · ' + p.nome + (total != null ? ' — contado: ' + fmtQ(total) + ' ' + p.unidade : ' — leitura registrada') +
+    (extra.romaneio ? ' (' + extra.romaneio + ')' : ''), 'sucesso', '📷 ' + esc(r.campo || 'leitura'));
+  codRender();
+}
+/* Chegou uma requisição do app (QR/label STOKIREQ) */
+function codReceberRequisicao(req, via){
+  COD.requisicao = req;
+  const conhecidos = req.itens.filter(i => i.produto).length;
+  const naoAchados = req.itens.length - conhecidos;
+  bipe('agudo');
+  if(navigator.vibrate) navigator.vibrate([40, 40, 40]);
+  toast('Requisição ' + req.numero + ' de ' + req.usuario + ' — ' + req.itens.length + ' item(ns)' +
+    (naoAchados ? ' (' + naoAchados + ' sem cadastro)' : '') + (via === 'câmera' ? '' : ' · via ' + via) + '.',
+    conhecidos ? 'sucesso' : 'alerta', '📱 Requisição do app');
+  codRender();
+}
+function codReqAplicar(tipo){
+  const req = COD.requisicao;
+  if(!req) return;
+  const prontos = req.itens.filter(i => i.produto);
+  if(!prontos.length){ toast('Nenhum item desta requisição está cadastrado no sistema.', 'erro'); return; }
+  const rot = codReqRotulo(tipo);
+  let aplicados = 0, falhas = [];
+  prontos.forEach(i => {
+    const q = Number(i.qtd) || 0;
+    if(q <= 0) return;
+    const r = movimentar(i.produto.id, rot.mov, q, rot.rotulo + ' — requisição ' + req.numero + ' (app · ' + req.usuario + ')' + (req.obs ? ' · ' + req.obs : ''), 'Requisição');
+    if(r.ok) aplicados++; else falhas.push(i.ft + (r.falta ? ' (faltam ' + fmtQ(r.falta) + ')' : ' (' + r.msg + ')'));
+  });
+  salvar(); renderTudo();
+  if(aplicados) toast(aplicados + ' item(ns) baixados como ' + rot.mov.toLowerCase() + ' — requisição ' + req.numero + '.', 'sucesso', 'Requisição aplicada');
+  if(falhas.length) toast('Não foi possível aplicar: ' + falhas.join(' · '), 'erro', 'Itens com problema');
+}
+function codReqImprimir(){
+  const req = COD.requisicao;
+  if(!req) return;
+  const linhas = req.itens.map((i, idx) => {
+    const estoque = i.produto ? (Number(i.produto.estoque) || 0) : null;
+    return '<tr><td>' + (idx + 1) + '</td><td>' + esc(i.ft) + '</td><td>' + esc(i.nome) + '</td><td>' + esc(i.unidade) + '</td>' +
+      '<td class="text-right">' + esc(fmtQ(i.qtd)) + '</td><td class="text-right">' + (estoque == null ? '<b>sem cadastro</b>' : esc(fmtQ(estoque))) + '</td></tr>';
+  }).join('');
+  const total = req.itens.reduce((a, i) => a + (Number(i.qtd) || 0), 0);
+  $('#printArea').innerHTML = '<div class="doc"><h1>Lista de separação — requisição ' + esc(req.numero) + '</h1>' +
+    '<div class="sub">Stoki SDY · recebida do app em ' + esc(relDataHoraSeg(agora())) + '</div>' +
+    '<div class="bloco"><div><span>Solicitante</span><b>' + esc(req.usuario) + '</b></div>' +
+      '<div><span>Tipo</span><b>' + esc(codReqRotulo(req.tipo).rotulo) + '</b></div>' +
+      '<div><span>Itens</span><b>' + req.itens.length + '</b></div>' +
+      '<div><span>Quantidade total</span><b>' + esc(fmtQ(total)) + '</b></div></div>' +
+    (req.obs ? '<p class="observacao"><b>Observação:</b> ' + esc(req.obs) + '</p>' : '') +
+    '<table><thead><tr><th>#</th><th>FT / Código</th><th>Produto</th><th>Un</th><th class="text-right">Qtd.</th><th class="text-right">Estoque</th></tr></thead><tbody>' + linhas + '</tbody></table>' +
+    '<div class="assinaturas"><div>Separação</div><div>Conferência</div><div>Recebedor</div></div></div>';
+  setTimeout(() => window.print(), 60);
+}
+function codRenderRequisicao(){
+  const cartao = $('#codReqCartao');
+  const box = $('#codReqBox');
+  if(!cartao || !box) return;
+  const req = COD.requisicao;
+  if(!req){ cartao.style.display = 'none'; return; }
+  cartao.style.display = '';
+  const rot = codReqRotulo(req.tipo);
+  if($('#codReqTag')) $('#codReqTag').textContent = req.numero + ' · ' + req.usuario;
+  const total = req.itens.reduce((a, i) => a + (Number(i.qtd) || 0), 0);
+  const linhas = req.itens.map(i => {
+    const est = i.produto ? (Number(i.produto.estoque) || 0) : null;
+    const falta = i.produto && est < (Number(i.qtd) || 0);
+    return '<tr class="' + (i.produto ? (falta ? 'baixo' : '') : 'baixo') + '"><td class="ft">' + esc(i.ft) + '</td>' +
+      '<td class="forte">' + esc(i.nome) + (i.produto ? '' : ' <span class="tag bad">não cadastrado</span>') + '</td>' +
+      '<td class="num forte">' + esc(fmtQ(i.qtd)) + ' ' + esc(i.unidade) + '</td>' +
+      '<td class="num">' + (est == null ? '—' : esc(fmtQ(est))) + '</td>' +
+      '<td>' + (i.produto ? (falta ? '<span class="tag warn">estoque insuficiente</span>' : '<span class="tag ok">ok</span>') : '<span class="tag bad">cadastrar</span>') + '</td></tr>';
+  }).join('');
+  box.innerHTML = '<div class="cod-kpis">' +
+      '<div class="cx"><span>Requisição</span><b>' + esc(req.numero) + '</b><small>' + esc(rot.rotulo) + '</small></div>' +
+      '<div class="cx"><span>Solicitante</span><b>' + esc(req.usuario) + '</b><small>enviada pelo app</small></div>' +
+      '<div class="cx"><span>Itens</span><b>' + req.itens.length + '</b><small>' + esc(fmtQ(total)) + ' unidades no total</small></div>' +
+      '<div class="cx"><span>Sem cadastro</span><b>' + req.itens.filter(i => !i.produto).length + '</b><small>itens a cadastrar</small></div>' +
+    '</div>' +
+    (req.obs ? '<p class="dica">Observação do solicitante: <b>' + esc(req.obs) + '</b></p>' : '') +
+    '<div class="tabela-wrap tabela-interna"><table class="tabela tabela-min-700"><thead><tr><th>FT / Código</th><th>Produto</th><th class="num">Pedido</th><th class="num">Estoque</th><th>Conferência</th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+    '<div class="acoes-form">' +
+      (rot.mov ? '<button type="button" class="btn ' + (rot.mov === 'Entrada' ? 'ok' : 'perigo') + '" id="btnCodReqAplicar"><span class="ic">' + (rot.mov === 'Entrada' ? '▲' : '▼') + '</span>Aplicar como ' + esc(rot.mov) + ' no estoque</button>' : '') +
+      '<button type="button" class="btn" id="btnCodReqImprimir"><span class="ic">🖨️</span>Lista de separação</button>' +
+      '<button type="button" class="btn fantasma" id="btnCodReqCopiar"><span class="ic">📋</span>Copiar itens</button>' +
+    '</div>';
+  const ligar = (id, fn) => { const el = $('#' + id); if(el) el.addEventListener('click', fn); };
+  ligar('btnCodReqAplicar', () => codReqAplicar(rot.mov));
+  ligar('btnCodReqImprimir', codReqImprimir);
+  ligar('btnCodReqCopiar', () => {
+    const texto = req.itens.map(i => i.ft + ' — ' + i.nome + ' · ' + fmtQ(i.qtd) + ' ' + i.unidade).join('\n');
+    const pronto = 'Requisição ' + req.numero + ' · ' + req.usuario + '\n' + texto;
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(pronto).then(() => toast('Itens copiados.', 'sucesso'), () => toast(pronto, 'info'));
+    else toast(pronto, 'info');
+  });
+}
+
+/* Aplica a leitura no romaneio da carga ou na NF em andamento */
+function codAplicarNoRomaneio(p, qtd, modo){
+  if(modo === 'carga'){
+    let r = state.rascunhoConferencia;
+    if(!r){
+      const escolhida = $('#codCarga') ? $('#codCarga').value : '';
+      if(escolhida){
+        iniciarConferencia(escolhida);
+        r = state.rascunhoConferencia;
+      }
+    }
+    if(!r) return {ok:false, msg:'Nenhuma conferência de carga em andamento. Escolha a carga no seletor ou inicie na aba “Conferir carga”.'};
+    const carga = state.carregamentos.find(c => c.id === r.carregamentoId);
+    const it = r.itens.find(i => i.produtoId === p.id);
+    if(!it) return {ok:false, msg:'Este produto não faz parte do romaneio da carga nº ' + (carga ? carga.numero : '?') + '.'};
+    it.conferido = (Number(it.conferido) || 0) + qtd;
+    if(!it.codigo) it.codigo = p.ean || '';
+    salvar(true);
+    renderTabelaConf();
+    return {ok:true, carga: carga ? carga.numero : '?', item:it};
+  }
+  const r = state.rascunhoRecebimento;
+  if(!r) return {ok:false, msg:'Nenhum recebimento em andamento. Inicie a NF na aba “Receber”.'};
+  /* O romaneio da NF é montado na hora: o primeiro bipe do produto cria a linha. */
+  let it = r.itens.find(i => i.produtoId === p.id);
+  if(!it){
+    it = {produtoId:p.id, codigo:p.ean || '', esperado:0, conferido:0, porLeitura:true};
+    r.itens.push(it);
+  }
+  it.conferido = (Number(it.conferido) || 0) + qtd;
+  if(!it.codigo) it.codigo = p.ean || '';
+  salvar(true);
+  if(typeof renderTabelaReceb === 'function') renderTabelaReceb();
+  return {ok:true, nf:r.nf, item:it};
+}
+function codIrCadastrar(codigo){
+  irPara('produtos');
+  const cod = codDigitos(codigo) || String(codigo || '').trim();
+  if($('#pEan')) $('#pEan').value = /^\d{6,}$/.test(cod) ? cod : '';
+  if($('#pFt') && !/^\d{6,}$/.test(cod)) $('#pFt').value = cod;
+  if($('#pNome')) $('#pNome').focus();
+  toast('Preencha o cadastro do produto com o código lido: ' + cod, 'info', 'Novo produto');
+}
+
+/* ---------- ações rápidas no produto lido ---------- */
+function codQtdRapida(){ return COD.qtdRapida || codQtdLeitura(); }
+function codMovimentoRapido(tipo){
+  const p = COD.ultimoProduto ? produto(COD.ultimoProduto) : null;
+  if(!p){ toast('Bipe um produto primeiro.', 'alerta'); return; }
+  const qtd = codQtdRapida();
+  const r = movimentar(p.id, tipo, qtd, (tipo === 'Entrada' ? 'Entrada' : 'Saída') + ' rápida por leitura de código (' + COD.ultimoCodigo + ')', 'Leitura');
+  if(!r.ok){ toast(r.msg, 'erro', 'Movimentação não realizada'); return; }
+  toast(p.ft + ' · ' + tipo + ' de ' + fmtQ(qtd) + ' ' + p.unidade + '. Estoque: ' + fmtQ(r.depois) + '.', 'sucesso');
+  salvar(); renderTudo();
+}
+/* Aplica a contagem da sessão no estoque */
+async function codAplicarContagem(){
+  const itens = Array.from(COD.sessao.contagem.entries());
+  if(!itens.length){ toast('Nenhuma contagem na sessão. Bipe os produtos no modo “Contagem”.', 'alerta', 'Nada para aplicar'); return; }
+  const linhas = itens.map(([pid, qtd]) => {
+    const p = produto(pid) || {ft:'—', nome:'Produto removido', unidade:'un', estoque:0};
+    const est = Number(p.estoque) || 0, dif = qtd - est;
+    return '<tr><td>' + esc(p.ft) + ' — ' + esc(p.nome) + '</td><td class="num">' + esc(fmtQ(qtd)) + '</td>' +
+      '<td class="num">' + esc(fmtQ(est)) + '</td><td class="num ' + (dif === 0 ? '' : 'text-bad') + '">' + (dif > 0 ? '+' : '') + esc(fmtQ(dif)) + '</td></tr>';
+  }).join('');
+  const promessa = abrirModal({
+    titulo:'Aplicar contagem por leitura de código', icone:'📷', largo:true, okTexto:'Aplicar e registrar movimentação',
+    html:'<p>Foram contados <b>' + itens.length + '</b> produto(s) nesta sessão. Escolha como aplicar:</p>' +
+      '<div class="campo mt-12"><label for="codAplicarModo">Forma de aplicação</label>' +
+      '<select id="codAplicarModo">' +
+        '<option value="ajuste">Ajustar o estoque para a contagem (inventário)</option>' +
+        '<option value="diferenca">Registrar só a diferença (entrada/saída)</option>' +
+      '</select></div>' +
+      '<div class="tabela-wrap tabela-interna"><table class="tabela tabela-min-520"><thead><tr><th>Produto</th><th class="num">Contado</th><th class="num">Estoque</th><th class="num">Diferença</th></tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+      '<p class="dica mt-10">Toda aplicação gera movimentação com origem “Leitura” e usuário logado — visível no relatório de movimentação.</p>'
+  });
+  const sel = document.getElementById('codAplicarModo');
+  const escolha = {v: sel ? sel.value : 'ajuste'};
+  if(sel) sel.addEventListener('change', () => { escolha.v = sel.value; });
+  const ok = await promessa;
+  if(!ok) return;
+  let aplicados = 0, divergentes = 0;
+  itens.forEach(([pid, qtd]) => {
+    const p = produto(pid); if(!p) return;
+    const est = Number(p.estoque) || 0;
+    const dif = qtd - est;
+    if(!dif){ aplicados++; return; }
+    let res;
+    if(escolha.v === 'ajuste') res = ajustarEstoque(pid, qtd, 'Contagem por leitura de código (' + (COD.sessao.leituras.length) + ' leituras)', 'Leitura');
+    else res = movimentar(pid, dif > 0 ? 'Entrada' : 'Saída', Math.abs(dif), 'Ajuste de contagem por leitura de código', 'Leitura');
+    if(res.ok){ aplicados++; divergentes++; }
+  });
+  salvar(); renderTudo();
+  toast(aplicados + ' produto(s) aplicados' + (divergentes ? ' · ' + divergentes + ' com divergência corrigida' : '') + '.', 'sucesso', 'Contagem aplicada');
+}
+/* Planilha da sessão */
+function codSessaoXlsx(){
+  if(!codSessaoAtiva()){ toast('Nenhuma leitura na sessão.', 'alerta', 'Nada para exportar'); return; }
+  const leituras = COD.sessao.leituras;
+  const cab = ['Data','Hora','Produto','FT / Código','Código lido','Campo','Modo','Via','Qtd. lida','Estoque no momento','Romaneio','Observação'];
+  const linhas = [cab.map(h => xlTxt(h, XL.cabecalho))];
+  leituras.slice().reverse().forEach(l => {
+    linhas.push([
+      xlData(l.data, XL.data), xlData(l.data, XL.hora), xlTxt(l.nome), xlTxt(l.ft), xlTxt(l.codigo), xlTxt(l.campo),
+      xlTxt(l.modo), xlTxt(l.via), xlNum(l.quantidade, XL.qtd), xlNum(l.estoqueAntes, XL.qtd),
+      xlTxt(l.romaneio || ''), xlTxt(l.aviso || '')
+    ]);
+  });
+  const contagem = [['Produto','FT / Código','Unidade','Qtd. contada','Estoque atual','Diferença','Valor em estoque (R$)'].map(h => xlTxt(h, XL.cabecalho))];
+  Array.from(COD.sessao.contagem.entries()).forEach(([pid, qtd]) => {
+    const p = produto(pid) || {ft:'—', nome:'Produto removido', unidade:'un', estoque:0, preco:0};
+    const est = Number(p.estoque) || 0;
+    contagem.push([xlTxt(p.nome), xlTxt(p.ft), xlTxt(p.unidade), xlNum(qtd, XL.qtd), xlNum(est, XL.qtd),
+      xlNum(qtd - est, XL.qtd), xlNum(qtd * (Number(p.preco) || 0), XL.moeda)]);
+  });
+  const resumo = [
+    [xlTxt('Conferência por QR Code / EAN — Stoki SDY', XL.titulo)],
+    [xlTxt('Emitido em ' + relDataHoraSeg(agora()) + ' · usuário ' + (operadorAtual() || '—'), XL.nota)],
+    [],
+    [xlTxt('Início da sessão', XL.texto), COD.sessao.inicio ? xlData(COD.sessao.inicio, XL.dataHora) : xlTxt('—')],
+    [xlTxt('Leituras registradas', XL.texto), xlNum(leituras.length, XL.inteiro)],
+    [xlTxt('Produtos distintos lidos', XL.texto), xlNum(new Set(leituras.map(l => l.produtoId)).size, XL.inteiro)],
+    [xlTxt('Produtos contados', XL.texto), xlNum(COD.sessao.contagem.size, XL.inteiro)],
+    [xlTxt('Quantidade total contada', XL.texto), xlNum(Array.from(COD.sessao.contagem.values()).reduce((a, b) => a + b, 0), XL.qtd)]
+  ];
+  const blob = xlPasta([
+    {nome:'Resumo', ativa:true, larguras:[34, 30, 16, 16], linhas:resumo},
+    {nome:'Leituras', congelar:1, filtro:'A1:L1', larguras:[11, 10, 44, 16, 20, 12, 16, 10, 12, 18, 18, 40], linhas:linhas},
+    {nome:'Contagem', congelar:1, filtro:'A1:G1', larguras:[44, 16, 10, 14, 14, 12, 22], linhas:contagem}
+  ], xlCorCabecalho());
+  const nome = 'conferencia-codigos-' + new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.xlsx';
+  if(baixarBlob(blob, nome)) toast(leituras.length + ' leitura(s) em 3 abas (Resumo, Leituras, Contagem).', 'sucesso', 'Excel da conferência');
+}
+function codLimparSessao(){
+  COD.sessao = {inicio:null, leituras:[], contagem:new Map()};
+  COD.ecos = 0;
+  codRender();
+  toast('Sessão de conferência zerada.', 'info');
+}
+
+/* ---------- etiquetas ---------- */
+function codEtiquetaHtml(p){
+  const ean = codDigitos(p.ean);
+  const barras = ean ? codBarrasSvg(ean, 40) : '';
+  const qr = codQrSvg(codPayload(p), 4);
+  return '<div class="etiqueta">' +
+    '<span class="et-un">' + esc(p.unidade || 'un') + '</span>' +
+    '<span class="et-nome">' + esc(p.nome || 'Produto') + '</span>' +
+    '<span class="et-ft">' + esc(p.ft || '—') + '</span>' +
+    (qr ? '<div class="et-qr">' + qr + '</div>' : '<span class="dica">QR indisponível</span>') +
+    (barras ? barras : (ean ? '<span class="dica">EAN ' + esc(ean) + ' (dígito verificador inválido)</span>' : '<span class="dica">sem EAN cadastrado</span>')) +
+    '</div>';
+}
+function codRenderEtiquetas(){
+  const grade = $('#codEtiquetasGrade');
+  if(!grade) return;
+  const sel = $('#codEtiquetaProduto');
+  const escolhido = sel ? sel.value : '';
+  const lista = escolhido ? [produto(escolhido)].filter(Boolean) : produtosOrdenados();
+  if(!lista.length){
+    grade.innerHTML = '<div class="etiqueta vazia">Nenhum produto cadastrado para gerar etiquetas.</div>';
+    return;
+  }
+  const mostradas = lista.slice(0, COD_MAX_ETIQUETAS_TELA);
+  grade.innerHTML = mostradas.map(codEtiquetaHtml).join('') +
+    (lista.length > mostradas.length ? '<div class="etiqueta vazia">Exibindo ' + mostradas.length + ' de ' + lista.length + ' produtos.<br>Use <b>Imprimir etiquetas</b> para gerar todas.</div>' : '');
+}
+function codImprimirEtiquetas(){
+  const sel = $('#codEtiquetaProduto');
+  const escolhido = sel ? sel.value : '';
+  const lista = (escolhido ? [produto(escolhido)].filter(Boolean) : produtosOrdenados()).slice(0, COD_MAX_ETIQUETAS_IMPRESSAO);
+  if(!lista.length){ toast('Nenhum produto cadastrado para gerar etiquetas.', 'alerta'); return; }
+  $('#printArea').innerHTML = '<div class="doc"><h1>Etiquetas de produto — QR Code e código de barras</h1>' +
+    '<div class="sub">Stoki SDY · ' + esc(relDataHoraSeg(agora())) + ' · ' + lista.length + ' etiqueta(s)' +
+    (escolhido ? '' : ' · todos os produtos') + '. Bipe o QR Code ou o código de barras na aba “Bipar código”.</div>' +
+    '<div class="etiquetas">' + lista.map(codEtiquetaHtml).join('') + '</div></div>';
+  setTimeout(() => window.print(), 60);
+}
+/* Prévia grande do QR/código do produto selecionado */
+function codGerarQrSelecionado(){
+  const sel = $('#codEtiquetaProduto');
+  const p = sel && sel.value ? produto(sel.value) : COD.ultimoProduto ? produto(COD.ultimoProduto) : null;
+  if(!p){ toast('Escolha um produto na lista para gerar o QR.', 'alerta'); return; }
+  const qr = codQrSvg(codPayload(p), 6);
+  modalInfo('QR Code · ' + p.ft, '<div class="cod-produto"><div class="cod-topo"><h4>' + esc(p.nome) + '</h4></div>' +
+    '<div class="cod-kpis"><div class="cx"><span>FT / Código</span><b>' + esc(p.ft) + '</b></div>' +
+    '<div class="cx"><span>EAN</span><b>' + esc(codDigitos(p.ean) || '—') + '</b></div>' +
+    '<div class="cx"><span>Estoque</span><b>' + esc(fmtQ(p.estoque)) + ' ' + esc(p.unidade) + '</b></div></div>' +
+    '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><div class="cod-qr" style="padding:10px">' + (qr || 'QR indisponível') + '</div>' +
+    (codDigitos(p.ean) ? '<div style="flex:1;min-width:200px">' + codBarrasSvg(codDigitos(p.ean), 60) + '</div>' : '') + '</div>' +
+    '<p class="dica mt-10">Conteúdo do QR: <span class="mono">' + esc(codPayload(p)) + '</span></p></div>', '🔳');
+}
+
+/* ---------- render da aba ---------- */
+function codRenderEco(){
+  const el = $('#codTagEco');
+  if(el) el.innerHTML = COD.ecos ? '<span class="tag eco">' + COD.ecos + ' leitura(s) repetida(s) ignorada(s)</span>' : '—';
+}
+function codRenderCargaSelect(){
+  const sel = $('#codCarga');
+  const wrap = $('#wrapCodCarga');
+  if(!sel || !wrap) return;
+  const modo = codModoAtual();
+  const mostra = modo === 'carga' || modo === 'recebimento';
+  wrap.style.display = mostra ? '' : 'none';
+  if(!mostra){ sel.innerHTML = ''; return; }
+  if(modo === 'carga'){
+    const pendentes = state.carregamentos.filter(c => c.status === 'Pendente');
+    const atual = sel.value;
+    sel.innerHTML = pendentes.length
+      ? pendentes.map(c => '<option value="' + esc(c.id) + '">Carga nº ' + esc(c.numero) + ' → ' + esc(c.destino) + '</option>').join('')
+      : '<option value="">— nenhum carregamento pendente —</option>';
+    const r = state.rascunhoConferencia;
+    if(r && pendentes.some(c => c.id === r.carregamentoId)) sel.value = r.carregamentoId;
+    else if(atual && pendentes.some(c => c.id === atual)) sel.value = atual;
+  } else {
+    const r = state.rascunhoRecebimento;
+    sel.innerHTML = r
+      ? '<option value="' + esc(r.id) + '">NF ' + esc(r.nf) + ' — ' + esc(r.fornecedor) + '</option>'
+      : '<option value="">— nenhum recebimento em andamento —</option>';
+  }
+}
+function codRenderProduto(){
+  const box = $('#codProdutoBox');
+  if(!box) return;
+  const p = COD.ultimoProduto ? produto(COD.ultimoProduto) : null;
+  if(!p){
+    if(COD.naoEncontrado){
+      box.innerHTML = '<div class="falta-linha">Código <b>' + esc(COD.naoEncontrado) + '</b> não corresponde a nenhum produto cadastrado.</div>' +
+        '<div class="acoes-form"><button type="button" class="btn primario" id="btnCodCadastrar"><span class="ic">✨</span>Cadastrar produto com este código</button>' +
+        '<button type="button" class="btn fantasma" id="btnCodBuscarProd"><span class="ic">🗂️</span>Ver produtos cadastrados</button></div>';
+      const b1 = $('#btnCodCadastrar'); if(b1) b1.addEventListener('click', () => codIrCadastrar(COD.naoEncontrado));
+      const b2 = $('#btnCodBuscarProd'); if(b2) b2.addEventListener('click', () => { irPara('produtos'); if($('#buscaProduto')){ $('#buscaProduto').value = COD.naoEncontrado; renderProdutos(); } });
+      return;
+    }
+    box.innerHTML = '<div class="vazio"><span class="ic">📷</span><b>Nenhum produto lido ainda</b>Bipe o QR Code ou o código de barras do produto — ou digite o código no campo acima.</div>';
+    return;
+  }
+  const est = Number(p.estoque) || 0;
+  const minimo = Number(p.minimo) || 0;
+  const critico = est <= minimo;
+  const contado = codContagemDe(p.id);
+  const qr = codQrSvg(codPayload(p), 4);
+  box.innerHTML = '<div class="cod-produto">' +
+    '<div class="cod-topo"><h4>' + esc(p.nome) + '</h4>' +
+      '<span class="tag accent" id="codTagCampo">' + esc(COD.ultimoCampo || 'código') + '</span>' +
+      '<span class="tag ean">' + esc(COD.ultimoCodigo || '') + '</span>' +
+      (critico ? '<span class="tag bad">abaixo do mínimo</span>' : '<span class="tag ok">estoque em dia</span>') +
+      '<span class="push-right"></span>' +
+      '<div class="cod-qr">' + (qr || '') + '</div>' +
+    '</div>' +
+    '<div class="cod-kpis">' +
+      '<div class="cx"><span>Estoque atual</span><b>' + esc(fmtQ(est)) + ' ' + esc(p.unidade) + '</b><small>mínimo ' + esc(fmtQ(minimo)) + '</small></div>' +
+      '<div class="cx"><span>Contado na sessão</span><b>' + esc(fmtQ(contado)) + ' ' + esc(p.unidade) + '</b><small>' + (contado ? (contado === est ? 'igual ao estoque' : 'diferença ' + (contado > est ? '+' : '') + fmtQ(contado - est)) : 'modo ' + codModoAtual()) + '</small></div>' +
+      '<div class="cx"><span>FT / Código</span><b>' + esc(p.ft) + '</b><small>' + esc(p.estrutura || '—') + '</small></div>' +
+      '<div class="cx"><span>EAN</span><b>' + esc(codDigitos(p.ean) || '—') + '</b><small>' + (codDigitos(p.ean) ? 'código de barras' : 'sem EAN') + '</small></div>' +
+      '<div class="cx' + (critico ? ' alerta' : '') + '"><span>Valor em estoque</span><b>' + esc(fmtBRL(est * (Number(p.preco) || 0))) + '</b><small>preço ' + esc(fmtBRL(p.preco)) + '</small></div>' +
+    '</div>' +
+    '<div class="cod-acoes">' +
+      '<label class="dica" for="codQtdRapida">Quantidade</label>' +
+      '<input type="number" id="codQtdRapida" class="mono qtd" min="1" step="1" value="' + esc(codQtdRapida()) + '">' +
+      '<button type="button" class="btn ok" id="btnCodEntrada"><span class="ic">▲</span>Entrada rápida</button>' +
+      '<button type="button" class="btn perigo" id="btnCodSaida"><span class="ic">▼</span>Saída rápida</button>' +
+      '<button type="button" class="btn fantasma" id="btnCodVerProduto"><span class="ic">🗂️</span>Ver no cadastro</button>' +
+      '<button type="button" class="btn fantasma" id="btnCodQrProduto"><span class="ic">🔳</span>QR / código de barras</button>' +
+    '</div></div>';
+  const ligar = (id, fn) => { const el = $('#' + id); if(el) el.addEventListener('click', fn); };
+  const qtdRap = $('#codQtdRapida');
+  if(qtdRap) qtdRap.addEventListener('input', () => { COD.qtdRapida = Math.max(1, Math.floor(parseNum(qtdRap.value)) || 1); });
+  ligar('btnCodEntrada', () => codMovimentoRapido('Entrada'));
+  ligar('btnCodSaida', () => codMovimentoRapido('Saída'));
+  ligar('btnCodVerProduto', () => {
+    irPara('produtos');
+    if($('#buscaProduto')){ $('#buscaProduto').value = p.ft; renderProdutos(); }
+  });
+  ligar('btnCodQrProduto', () => {
+    const sel = $('#codEtiquetaProduto');
+    if(sel) sel.value = p.id;
+    codRenderEtiquetas();
+    codGerarQrSelecionado();
+  });
+}
+function codRenderSessao(){
+  const box = $('#codSessaoBox');
+  const tb = $('#codSessaoTbody');
+  const leituras = COD.sessao.leituras;
+  const modo = codModoAtual();
+  if($('#codTagSessao')) $('#codTagSessao').textContent = leituras.length
+    ? leituras.length + ' leitura(s) · desde ' + relHora(COD.sessao.inicio) + ' · modo ' + modo
+    : 'nenhuma leitura';
+  const btnAplicar = $('#btnCodAplicar');
+  if(btnAplicar){
+    btnAplicar.style.display = modo === 'contagem' ? '' : 'none';
+    btnAplicar.disabled = !COD.sessao.contagem.size;
+  }
+  if(box){
+    if(!leituras.length){
+      box.innerHTML = '<div class="vazio"><span class="ic">🧾</span><b>Sessão vazia</b>As leituras aparecem aqui, com data e hora — úteis para conferir depois.</div>';
+    } else {
+      const produtosLidos = new Set(leituras.map(l => l.produtoId));
+      const totalContado = Array.from(COD.sessao.contagem.values()).reduce((a, b) => a + b, 0);
+      const contados = Array.from(COD.sessao.contagem.entries());
+      const iguais = contados.filter(([pid, q]) => (Number((produto(pid) || {}).estoque) || 0) === q).length;
+      const comDif = contados.filter(([pid, q]) => (Number((produto(pid) || {}).estoque) || 0) !== q);
+      box.innerHTML = '<div class="cod-kpis">' +
+        '<div class="cx"><span>Leituras</span><b>' + leituras.length + '</b><small>' + COD.ecos + ' repetida(s) ignorada(s)</small></div>' +
+        '<div class="cx"><span>Produtos distintos</span><b>' + produtosLidos.size + '</b><small>de ' + state.produtos.length + ' cadastrados</small></div>' +
+        '<div class="cx"><span>Qtd. contada</span><b>' + esc(fmtQ(totalContado)) + '</b><small>' + COD.sessao.contagem.size + ' produto(s) contado(s)</small></div>' +
+        '<div class="cx' + (comDif.length ? ' alerta' : '') + '"><span>Divergências</span><b>' + comDif.length + '</b><small>' + iguais + ' produto(s) batendo</small></div>' +
+      '</div>' +
+      (comDif.length ? '<div class="falta-linha aviso-warn">Produtos com contagem diferente do estoque: ' +
+        comDif.slice(0, 6).map(([pid, q]) => { const pp = produto(pid) || {ft:'—', unidade:''}; const d = q - (Number(pp.estoque) || 0); return esc(pp.ft) + ' (' + (d > 0 ? '+' : '') + fmtQ(d) + ')'; }).join(' · ') +
+        (comDif.length > 6 ? '…' : '') + '</div>' : '') +
+      (modo === 'contagem' ? '<p class="dica">Confira a contagem e toque em <b>Aplicar contagem</b> para ajustar o estoque ou registrar as diferenças.</p>'
+        : modo === 'carga' ? '<p class="dica">As leituras estão sendo aplicadas no romaneio. Abra a aba <b>Conferir carga</b> para revisar e finalizar a baixa.</p>'
+        : modo === 'recebimento' ? '<p class="dica">As leituras estão sendo somadas às quantidades conferidas da NF em andamento.</p>'
+        : '<p class="dica">Modo checklist: as leituras ficam registradas na sessão, sem alterar o estoque.</p>');
+    }
+  }
+  if(tb){
+    tb.innerHTML = leituras.length ? leituras.map(l => {
+      const p = produto(l.produtoId);
+      return '<tr><td class="ft">' + esc(relHora(l.data)) + '</td>' +
+        '<td class="forte">' + esc(l.nome) + (p ? '' : ' <span class="tag warn">fora do cadastro</span>') + '</td>' +
+        '<td class="ft">' + esc(l.ft) + '</td>' +
+        '<td class="ft">' + esc(l.codigo) + ' <span class="tag">' + esc(l.campo) + '</span></td>' +
+        '<td class="num forte">' + esc(fmtQ(l.quantidade)) + ' ' + esc(l.unidade) + '</td>' +
+        '<td class="num">' + esc(fmtQ(p ? p.estoque : l.estoqueAntes)) + '</td>' +
+        '<td>' + esc(l.modo) + ' · ' + esc(l.via) + (l.romaneio ? ' <span class="tag info">' + esc(l.romaneio) + '</span>' : '') + '</td></tr>';
+    }).join('') : '<tr><td colspan="7"><div class="vazio"><span class="ic">🕘</span><b>Nenhuma leitura</b>Bipe um código para começar.</div></td></tr>';
+  }
+}
+function codRender(){
+  if(!$('#tab-codigos')) return;
+  codRenderCargaSelect();
+  codRenderRequisicao();
+  codRenderProduto();
+  codRenderSessao();
+  codRenderEtiquetas();
+  codRenderEco();
+  const sel = $('#codEtiquetaProduto');
+  if(sel){
+    const atual = sel.value;
+    sel.innerHTML = '<option value="">Todos os produtos</option>' + produtosOrdenados().map(p =>
+      '<option value="' + esc(p.id) + '">' + esc(p.nome) + ' — ' + esc(p.ft) + '</option>').join('');
+    if(atual && state.produtos.some(p => p.id === atual)) sel.value = atual;
+  }
+}
+
+/* ---------- eventos da aba ---------- */
+$('#btnCamLigar').addEventListener('click', codIniciarCamera);
+$('#btnCamDesligar').addEventListener('click', () => codPararCamera(false));
+if($('#btnCodLuz')) $('#btnCodLuz').addEventListener('click', codLuz);
+$('#codModo').addEventListener('change', function(){
+  COD.sessao.leituras.forEach(l => { if(!l.modo) l.modo = codModoAtual(); });
+  codRender();
+});
+$('#codCamera').addEventListener('change', async function(){
+  COD.cameraId = this.value;
+  if(COD.rodando){ await codPararCamera(true); codIniciarCamera(); }
+});
+$('#btnCodManual').addEventListener('click', function(){
+  const el = $('#codManual');
+  const valor = el.value.trim();
+  if(!valor){ toast('Digite ou cole um código (EAN, FT ou etiqueta).', 'alerta'); return; }
+  codRegistrarLeitura(valor, 'digitado');
+  el.value = '';
+});
+$('#codManual').addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  e.preventDefault();
+  $('#btnCodManual').click();
+});
+$('#btnCodFoto').addEventListener('click', () => $('#codArquivo').click());
+$('#codArquivo').addEventListener('change', async function(e){
+  const arq = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if(arq) await codLerArquivo(arq);
+});
+$('#btnCodEtiquetas').addEventListener('click', function(){
+  codRenderEtiquetas();
+  const cartao = $('#codEtiquetasGrade');
+  if(cartao) cartao.scrollIntoView({behavior:'smooth', block:'center'});
+});
+$('#btnCodEtiquetaQr').addEventListener('click', codGerarQrSelecionado);
+$('#btnCodReqFechar').addEventListener('click', () => { COD.requisicao = null; codRender(); });
+$('#btnCodEtiquetaImprimir').addEventListener('click', codImprimirEtiquetas);
+$('#btnCodAplicar').addEventListener('click', codAplicarContagem);
+$('#btnCodXlsx').addEventListener('click', codSessaoXlsx);
+$('#btnCodLimparSessao').addEventListener('click', async function(){
+  if(!codSessaoAtiva()){ codLimparSessao(); return; }
+  const ok = await abrirModal({titulo:'Zerar a sessão de conferência', icone:'🧹', perigo:true, okTexto:'Zerar sessão',
+    html:'<p>As <b>' + COD.sessao.leituras.length + '</b> leitura(s) e as contagens desta sessão serão descartadas. Nenhuma baixa de estoque é desfeita.</p>'});
+  if(ok) codLimparSessao();
+});
+
 
 /* ---------------- tema (botão) ---------------- */
 $('#btnTema').addEventListener('click', function(){
